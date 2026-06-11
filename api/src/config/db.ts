@@ -9,6 +9,9 @@ type GlobalPrisma = {
 
 const globalForPrisma = globalThis as unknown as GlobalPrisma;
 
+console.log("--- DB FILE EVALUATED ---");
+console.log("Raw Env URL:", process.env.DATABASE_URL);
+
 export const pool =
   globalForPrisma.pool ||
   new Pool({

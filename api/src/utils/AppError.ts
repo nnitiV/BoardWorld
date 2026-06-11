@@ -7,7 +7,6 @@ export class AppError extends Error {
     this.status = status;
     this.isOperational = true; // We explicitly threw this error
 
-    // Captures the exact line of code where the error happened
     Error.captureStackTrace(this, this.constructor);
   }
 }

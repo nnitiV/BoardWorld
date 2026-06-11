@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -13,7 +12,7 @@ model User {
   password  String
   name      String?
   username  String?
-  dob       DateTime @map("date_of_birth")
+  dateOfBirth       DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("users")

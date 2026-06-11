@@ -7,7 +7,7 @@ export const RegisterUserSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   dateOfBirth: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid date format for dateOfBirth",
-  }),
+  }).transform((date) => new Date(date)),
 });
 
 export type RegisterUser = z.infer<typeof RegisterUserSchema>;
