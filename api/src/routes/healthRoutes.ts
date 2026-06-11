@@ -1,7 +1,16 @@
 import { Request, Response, Router } from "express";
+import { prisma } from "../config/db.js";
 
 const healthRoutes = Router();
 
-healthRoutes.get("/", (req: Request, res: Response ) => res.status(200).json({message: "The API is healthy!"}));
+healthRoutes.get("/", async (req: Request, res: Response) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
 
-export default healthRoutes
+    res.status(200).json({ status: "UP", database: "CONNECTED" });
+  } catch (error) {
+    res.status(503).json({ status: "DOWN", database: "DISCONNECTED" });
+  }
+});
+
+export default healthRoutes;
