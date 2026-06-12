@@ -11,3 +11,10 @@ export const RegisterUserSchema = z.object({
 });
 
 export type RegisterUser = z.infer<typeof RegisterUserSchema>;
+
+export const LoginUserSchema = z.object({
+  login: z.string(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export type LoginUser = z.infer<typeof LoginUserSchema>;
