@@ -49,8 +49,9 @@ export const loginUser = async (userData: LoginUser) => {
 
   let refreshToken = null;
   if(userData.rememberMe) {
+    const rawToken = crypto.randomBytes(64).toString("hex");
     const expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-    refreshToken = await refreshTokenRepository.createRefreshToken(accessToken, user.id, expiresAt)
+    refreshToken = await refreshTokenRepository.createRefreshToken(rawToken, user.id, expiresAt)
   }
 
   const { password, ...safeUser } = user;

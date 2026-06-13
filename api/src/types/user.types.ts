@@ -15,7 +15,7 @@ export type RegisterUser = z.infer<typeof RegisterUserSchema>;
 export const LoginUserSchema = z.object({
   login: z.string(),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  rememberMe: z.boolean().nullable
+  rememberMe: z.boolean().default(false)
 });
 
 export type LoginUser = z.infer<typeof LoginUserSchema>;
