@@ -1,8 +1,12 @@
 import * as authRepository from "../repository/authRepository.js";
 import * as userRepository from "../repository/userRepository.js";
+import * as refreshTokenRepository from "../repository/refreshTokenRepository.js";
 import { LoginUser, RegisterUser } from "../types/user.types.js";
+import crypto from "crypto"
 import bcrypt from "bcrypt";
 import { AppError } from "../utils/AppError.js";
+import jwt from "jsonwebtoken";
+import { prisma } from "../config/db.js";
 
 export const registerUser = async (userData: RegisterUser) => {
   if (await userRepository.getUserByEmail(userData.email)) {
@@ -19,10 +23,71 @@ export const registerUser = async (userData: RegisterUser) => {
 };
 
 export const loginUser = async (userData: LoginUser) => {
-  const user = (await userRepository.getUserByEmail(userData.login) || await userRepository.getUserByUsername(userData.login))
+  const user =
+    (await userRepository.getUserByEmail(userData.login)) ||
+    (await userRepository.getUserByUsername(userData.login));
   if (!user) {
     throw new AppError("User don't exist.", 404);
   }
-  const {password, ...safeUser} = user;
-  return user;  
+  const isPasswordValid = await bcrypt.compare(
+    userData.password,
+    user.password,
+  );
+  if (!isPasswordValid) {
+    throw new AppError("Invalid password.", 401);
+  }
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new AppError(
+      "FATAL: JWT_SECRET is not defined in the variables.",
+      500,
+    );
+  }
+  const accessToken = jwt.sign({ sub: user.id }, secret, {
+    expiresIn: "1h",
+  });
+
+  let refreshToken = null;
+  if(userData.rememberMe) {
+    const expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
+    refreshToken = await refreshTokenRepository.createRefreshToken(accessToken, user.id, expiresAt)
+  }
+
+  const { password, ...safeUser } = user;
+  return { user, accessToken, refreshToken };
+};
+
+export const refreshSession = async (token: string) => {
+  const storedToken = await refreshTokenRepository.getRefreshToken(token);
+  if (!storedToken) {
+    throw new AppError("No such token stored.", 401);
+  }
+  if (new Date() > storedToken.expiresAt) {
+    throw new AppError("Token expired.", 401);
+  }
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new AppError("There was an internal server error.", 500);
+  }
+
+  const accessToken = jwt.sign({ sub: storedToken.userId }, secret, {
+    expiresIn: "1h",
+  });
+
+  return await prisma.$transaction(async (tx) => {
+    await refreshTokenRepository.deleteRefreshToken(storedToken.token, tx);
+
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const rawToken = crypto.randomBytes(64).toString("hex");
+
+    const refreshToken = await refreshTokenRepository.createRefreshToken(
+      rawToken,
+      storedToken.userId,
+      expiresAt,
+      tx,
+    );
+
+    return { accessToken, refreshToken: refreshToken.token };
+  });
 };

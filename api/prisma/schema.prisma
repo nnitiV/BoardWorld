@@ -7,13 +7,22 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id 
   email     String   @unique
   password  String
-  name      String?
+  name      String? 
   username  String? @unique
   dateOfBirth       DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  refreshTokens     RefreshToken[] 
   @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
 }
