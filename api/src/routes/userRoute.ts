@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getLoggedUser } from "../controller/userController.js";
+import { deleteUserById, getLoggedUserProfile } from "../controller/userController.js";
 
 const userRoutes = Router();
 
-userRoutes.get("/me", getLoggedUser);
+userRoutes.get("/me", getLoggedUserProfile);
+userRoutes.delete("/deleteMe", deleteUserById);
 
 export default userRoutes;

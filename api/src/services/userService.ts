@@ -9,3 +9,11 @@ export const getLoggedUserProfile = async (id: string) => {
   const {password, ...safeUser} = user;
   return safeUser;
 };
+
+export const deleteUserById = async (id: string) => {
+  const wasUserDeleted = await userRepository.deleteUserById(id);
+  if(!wasUserDeleted) {
+    throw new AppError("User not found.", 404);
+  }
+  return true;
+}

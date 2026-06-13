@@ -89,6 +89,16 @@ export const refreshSession = async (token: string) => {
       tx,
     );
 
+    await refreshTokenRepository.deleteRefreshToken(storedToken.token, tx);
+
     return { accessToken, refreshToken: refreshToken.token };
   });
 };
+
+export const deleteToken = async (token: string) => {
+  const wasItDeleted = await refreshTokenRepository.deleteRefreshToken(token);
+  if(!wasItDeleted) {
+    throw new AppError("Token not found.", 404);
+  }
+  return !!wasItDeleted;
+}

@@ -28,5 +28,5 @@ export const deleteRefreshToken = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.refreshToken.delete({ where: { token } });
+  return await client.refreshToken.deleteMany({ where: { token } });
 };
