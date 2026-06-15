@@ -1,8 +1,14 @@
 import * as productRepository from "../repository/productRepository.js";
+import { UpdateProduct } from "../types/product.types.js";
+import { AppError } from "../utils/AppError.js";
+
+export const getProductById = async (id: string) => {
+  return await productRepository.getProductById(id);
+};
 
 export const createNewProduct = async (productData: {
   name: string;
-  price: string; // Comes in as string from form-data
+  price: string;
   imageUrl: string;
 }) => {
   const parsedPrice = parseFloat(productData.price);
@@ -12,4 +18,8 @@ export const createNewProduct = async (productData: {
     imageUrl: productData.imageUrl,
   };
   return await productRepository.createProduct(payload);
+};
+
+export const updateProduct = async (id: string, productData: UpdateProduct) => {
+  return await productRepository.updateProduct(id, productData);
 };

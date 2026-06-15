@@ -38,8 +38,12 @@ model Product {
   id        String   @id @default(uuid())
   name String
   price Decimal
+  stock Int @default(0)
   imageUrl String
+  isActive Boolean @default(true)
   cartItems CartItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Cart {
@@ -47,16 +51,21 @@ model Cart {
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   items CartItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CartItem {
-  id String @unique @default(uuid())
+  id String @id @default(uuid())
+  quantity Int @default(1)
 
   cartId String 
   cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
   productId String
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: NoAction)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@unique([cartId, productId])
 }

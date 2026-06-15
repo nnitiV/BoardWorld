@@ -1,0 +1,11 @@
+import z, { file, number, string } from "zod";
+
+export const UpdateProductSchema = z.object({
+  name: z.string(),
+  price: z.coerce.number().positive("Price must be a positive number"),
+  imageUrl: z.string(),
+  stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
+  isActive: z.enum(["true", "false"]).transform((val) => val === "true"),
+});
+
+export type UpdateProduct = z.infer<typeof UpdateProductSchema>;

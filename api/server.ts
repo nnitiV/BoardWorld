@@ -21,4 +21,4 @@ app.use("/api/products", productRoutes);
 
 app.use(globalErrorHandler);
 
-app.listen(5173, () => console.log("App listening at port 5173!"));
+app.listen(process.env.BACKEND_PORT, () => console.log("App listening at port 5173!"));

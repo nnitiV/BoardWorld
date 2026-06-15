@@ -2,6 +2,8 @@ import { Response } from "express";
 import { AuthRequest } from "../types/express.js";
 import { AppError } from "../utils/AppError.js";
 import * as productService from "../services/productService.js";
+import { UpdateProductSchema } from "../types/product.types.js";
+import fs from "fs/promises";
 
 export const createProduct = async (req: AuthRequest, res: Response) => {
   const { name, price } = req.body;
@@ -21,5 +23,26 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
   res.status(201).json({
     status: "success",
     data: { product },
+  });
+};
+
+export const updateProduct = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  if (!id) {
+    throw new AppError("Please, provide the product id.", 400);
+  }
+  const product = await productService.getProductById(id.toString());
+  if (req.file && product) {
+    await fs.unlink(`${process.cwd()}/${product?.imageUrl}`);
+  }
+  const productData = UpdateProductSchema.parse(req.body);
+  const wasUpdated = await productService.updateProduct(id.toString(), productData);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      message: "Product updated successfully.",
+      updateProduct: wasUpdated,
+    },
   });
 };
