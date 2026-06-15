@@ -34,3 +34,4 @@ export const deleteUserById = async (req: AuthRequest, res: Response) => {
   const user = await userService.deleteUserById(id);
   res.status(200).json({ user });
 };
+

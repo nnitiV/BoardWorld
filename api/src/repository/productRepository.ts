@@ -25,3 +25,25 @@ export const updateProduct = async (
     data,
   });
 };
+
+export const restoreProduct = async (
+  id: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.product.update({
+    where: { id },
+    data: { isActive: true },
+  });
+};
+
+export const deactivateProduct = async (
+  id: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.product.update({
+    where: { id },
+    data: { isActive: false },
+  });
+};
