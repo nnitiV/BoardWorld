@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { AuthRequest } from "../types/express.js";
 import { AppError } from "../utils/AppError.js";
 import * as productService from "../services/productService.js";
@@ -26,17 +26,17 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
   });
 };
 
-export const updateProduct = async (req: AuthRequest, res: Response) => {
+export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
-  if (!id) {
-    throw new AppError("Please, provide the product id.", 400);
-  }
   const product = await productService.getProductById(id.toString());
   if (req.file && product) {
     await fs.unlink(`${process.cwd()}/${product?.imageUrl}`);
   }
   const productData = UpdateProductSchema.parse(req.body);
-  const wasUpdated = await productService.updateProduct(id.toString(), productData);
+  const wasUpdated = await productService.updateProduct(
+    id.toString(),
+    productData,
+  );
 
   res.status(200).json({
     status: "success",
@@ -44,5 +44,26 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
       message: "Product updated successfully.",
       updateProduct: wasUpdated,
     },
+  });
+};
+
+export const restoreProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const restoredProduct = await productService.restoreProduct(id.toString());
+  res.status(200).json({
+    message: "Product restored.",
+    restoredProduct
+  })
+}
+
+export const deactivateProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const updatedProduct = await productService.deactivateProduct(
+    id.toString(),
+  );
+
+  res.status(200).json({
+    message: "Status updated.",
+    updatedProduct,
   });
 };

@@ -23,3 +23,11 @@ export const createNewProduct = async (productData: {
 export const updateProduct = async (id: string, productData: UpdateProduct) => {
   return await productRepository.updateProduct(id, productData);
 };
+
+export const restoreProduct = async (id: string) => {
+  return await productRepository.restoreProduct(id);
+}
+
+export const deactivateProduct = async (id: string) => {
+  return await productRepository.deactivateProduct(id);
+};
