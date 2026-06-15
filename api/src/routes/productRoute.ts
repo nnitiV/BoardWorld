@@ -5,12 +5,16 @@ import { uploadProductImage } from "../middleware/uploadMiddleware.js";
 import {
   createProduct,
   deactivateProduct,
+  getProductById,
+  getProductCatalog,
   restoreProduct,
   updateProduct,
 } from "../controller/productController.js";
 
 const productRoutes = Router();
 
+productRoutes.get("/catalog", getProductCatalog);
+productRoutes.get("/:id", getProductById);
 productRoutes.post(
   "/",
   protect,

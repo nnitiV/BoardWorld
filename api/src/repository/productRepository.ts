@@ -6,6 +6,26 @@ export const getProductById = async (id: string) => {
   return await prisma.product.findUnique({ where: { id } });
 };
 
+export const getProductCatalog = async (
+  skip: number,
+  limit: number,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.product.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      name: true,
+      imageUrl: true,
+      price: true,
+      isActive: true,
+    },
+    take: limit,
+    skip: skip,
+  });
+};
+
 export const createProduct = async (
   data: Prisma.ProductCreateInput,
   tx?: Prisma.TransactionClient,
