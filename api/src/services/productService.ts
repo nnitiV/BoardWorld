@@ -10,6 +10,12 @@ export const getProductById = async (id: string) => {
   return product;
 };
 
+export const getProductCatalog = async (page: number, limit: number)  => {
+  const skip = (page - 1) * limit;
+  const productCatalog = await productRepository.getProductCatalog(skip, limit);
+  return productCatalog;
+};
+
 export const createNewProduct = async (productData: {
   name: string;
   price: string;

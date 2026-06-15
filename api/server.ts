@@ -15,9 +15,9 @@ app.use(express.json());
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/api/products", productRoutes);
 app.use(protect);
 app.use("/api/user", userRoutes);
-app.use("/api/products", productRoutes);
 
 app.use(globalErrorHandler);
 

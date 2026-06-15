@@ -9,3 +9,10 @@ export const UpdateProductSchema = z.object({
 });
 
 export type UpdateProduct = z.infer<typeof UpdateProductSchema>;
+
+export const ProductCatalogRequestSchema = z.object({
+  page: z.coerce.number(),
+  limit: z.coerce.number(),
+});
+
+export type ProductCatalogRequest = z.infer<typeof ProductCatalogRequestSchema>;

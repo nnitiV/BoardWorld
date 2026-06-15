@@ -2,8 +2,25 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../types/express.js";
 import { AppError } from "../utils/AppError.js";
 import * as productService from "../services/productService.js";
-import { UpdateProductSchema } from "../types/product.types.js";
+import { ProductCatalogRequestSchema, UpdateProductSchema } from "../types/product.types.js";
 import fs from "fs/promises";
+
+export const getProductById =  async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const product = await productService.getProductById(id.toString());
+  res.status(200).json({
+    message: "Product found.",
+    product
+  })
+}
+
+export const getProductCatalog = async (req: AuthRequest, res: Response) => {
+  const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
+  const productCatalog = await productService.getProductCatalog(page, limit);
+  res
+    .status(200)
+    .json({ message: "Product catalog retrieved.", productCatalog });
+};
 
 export const createProduct = async (req: AuthRequest, res: Response) => {
   const { name, price } = req.body;
@@ -52,15 +69,13 @@ export const restoreProduct = async (req: Request, res: Response) => {
   const restoredProduct = await productService.restoreProduct(id.toString());
   res.status(200).json({
     message: "Product restored.",
-    restoredProduct
-  })
-}
+    restoredProduct,
+  });
+};
 
 export const deactivateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updatedProduct = await productService.deactivateProduct(
-    id.toString(),
-  );
+  const updatedProduct = await productService.deactivateProduct(id.toString());
 
   res.status(200).json({
     message: "Status updated.",
