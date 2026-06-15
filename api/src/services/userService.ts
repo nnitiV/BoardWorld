@@ -10,6 +10,14 @@ export const getLoggedUserProfile = async (id: string) => {
   return safeUser;
 };
 
+export const getUserRole = async (id: string) => {
+  const userRole = await userRepository.getUserRole(id);
+  if(!userRole) {
+    throw new AppError("User doesn't exist.", 404);
+  }
+  return userRole;
+}
+
 export const deleteUserById = async (id: string) => {
   const wasUserDeleted = await userRepository.deleteUserById(id);
   if(!wasUserDeleted) {

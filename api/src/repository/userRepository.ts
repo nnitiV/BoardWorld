@@ -18,9 +18,15 @@ export const getUserById = async (id: string) => {
   });
 };
 
+export const getUserRole = async (id: string) => {
+  return await prisma.user.findUnique({
+    where: { id },
+    select: { role: true },
+  });
+};
+
 export const deleteUserById = async (id: string) => {
   return await prisma.user.delete({
     where: { id },
   });
 };
-  
