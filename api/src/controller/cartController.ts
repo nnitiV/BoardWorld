@@ -7,6 +7,18 @@ import { AuthRequest } from "../types/express.js";
 import * as cartService from "../services/cartService.js";
 import { AppError } from "../utils/AppError.js";
 
+export const getCartByUserId = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    throw new AppError("Authentication failed: User context missing.", 401);
+  }
+  const cart = await cartService.getCartByUserId(userId.toString());
+  res.status(200).json({
+    message: "Cart retrieved.",
+    cart
+  })
+};    
+
 export const addToCart = async (req: AuthRequest, res: Response) => {
   const cartItemToAdd = AddCartItemSchema.parse(req.body);
   const user = req.user;
@@ -22,12 +34,12 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
 
 export const updateCartItem = async (req: AuthRequest, res: Response) => {
   const cartItemToUpdate = UpdateCartItemSchema.parse(req.body);
-  const user = req.user;
-  if (!user) {
+  const userId = req.user?.id;
+  if (!userId) {
     throw new AppError("Authentication failed: User context missing.", 401);
   }
   const updatedCartItem = await cartService.updateCartItem(
-    user.id,
+    userId,
     cartItemToUpdate,
   );
   res.status(200).json({
@@ -38,13 +50,13 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
 
 export const deleteCartItem = async (req: AuthRequest, res: Response) => {
   const { id: cartItemId } = req.params;
-  const user = req.user;
-  if (!user) {
+  const userId = req.user?.id;
+  if (!userId) {
     throw new AppError("Authentication failed: User context missing.", 401);
   }
   const deletedCartItem = await cartService.deleteCartItemById(
     cartItemId.toString(),
-    user.id,
+    userId
   );
   res.status(200).json({
     message: "Cart Item Deleted.",

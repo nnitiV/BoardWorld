@@ -3,13 +3,27 @@ import * as cartRepository from "../repository/cartRepository.js";
 import { AddCartItem, UpdateCartItem } from "../types/cart.types.js";
 import { AppError } from "../utils/AppError.js";
 
+export const getCartByUserId = async (userId: string) => {
+  const cart = await cartRepository.getCartByUserId(userId);
+  if (!cart) {
+    return { items: [] };
+  }
+  return cart;
+};
+
 export const addToCart = async (userId: string, cartItem: AddCartItem) => {
   return await prisma.$transaction(async (tx) => {
     let cart = await cartRepository.getCartByUserId(userId, tx);
-    if (!cart) {
-      cart = await cartRepository.createCart(userId, tx);
-    }
-    let newCartItem = await cartRepository.addItemToCart(cartItem, cart.id, tx);
+    
+    let cartId = !cart
+      ? (await cartRepository.createCart(userId, tx)).id
+      : cart.id;
+
+    const newCartItem = await cartRepository.addItemToCart(
+      cartItem,
+      cartId,
+      tx,
+    );
 
     return newCartItem;
   });
@@ -34,7 +48,10 @@ export const updateCartItem = async (
   });
 };
 
-export const deleteCartItemById = async (cartItemId: string, userId: string) => {
+export const deleteCartItemById = async (
+  cartItemId: string,
+  userId: string,
+) => {
   return await prisma.$transaction(async (tx) => {
     let cart = await cartRepository.getCartByUserId(userId, tx);
     if (!cart) {

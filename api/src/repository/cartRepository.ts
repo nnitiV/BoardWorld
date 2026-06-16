@@ -7,7 +7,23 @@ export const getCartByUserId = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.cart.findUnique({ where: { userId } });
+  return await client.cart.findUnique({ where: { userId },
+    include: {
+      items: {
+        include: {
+          product: true 
+        }
+      }
+    }
+  });
+};
+
+export const getCartItemsByCartId = async (
+  cartId: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.cartItem.findMany({ where: { cartId } });
 };
 
 export const createCart = async (
