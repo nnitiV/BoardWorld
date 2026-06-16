@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../config/db.js";
-import { AddCartItem } from "../types/cart.types.js";
+import { AddCartItem, UpdateCartItem } from "../types/cart.types.js";
 
 export const getCartByUserId = async (
   userId: string,
@@ -48,16 +48,25 @@ export const addItemToCart = async (
 };
 
 export const updateCartItem = async (
-  data: AddCartItem,
-  cartId: string,
+  userId: string,
+  data: UpdateCartItem,
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
   return await client.cartItem.update({
-    where: { cartId_productId: { cartId, productId: data.productId } },
-    data: {
-      ...data,
-      cartId,
+    where: {
+      cartId_productId: { cartId: data.cartId, productId: data.productId },
     },
+    data,
+  });
+};
+
+export const deleteCartItemById = async (
+  id: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.cartItem.delete({
+    where: { id },
   });
 };
