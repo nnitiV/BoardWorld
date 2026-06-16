@@ -18,7 +18,7 @@ export const getProductCatalog = async (page: number, limit: number)  => {
 
 export const createNewProduct = async (productData: {
   name: string;
-  price: string;
+  price: number;
   imageUrl: string;
 }) => {
   const payload = {

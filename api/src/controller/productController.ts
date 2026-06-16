@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../types/express.js";
 import { AppError } from "../utils/AppError.js";
 import * as productService from "../services/productService.js";
-import { ProductCatalogRequestSchema, UpdateProductSchema } from "../types/product.types.js";
+import { CreateProductSchema, ProductCatalogRequestSchema, UpdateProductSchema } from "../types/product.types.js";
 import fs from "fs/promises";
 
 export const getProductById =  async (req: AuthRequest, res: Response) => {
@@ -23,7 +23,7 @@ export const getProductCatalog = async (req: AuthRequest, res: Response) => {
 };
 
 export const createProduct = async (req: AuthRequest, res: Response) => {
-  const { name, price } = req.body;
+  const { name, price } = CreateProductSchema.parse(req.body);
 
   if (!req.file) {
     throw new AppError("Please provide an image for the product.", 400);

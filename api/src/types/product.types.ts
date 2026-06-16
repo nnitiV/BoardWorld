@@ -1,4 +1,4 @@
-import z, { file, number, string } from "zod";
+import z from "zod";
 
 export const UpdateProductSchema = z.object({
   name: z.string(),
@@ -15,4 +15,7 @@ export const ProductCatalogRequestSchema = z.object({
   limit: z.coerce.number(),
 });
 
-export type ProductCatalogRequest = z.infer<typeof ProductCatalogRequestSchema>;
+export const CreateProductSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  price: z.coerce.number().positive("Price must be a positive number"),
+});
