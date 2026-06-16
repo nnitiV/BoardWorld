@@ -35,7 +35,7 @@ model RefreshToken {
 }
 
 model Product {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
   name String
   price Decimal
   stock Int @default(0)
@@ -47,7 +47,7 @@ model Product {
 }
 
 model Cart {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   items CartItem[]
