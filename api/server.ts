@@ -3,6 +3,7 @@ import express from "express";
 import healthRoutes from "./src/routes/healthRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoute.js";
+import cartRoutes from "./src/routes/cartRoute.js";
 import productRoutes from "./src/routes/productRoute.js";
 import globalErrorHandler from "./src/middleware/errorHandler.js";
 import { protect } from "./src/middleware/authMiddleware.js";
@@ -18,6 +19,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/products", productRoutes);
 app.use(protect);
 app.use("/api/user", userRoutes);
+app.use("/api/cart", cartRoutes)
 
 app.use(globalErrorHandler);
 
