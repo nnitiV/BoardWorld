@@ -16,10 +16,12 @@ export const registerUser = async (userData: RegisterUser) => {
     throw new AppError("Username alread in use.", 400);
   }
   const hashedPassword = await bcrypt.hash(userData.password, 12);
-  return await authRepository.registerUser({
+  const newUser = await authRepository.registerUser({
     ...userData,
     password: hashedPassword,
   });
+  const {password, ...safeUser} = newUser;
+  return safeUser;
 };
 
 export const loginUser = async (userData: LoginUser) => {

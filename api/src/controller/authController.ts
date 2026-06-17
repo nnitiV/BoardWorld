@@ -6,8 +6,7 @@ import z from "zod";
 export const register = async (req: Request, res: Response) => {
   const validatedData = RegisterUserSchema.parse(req.body);
   const newUser = await authService.registerUser(validatedData);
-  const { password, ...safeUser } = newUser;
-  res.status(200).json({ message: "User created.", user: safeUser });
+  res.status(200).json({ message: "User created.", user: newUser });
 };
 
 export const login = async (req: Request, res: Response) => {
