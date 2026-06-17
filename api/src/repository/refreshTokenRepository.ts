@@ -10,19 +10,30 @@ export const getRefreshToken = async (token: string) => {
 export const createRefreshToken = async (
   token: string,
   userId: string,
+  deviceId: string,
   expiresAt: Date,
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.refreshToken.create({
-    data: {
-      token,
-      userId,
-      expiresAt,
+  return await client.refreshToken.upsert({
+    where: { 
+      userId_deviceId: { 
+        userId: userId,
+        deviceId: deviceId,
+      }
+    }, 
+    update: { 
+      token, 
+      expiresAt 
+    },
+    create: { 
+      userId, 
+      deviceId, 
+      token, 
+      expiresAt 
     },
   });
 };
-
 export const deleteRefreshToken = async (
   token: string,
   tx?: Prisma.TransactionClient,

@@ -51,19 +51,20 @@ export const loginUser = async (userData: LoginUser) => {
   if(userData.rememberMe) {
     const rawToken = crypto.randomBytes(64).toString("hex");
     const expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-    refreshToken = await refreshTokenRepository.createRefreshToken(rawToken, user.id, expiresAt)
+    const deviceId = userData.deviceId || "unknown-device";
+    refreshToken = await refreshTokenRepository.createRefreshToken(rawToken, user.id, deviceId, expiresAt)
   }
 
   const { password, ...safeUser } = user;
-  return { user, accessToken, refreshToken };
+  return { safeUser, accessToken, refreshToken };
 };
-
 export const refreshSession = async (token: string) => {
   const storedToken = await refreshTokenRepository.getRefreshToken(token);
   if (!storedToken) {
     throw new AppError("No such token stored.", 401);
   }
   if (new Date() > storedToken.expiresAt) {
+    await refreshTokenRepository.deleteRefreshToken(storedToken.token);
     throw new AppError("Token expired.", 401);
   }
 
@@ -76,23 +77,17 @@ export const refreshSession = async (token: string) => {
     expiresIn: "1h",
   });
 
-  return await prisma.$transaction(async (tx) => {
-    await refreshTokenRepository.deleteRefreshToken(storedToken.token, tx);
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const rawToken = crypto.randomBytes(64).toString("hex");
 
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const rawToken = crypto.randomBytes(64).toString("hex");
+  const newRefreshToken = await refreshTokenRepository.createRefreshToken(
+    rawToken,
+    storedToken.userId,
+    storedToken.deviceId, 
+    expiresAt
+  );
 
-    const refreshToken = await refreshTokenRepository.createRefreshToken(
-      rawToken,
-      storedToken.userId,
-      expiresAt,
-      tx,
-    );
-
-    await refreshTokenRepository.deleteRefreshToken(storedToken.token, tx);
-
-    return { accessToken, refreshToken: refreshToken.token };
-  });
+  return { accessToken, refreshToken: newRefreshToken.token };
 };
 
 export const deleteToken = async (token: string) => {
