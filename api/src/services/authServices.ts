@@ -58,6 +58,7 @@ export const loginUser = async (userData: LoginUser) => {
   const { password, ...safeUser } = user;
   return { safeUser, accessToken, refreshToken };
 };
+
 export const refreshSession = async (token: string) => {
   const storedToken = await refreshTokenRepository.getRefreshToken(token);
   if (!storedToken) {
