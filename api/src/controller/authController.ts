@@ -11,8 +11,48 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const validatedData = LoginUserSchema.parse(req.body);
-  const user = await authService.loginUser(validatedData);
-  res.status(200).json({ message: "Logged in!", user });
+  const {
+    safeUser: user,
+    accessToken,
+    refreshToken,
+  } = await authService.loginUser(validatedData);
+  if (refreshToken) {
+    res.cookie("refresh_token", refreshToken.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      expires: refreshToken.expiresAt,
+    });
+  }
+  res.cookie("user_role", user.role, {
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+  res.cookie("is_logged_in", "true", {
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+  res.status(200).json({ message: "Logged in!", user, accessToken });
+};
+
+export const logout = async (req: Request, res: Response) => {
+  const token = req.cookies.refresh_token;
+  if (!token) {
+    return res.status(200).json({ message: "Already logged out." });
+  }
+  await authService.logoutUser(token);
+  res.clearCookie("refresh_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+
+  res.clearCookie("is_logged_in");
+  res.clearCookie("user_role");
+
+  res.status(200).json({ message: "Logged out successfully!" });
 };
 
 const RefreshTokenSchema = z.object({

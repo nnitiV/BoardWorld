@@ -54,11 +54,15 @@ export const loginUser = async (userData: LoginUser) => {
     const rawToken = crypto.randomBytes(64).toString("hex");
     const expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
     const deviceId = userData.deviceId || "unknown-device";
-    refreshToken = await refreshTokenRepository.createRefreshToken(rawToken, user.id, deviceId, expiresAt)
+    refreshToken = await refreshTokenRepository.upsertRefreshToken(rawToken, user.id, deviceId, expiresAt)
   }
 
   const { password, ...safeUser } = user;
   return { safeUser, accessToken, refreshToken };
+};
+
+export const logoutUser = async (token: string) => {
+  await refreshTokenRepository.deleteRefreshToken(token);
 };
 
 export const refreshSession = async (token: string) => {
@@ -83,7 +87,7 @@ export const refreshSession = async (token: string) => {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const rawToken = crypto.randomBytes(64).toString("hex");
 
-  const newRefreshToken = await refreshTokenRepository.createRefreshToken(
+  const newRefreshToken = await refreshTokenRepository.upsertRefreshToken(
     rawToken,
     storedToken.userId,
     storedToken.deviceId, 

@@ -7,7 +7,7 @@ export const getRefreshToken = async (token: string) => {
   });
 };
 
-export const createRefreshToken = async (
+export const upsertRefreshToken = async (
   token: string,
   userId: string,
   deviceId: string,
