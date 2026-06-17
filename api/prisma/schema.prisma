@@ -30,8 +30,11 @@ model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String
+  deviceId  String   // You added this
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
+
+  @@unique([userId, deviceId]) 
 }
 
 model Product {
