@@ -21,7 +21,7 @@ export default function Login() {
   return (
     <div className="min-h-[calc(100vh-80px)] w-full flex items-center justify-center py-12">
       <div className="shadow-2xl w-full mx-auto p-4 py-8 border text-blue-950 border-black/10 rounded-2xl md:w-1/3 ">
-        <h1 className="mx-auto text-2xl font-semibold w-fit mb-8">Login</h1>
+        <h1 className=" text-2xl font-semibold text-center mb-8">Login</h1>
         {isError && (
           <div className="bg-red-50 border mb-6 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium animate-fade-in">
             {errorMessage}
@@ -74,6 +74,7 @@ export default function Login() {
           </div>
           <button
             type="submit"
+            disabled={isPending}
             className="bg-blue-950 w-full block mx-auto text-slate-300 font-bold px-10 py-3 rounded-xl transition-all cursor-pointer hover:bg-blue-900 focus:ring-4 focus:ring-blue-100"
           >
             {isPending ? "Logging in..." : "Login"}

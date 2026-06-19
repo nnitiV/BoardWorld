@@ -2,7 +2,24 @@ export interface UserProfile {
   id: string;
   email: string;
   name: string;
-  role: "admin" | "user";
+  username: string; 
+  role: "USER" | "ADMIN"; 
+  dateOfBirth: string; 
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RegisterCredentials {
+  email: string;
+  name: string;
+  username: string;
+  password: string;
+  dateOfBirth: string
+}
+
+export interface RegisterResponse {
+  message: string;
+  user: UserProfile;
 }
 
 export interface LoginCredentials {
@@ -13,7 +30,7 @@ export interface LoginCredentials {
 }
 
 export interface LoginResponse {
+  message: string;      
   accessToken: string;
-  expiresIn: number;
   user: UserProfile;
 }
