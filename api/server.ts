@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import healthRoutes from "./src/routes/healthRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoute.js";
@@ -11,6 +12,28 @@ import { protect } from "./src/middleware/authMiddleware.js";
 import path from "path";
 
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:3000",          
+  "https://boardworld.vercel.app",  
+];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Blocked by Board World CORS Policy"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true, 
+  allowedHeaders: ["Content-Type", "Authorization", "X-Device-Id"],
+};
+
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
