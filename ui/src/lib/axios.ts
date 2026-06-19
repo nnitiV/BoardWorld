@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.BASE_URL || "http://localhost:3000",
+  baseURL: process.env.BASE_URL || "http://localhost:5173/api",
 });
 
 api.interceptors.request.use((config) => {
@@ -28,7 +28,7 @@ api.interceptors.response.use(
         
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (_) {
         useAuthStore.getState().clearAuth();
         window.location.href = "/login";
       }
