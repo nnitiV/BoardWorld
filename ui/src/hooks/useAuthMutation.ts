@@ -12,7 +12,7 @@ import { AxiosError } from "axios";
 
 export function useLoginMutation() {
   const router = useRouter();
-  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setAccessToken = useAuthStore((state) => state.setAuthData);
 
   return useMutation<
     LoginResponse,

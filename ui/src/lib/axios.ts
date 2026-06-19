@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const api = axios.create({
   baseURL: process.env.BASE_URL || "http://localhost:5173/api",
@@ -23,13 +24,16 @@ api.interceptors.response.use(
       
       try {
         const { data } = await axios.post("/auth/refresh", {}, { withCredentials: true });
+        const accessToken = data.accessToken;
+        const decodedToken = jwtDecode<{ exp: number }>(accessToken);
+        const expirationTimeInMs = decodedToken.exp * 1000;
         
-        useAuthStore.getState().setAccessToken(data.accessToken);
+        useAuthStore.getState().setAuthData(data.accessToken, expirationTimeInMs);
         
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest);
       } catch (_) {
-        useAuthStore.getState().clearAuth();
+        useAuthStore.getState().logout();
         window.location.href = "/login";
       }
     }
