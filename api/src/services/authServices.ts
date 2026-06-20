@@ -7,6 +7,8 @@ import bcrypt from "bcrypt";
 import { AppError } from "../utils/AppError.js";
 import jwt from "jsonwebtoken";
 import { prisma } from "../config/db.js";
+import { UAParser } from "ua-parser-js";
+import { userDeviceRepository } from "../repository/userDeviceRepository.js";
 
 export const registerUser = async (userData: RegisterUser) => {
   if (await userRepository.getUserByEmail(userData.email)) {
@@ -24,7 +26,7 @@ export const registerUser = async (userData: RegisterUser) => {
   return safeUser;
 };
 
-export const loginUser = async (userData: LoginUser) => {
+export const loginUser = async (userData: LoginUser, userAgentString: string, deviceId: string) => {
   const user =
     (await userRepository.getUserByEmail(userData.login)) ||
     (await userRepository.getUserByUsername(userData.login));
@@ -38,6 +40,12 @@ export const loginUser = async (userData: LoginUser) => {
   if (!isPasswordValid) {
     throw new AppError("Invalid password.", 401);
   }
+
+  const parser = new UAParser(userAgentString);
+  const deviceName = `${parser.getBrowser().name || "Unknown"} on ${parser.getOS().name || "Unknown"}`;
+
+  await userDeviceRepository.upsertDevice(user.id, deviceId, deviceName, parser.getOS().name || "Unknown");
+
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new AppError(

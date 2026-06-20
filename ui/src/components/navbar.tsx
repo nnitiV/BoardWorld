@@ -1,10 +1,14 @@
 "use client";
+import { useLogoutMutation } from "@/hooks/useAuthMutation";
+import { useAuthStore } from "@/stores/authStore";
 import clsx from "clsx";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function NavBar() {
   const [isToggled, setIsToggled] = useState<boolean>(true);
+  const accessToken = useAuthStore(state => state.accessToken);
+  const {mutate: logout} = useLogoutMutation();
   return (
     <>
       <header className="bg-blue-950 text-slate-100 shadow-md border-b border-slate-950 py-4 px-6">
@@ -21,7 +25,11 @@ export default function NavBar() {
               <Link href={"#"}>About</Link>
             </li>
             <li>
+              {accessToken ?
+              <Link href={"#"} onClick={() => logout()}>Logout</Link>
+              :
               <Link href={"/login"}>Log in</Link>
+              }
             </li>
           </ul>
           <div

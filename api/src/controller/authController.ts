@@ -11,11 +11,19 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const validatedData = LoginUserSchema.parse(req.body);
+  const userAgentString = req.headers["user-agent"] || "";
+  const deviceId = req.body.deviceId;
+
+  if(!deviceId) {
+    return res.status(400).json({message: "Device ID is required."})
+  }
+
   const {
     safeUser: user,
     accessToken,
     refreshToken,
-  } = await authService.loginUser(validatedData);
+  } = await authService.loginUser(validatedData, userAgentString, deviceId);
+
   if (refreshToken) {
     res.cookie("refresh_token", refreshToken.token, {
       httpOnly: true,

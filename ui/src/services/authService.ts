@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import { useAuthStore } from "@/stores/authStore";
 import {
   LoginCredentials,
   LoginResponse,
@@ -18,4 +19,9 @@ export const authService = {
     );
     return data;
   },
+  logout: async () => {
+    const { data } = await api.post<{ message: string }>("/auth/logout");
+    return data;
+  },
 };
+

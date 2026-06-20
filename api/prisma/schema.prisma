@@ -19,6 +19,7 @@ model User {
   username  String? @unique
   role Role @default(USER)
   cart Cart?
+  userDevice  UserDevice[]
   dateOfBirth       DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -30,11 +31,22 @@ model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String
-  deviceId  String   // You added this
+  deviceId  String   
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
 
   @@unique([userId, deviceId]) 
+}
+
+model UserDevice {
+  id String @id @default(uuid())
+  deviceId String
+  deviceName String
+  userId String
+  os String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastActiveAt DateTime @default(now())
+  @@unique([userId, deviceId])
 }
 
 model Product {

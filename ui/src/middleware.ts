@@ -6,7 +6,11 @@ export function middleware(request: NextRequest) {
   const userRole = request.cookies.get("user_role")?.value;
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/cart") || pathname.startsWith("/orders")) {
+  if (
+    pathname.startsWith("/cart") ||
+    pathname.startsWith("/orders") ||
+    pathname.startsWith("/checkout")
+  ) {
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
@@ -14,7 +18,7 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/admin")) {
     if (!isLoggedIn || userRole !== "ADMIN") {
-      return NextResponse.redirect(new URL("/unauthorized", request.url)); 
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
   }
 
@@ -29,5 +33,12 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/checkout/:path*", "/orders/:path*", "/admin/:path*", "/login", "/register"],
+  matcher: [
+    "/cart/:path*",
+    "/checkout/:path*",
+    "/orders/:path*",
+    "/admin/:path*",
+    "/login",
+    "/register",
+  ],
 };
