@@ -6,9 +6,8 @@ import crypto from "crypto"
 import bcrypt from "bcrypt";
 import { AppError } from "../utils/AppError.js";
 import jwt from "jsonwebtoken";
-import { prisma } from "../config/db.js";
 import { UAParser } from "ua-parser-js";
-import { userDeviceRepository } from "../repository/userDeviceRepository.js";
+import * as userDeviceRepository from "../repository/deviceRepository.js";
 
 export const registerUser = async (userData: RegisterUser) => {
   if (await userRepository.getUserByEmail(userData.email)) {
@@ -61,7 +60,6 @@ export const loginUser = async (userData: LoginUser, userAgentString: string, de
   if(userData.rememberMe) {
     const rawToken = crypto.randomBytes(64).toString("hex");
     const expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-    const deviceId = userData.deviceId || "unknown-device";
     refreshToken = await refreshTokenRepository.upsertRefreshToken(rawToken, user.id, deviceId, expiresAt)
   }
 
@@ -112,3 +110,7 @@ export const deleteToken = async (token: string) => {
   }
   return !!wasItDeleted;
 }
+
+export const revokeTokensForDevice = async (userId: string, deviceId: string) => {
+  await refreshTokenRepository.deleteTokensByDeviceId(userId, deviceId);
+};

@@ -14,8 +14,8 @@ export const login = async (req: Request, res: Response) => {
   const userAgentString = req.headers["user-agent"] || "";
   const deviceId = req.body.deviceId;
 
-  if(!deviceId) {
-    return res.status(400).json({message: "Device ID is required."})
+  if (!deviceId) {
+    return res.status(400).json({ message: "Device ID is required." });
   }
 
   const {
@@ -73,7 +73,7 @@ export const refreshToken = async (
   next: NextFunction,
 ) => {
   try {
-    const { refreshToken: incomingToken } = RefreshTokenSchema.parse(req.body);
+    const incomingToken = req.cookies.refresh_token;
     const { accessToken, refreshToken } =
       await authService.refreshSession(incomingToken);
     res.status(200).json({ accessToken, refreshToken });

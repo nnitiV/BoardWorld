@@ -16,21 +16,21 @@ export const upsertRefreshToken = async (
 ) => {
   const client = tx || prisma;
   return await client.refreshToken.upsert({
-    where: { 
-      userId_deviceId: { 
+    where: {
+      userId_deviceId: {
         userId: userId,
         deviceId: deviceId,
-      }
-    }, 
-    update: { 
-      token, 
-      expiresAt 
+      },
     },
-    create: { 
-      userId, 
-      deviceId, 
-      token, 
-      expiresAt 
+    update: {
+      token,
+      expiresAt,
+    },
+    create: {
+      userId,
+      deviceId,
+      token,
+      expiresAt,
     },
   });
 };
@@ -40,4 +40,15 @@ export const deleteRefreshToken = async (
 ) => {
   const client = tx || prisma;
   return await client.refreshToken.deleteMany({ where: { token } });
+};
+
+export const deleteTokensByDeviceId = async (
+  userId: string,
+  deviceId: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.refreshToken.delete({
+    where: { userId_deviceId: { userId, deviceId } },
+  });
 };

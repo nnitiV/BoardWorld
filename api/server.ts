@@ -6,6 +6,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoute.js";
 import cartRoutes from "./src/routes/cartRoute.js";
 import productRoutes from "./src/routes/productRoute.js";
+import deviceRoutes from "./src/routes/deviceRoutes.js";
 import globalErrorHandler from "./src/middleware/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { protect } from "./src/middleware/authMiddleware.js";
@@ -44,6 +45,7 @@ app.use("/api/auth", authRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/products", productRoutes);
 app.use(protect);
+app.use("/api/device", deviceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/cart", cartRoutes)
 
