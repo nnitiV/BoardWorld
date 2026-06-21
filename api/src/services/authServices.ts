@@ -1,6 +1,6 @@
 import * as authRepository from "../repository/authRepository.js";
-import * as userRepository from "../repository/userRepository.js";
-import * as refreshTokenRepository from "../repository/refreshTokenRepository.js";
+import * as userService from "../services/userService.js";
+import * as refreshTokenService from "../services/refreshTokenService.js";
 import { LoginUser, RegisterUser } from "../types/user.types.js";
 import crypto from "crypto"
 import bcrypt from "bcrypt";
@@ -10,10 +10,10 @@ import { UAParser } from "ua-parser-js";
 import * as userDeviceRepository from "../repository/deviceRepository.js";
 
 export const registerUser = async (userData: RegisterUser) => {
-  if (await userRepository.getUserByEmail(userData.email)) {
+  if (await userService.getUserByEmail(userData.email)) {
     throw new AppError("Email alread in use.", 400);
   }
-  if (await userRepository.getUserByUsername(userData.username)) {
+  if (await userService.getUserByUsername(userData.username)) {
     throw new AppError("Username alread in use.", 400);
   }
   const hashedPassword = await bcrypt.hash(userData.password, 12);
@@ -27,8 +27,8 @@ export const registerUser = async (userData: RegisterUser) => {
 
 export const loginUser = async (userData: LoginUser, userAgentString: string, deviceId: string) => {
   const user =
-    (await userRepository.getUserByEmail(userData.login)) ||
-    (await userRepository.getUserByUsername(userData.login));
+    (await userService.getUserByEmail(userData.login)) ||
+    (await userService.getUserByUsername(userData.login));
   if (!user) {
     throw new AppError("User don't exist.", 404);
   }
@@ -41,9 +41,15 @@ export const loginUser = async (userData: LoginUser, userAgentString: string, de
   }
 
   const parser = new UAParser(userAgentString);
-  const deviceName = `${parser.getBrowser().name || "Unknown"} on ${parser.getOS().name || "Unknown"}`;
+  const browser = parser.getBrowser().name;
+  const os = parser.getOS().name;
+  if(!browser || !os) {
+    throw new AppError("Unknown device.", 400)
+  }
 
-  await userDeviceRepository.upsertDevice(user.id, deviceId, deviceName, parser.getOS().name || "Unknown");
+  const deviceName = `${browser} on ${os}`;
+
+  await userDeviceRepository.upsertDevice(user.id, deviceId, deviceName, os);
 
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -60,7 +66,7 @@ export const loginUser = async (userData: LoginUser, userAgentString: string, de
   if(userData.rememberMe) {
     const rawToken = crypto.randomBytes(64).toString("hex");
     const expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-    refreshToken = await refreshTokenRepository.upsertRefreshToken(rawToken, user.id, deviceId, expiresAt)
+    refreshToken = await refreshTokenService.upsertRefreshToken(rawToken, user.id, deviceId, expiresAt)
   }
 
   const { password, ...safeUser } = user;
@@ -68,16 +74,16 @@ export const loginUser = async (userData: LoginUser, userAgentString: string, de
 };
 
 export const logoutUser = async (token: string) => {
-  await refreshTokenRepository.deleteRefreshToken(token);
+  await refreshTokenService.deleteRefreshToken(token);
 };
 
 export const refreshSession = async (token: string) => {
-  const storedToken = await refreshTokenRepository.getRefreshToken(token);
+  const storedToken = await refreshTokenService.getRefreshToken(token);
   if (!storedToken) {
     throw new AppError("No such token stored.", 401);
   }
   if (new Date() > storedToken.expiresAt) {
-    await refreshTokenRepository.deleteRefreshToken(storedToken.token);
+    await refreshTokenService.deleteRefreshToken(storedToken.token);
     throw new AppError("Token expired.", 401);
   }
 
@@ -93,7 +99,7 @@ export const refreshSession = async (token: string) => {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const rawToken = crypto.randomBytes(64).toString("hex");
 
-  const newRefreshToken = await refreshTokenRepository.upsertRefreshToken(
+  const newRefreshToken = await refreshTokenService.upsertRefreshToken(
     rawToken,
     storedToken.userId,
     storedToken.deviceId, 
@@ -104,7 +110,7 @@ export const refreshSession = async (token: string) => {
 };
 
 export const deleteToken = async (token: string) => {
-  const wasItDeleted = await refreshTokenRepository.deleteRefreshToken(token);
+  const wasItDeleted = await refreshTokenService.deleteRefreshToken(token);
   if(!wasItDeleted) {
     throw new AppError("Token not found.", 404);
   }
@@ -112,5 +118,5 @@ export const deleteToken = async (token: string) => {
 }
 
 export const revokeTokensForDevice = async (userId: string, deviceId: string) => {
-  await refreshTokenRepository.deleteTokensByDeviceId(userId, deviceId);
+  await refreshTokenService.deleteTokensByDeviceId(userId, deviceId);
 };

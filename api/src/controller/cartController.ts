@@ -15,9 +15,9 @@ export const getCartByUserId = async (req: AuthRequest, res: Response) => {
   const cart = await cartService.getCartByUserId(userId.toString());
   res.status(200).json({
     message: "Cart retrieved.",
-    cart
-  })
-};    
+    cart,
+  });
+};
 
 export const addToCart = async (req: AuthRequest, res: Response) => {
   const cartItemToAdd = AddCartItemSchema.parse(req.body);
@@ -56,7 +56,7 @@ export const deleteCartItem = async (req: AuthRequest, res: Response) => {
   }
   const deletedCartItem = await cartService.deleteCartItemById(
     cartItemId.toString(),
-    userId
+    userId,
   );
   res.status(200).json({
     message: "Cart Item Deleted.",

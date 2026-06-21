@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AppError } from "../utils/AppError.js";
 import * as userService from "../services/userService.js";
 import jwt from "jsonwebtoken";

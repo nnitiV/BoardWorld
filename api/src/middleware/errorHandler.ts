@@ -1,10 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AppError } from "../utils/AppError.js";
 import { ZodError } from "zod";
 
 export default function globalErrorHandler(
   err: any,
-  req: Request,
   res: Response,
   next: NextFunction,
 ) {

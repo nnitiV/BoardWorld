@@ -24,7 +24,6 @@ const fileFilter = (req: any, file: any, cb: any) => {
   }
 };
 
-// 3. Export the configured middleware
 export const uploadProductImage = multer({
   storage,
   fileFilter,

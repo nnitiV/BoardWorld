@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { LoginUserSchema, RegisterUserSchema } from "../types/user.types.js";
 import * as authService from "../services/authServices.js";
-import z from "zod";
 
 export const register = async (req: Request, res: Response) => {
   const validatedData = RegisterUserSchema.parse(req.body);
@@ -63,21 +62,9 @@ export const logout = async (req: Request, res: Response) => {
   res.status(200).json({ message: "Logged out successfully!" });
 };
 
-const RefreshTokenSchema = z.object({
-  refreshToken: z.string({ error: "Refresh token is required." }).min(1),
-});
-
-export const refreshToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const incomingToken = req.cookies.refresh_token;
-    const { accessToken, refreshToken } =
-      await authService.refreshSession(incomingToken);
-    res.status(200).json({ accessToken, refreshToken });
-  } catch (error) {
-    next(error);
-  }
+export const refreshToken = async (req: Request, res: Response) => {
+  const incomingToken = req.cookies.refresh_token;
+  const { accessToken, refreshToken } =
+    await authService.refreshSession(incomingToken);
+  res.status(200).json({ accessToken, refreshToken });
 };

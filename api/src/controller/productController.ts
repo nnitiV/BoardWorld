@@ -38,7 +38,7 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
   });
 
   res.status(201).json({
-    status: "success",
+    message: "Product created.",
     data: { product },
   });
 };
@@ -56,7 +56,7 @@ export const updateProduct = async (req: Request, res: Response) => {
   );
 
   res.status(200).json({
-    status: "success",
+    message: "Product updated.",
     data: {
       message: "Product updated successfully.",
       updateProduct: wasUpdated,
@@ -78,7 +78,7 @@ export const deactivateProduct = async (req: Request, res: Response) => {
   const updatedProduct = await productService.deactivateProduct(id.toString());
 
   res.status(200).json({
-    message: "Status updated.",
+    message: "Product deactivated.",
     updatedProduct,
   });
 };

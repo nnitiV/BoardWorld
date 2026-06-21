@@ -5,7 +5,7 @@ import { AppError } from "../utils/AppError.js";
 export const getProductById = async (id: string) => {
   const product = await productRepository.getProductById(id);
   if (!product) {
-    throw new AppError(`Couldn't find product with id ${id}`, 404);
+    throw new AppError("Couldn't find product.", 404);
   }
   return product;
 };
@@ -32,7 +32,7 @@ export const createNewProduct = async (productData: {
 export const updateProduct = async (id: string, productData: UpdateProduct) => {
   const product = await getProductById(id);
   if (!product) {
-    throw new AppError(`Couldn't find product with id ${id}`, 404);
+    throw new AppError("Couldn't find product.", 404);
   }
   return await productRepository.updateProduct(id, productData);
 };
@@ -40,7 +40,7 @@ export const updateProduct = async (id: string, productData: UpdateProduct) => {
 export const restoreProduct = async (id: string) => {
   const product = await getProductById(id);
   if (!product) {
-    throw new AppError(`Couldn't find product with id ${id}`, 404);
+    throw new AppError("Couldn't find product.", 404);
   }
   if (product.isActive) {
     return product;
@@ -51,7 +51,7 @@ export const restoreProduct = async (id: string) => {
 export const deactivateProduct = async (id: string) => {
   const product = await getProductById(id);
   if (!product) {
-    throw new AppError(`Couldn't find product with id ${id}`, 404);
+    throw new AppError("Couldn't find product.", 404);
   }
   if (!product.isActive) {
     return product;

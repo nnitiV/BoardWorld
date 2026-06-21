@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { deleteUserById, getLoggedUserProfile, testAdminRoute } from "../controller/userController.js";
+import * as userController from "../controller/userController.js";
 
 const userRoutes = Router();
 
-userRoutes.get("/me", getLoggedUserProfile);
-userRoutes.get("/admin", testAdminRoute);
-userRoutes.delete("/deleteMe", deleteUserById);
+userRoutes.get("/me", userController.getLoggedUserProfile);
+userRoutes.delete("/deleteMe", userController.deleteUserById);
 
 
 export default userRoutes;

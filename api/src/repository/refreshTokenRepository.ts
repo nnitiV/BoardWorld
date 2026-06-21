@@ -34,6 +34,7 @@ export const upsertRefreshToken = async (
     },
   });
 };
+
 export const deleteRefreshToken = async (
   token: string,
   tx?: Prisma.TransactionClient,
