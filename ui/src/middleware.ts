@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
 
   if (pathname === "/login" || pathname === "/register") {
     if (isLoggedIn) {
-      const redirectUrl = userRole === "ADMIN" ? "/admin" : "/orders";
+      const redirectUrl = userRole === "ADMIN" ? "/admin" : "/";
       return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
   }

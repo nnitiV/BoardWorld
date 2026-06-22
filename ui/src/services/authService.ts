@@ -1,5 +1,4 @@
 import api from "@/lib/axios";
-import { useAuthStore } from "@/stores/authStore";
 import {
   LoginCredentials,
   LoginResponse,

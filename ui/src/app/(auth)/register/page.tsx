@@ -1,4 +1,8 @@
 "use client";
+import DateInput from "@/components/form/DateInput";
+import ErrorDiv from "@/components/form/ErrorDiv";
+import FormButton from "@/components/form/FormsButton";
+import TextInput from "@/components/form/TextInput";
 import { useRegisterMutation } from "@/hooks/useAuthMutation";
 import { RegisterCredentials } from "@/types/auth.type";
 import { isStrongPassword, isValidEmail } from "@/utils/validator";
@@ -18,6 +22,7 @@ export default function Register() {
   const { mutate: register, isPending, isError, error } = useRegisterMutation();
   const errorMessage =
     error?.response?.data?.message || "An unexpected network error occurred.";
+
   const handleSettingsChange = (
     event: ChangeEvent<HTMLInputElement, HTMLInputElement>,
   ) => {
@@ -29,6 +34,7 @@ export default function Register() {
       [fieldName]: newValue,
     }));
   };
+
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
@@ -42,12 +48,14 @@ export default function Register() {
       setLocalError("Please, provide value for all fields.");
       return;
     }
-    if(!isValidEmail(registerUser.email)){
-        setLocalError("Please, provide a valid email.");
+    if (!isValidEmail(registerUser.email)) {
+      setLocalError("Please, provide a valid email.");
       return;
     }
-    if(!isStrongPassword(registerUser.password)){
-        setLocalError("Please, provide a strong password (Bigger than 8 characters, lowercase, uppercase and a number).");
+    if (!isStrongPassword(registerUser.password)) {
+      setLocalError(
+        "Please, provide a strong password (Bigger than 8 characters, lowercase, uppercase and a number).",
+      );
       return;
     }
     if (registerUser.password !== confirmPassword) {
@@ -63,112 +71,69 @@ export default function Register() {
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
           Register
         </h1>
-        {(localError || isError) && (
-          <div className="bg-red-50 border mb-6 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium animate-fade-in">
-            {localError || errorMessage}
-          </div>
-        )}
+        <ErrorDiv isError={isError} errorMessage={errorMessage} />
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          <div className="flex flex-col mb-4 gap-2">
-            <label htmlFor="email" className="ms-2 text-blue-950 font-bold">
-              Email:
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="email"
-              value={registerUser.email}
-              onChange={handleSettingsChange}
-              className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 outline-0 transition-all focus:shadow-sm focus:border-blue-950"
-            />
-          </div>
-          <div className="flex flex-col mb-4 gap-2">
-            <label htmlFor="name" className="ms-2 text-blue-950 font-bold">
-              Name:
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="name"
-              value={registerUser.name}
-              onChange={handleSettingsChange}
-              className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 outline-0 transition-all focus:shadow-sm focus:border-blue-950"
-            />
-          </div>
-          <div className="flex flex-col mb-4 gap-2">
-            <label htmlFor="username" className="ms-2 text-blue-950 font-bold">
-              Username:
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              placeholder="username"
-              value={registerUser.username}
-              onChange={handleSettingsChange}
-              className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 outline-0 transition-all focus:shadow-sm focus:border-blue-950"
-            />
-          </div>
-          <div className="flex flex-col mb-4 gap-2">
-            <label
-              htmlFor="dateOfBirth"
-              className="ms-2 text-blue-950 font-bold"
-            >
-              Date of Birth:
-            </label>
-            <input
-              type="date"
-              id="dateOfBirth"
-              name="dateOfBirth"
-              placeholder="dateOfBirth"
-              value={registerUser.dateOfBirth}
-              onChange={handleSettingsChange}
-              className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 outline-0 transition-all focus:shadow-sm focus:border-blue-950"
-            />
-          </div>
-          <div className="flex flex-col mb-4 gap-2">
-            <label htmlFor="password" className="ms-2 text-blue-950 font-bold">
-              Password:
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="password"
-              value={registerUser.password}
-              onChange={handleSettingsChange}
-              className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 outline-0 transition-all focus:shadow-sm focus:border-blue-950"
-            />
-          </div>
-          <div className="flex flex-col mb-4 gap-2">
-            <label
-              htmlFor="confirmPassword"
-              className="ms-2 text-blue-950 font-bold"
-            >
-              Confirm Password:
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              placeholder="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 outline-0 transition-all focus:shadow-sm focus:border-blue-950"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="md:col-span-2 bg-blue-950 w-full block mx-auto text-slate-300 font-bold px-10 py-3 rounded-xl transition-all cursor-pointer hover:bg-blue-900 focus:ring-4 focus:ring-blue-100"
-          >
-            Register
-          </button>
+          <TextInput
+            label="Email:"
+            placeholder="Email"
+            id="email"
+            inputValue={registerUser.email}
+            onChange={handleSettingsChange}
+            type="email"
+            classes="flex flex-col mb-4 gap-2"
+          />
+          <TextInput
+            label="Name:"
+            placeholder="Name"
+            id="name"
+            inputValue={registerUser.name}
+            onChange={handleSettingsChange}
+            type="email"
+            classes="flex flex-col mb-4 gap-2"
+          />
+          <TextInput
+            label="Username:"
+            placeholder="Username"
+            id="username"
+            inputValue={registerUser.username}
+            onChange={handleSettingsChange}
+            type="email"
+            classes="flex flex-col mb-4 gap-2"
+          />
+          <DateInput
+            label="Date of birth:"
+            placeholder="dd/mm/yyyy"
+            id="dateOfBirth"
+            value={registerUser.dateOfBirth}
+            onChange={handleSettingsChange}
+            classes="flex flex-col mb-4 gap-2"
+          />
+          <TextInput
+            label="Password:"
+            placeholder="Password"
+            id="password"
+            inputValue={registerUser.password}
+            onChange={handleSettingsChange}
+            type="email"
+            classes="flex flex-col mb-4 gap-2"
+          />
+          <TextInput
+            label="Confirm Password:"
+            placeholder="confirmPassword"
+            id="confirmPassword"
+            inputValue={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            type="email"
+            classes="flex flex-col mb-4 gap-2"
+          />
+          <FormButton
+            isPending={isPending}
+            classes="col-span-2">
+              {isPending ? "Regitering..." : "Register"}
+            </FormButton>
         </form>
         <hr className="my-8 border border-blue-950 rounded-2xl" />
         <div className="text-center text-sm text-slate-600 space-y-2">

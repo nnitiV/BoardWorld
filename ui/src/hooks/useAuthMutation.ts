@@ -8,7 +8,7 @@ import {
   RegisterCredentials,
   RegisterResponse,
 } from "@/types/auth.type";
-import { Axios, AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 
 export function useLoginMutation() {
