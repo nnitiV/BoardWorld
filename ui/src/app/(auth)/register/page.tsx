@@ -71,7 +71,7 @@ export default function Register() {
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
           Register
         </h1>
-        <ErrorDiv isError={isError} errorMessage={errorMessage} />
+        <ErrorDiv isError={isError} errorMessage={errorMessage || localError} />
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
