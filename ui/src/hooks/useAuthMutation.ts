@@ -10,10 +10,12 @@ import {
 } from "@/types/auth.type";
 import { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useUserStore } from "@/stores/userStore";
 
 export function useLoginMutation() {
   const router = useRouter();
   const setAccessToken = useAuthStore((state) => state.setAuthData);
+  const setUser = useUserStore(state => state.setUser);
 
   return useMutation<
     LoginResponse,
@@ -25,6 +27,7 @@ export function useLoginMutation() {
       const decodedToken = jwtDecode<{ exp: number }>(data.accessToken);
       const expirationTimestamp = decodedToken.exp * 1000;
       setAccessToken(data.accessToken, expirationTimestamp);
+      setUser(data.user);
       router.push("/");
     },
     onError: (error) => {

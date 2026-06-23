@@ -5,6 +5,7 @@ import {
   RegisterCredentials,
   RegisterResponse,
 } from "@/types/auth.type";
+import { userService } from "./userService";
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
@@ -16,7 +17,8 @@ export const authService = {
       "/auth/register",
       credentials,
     );
-    return data;
+    const user = await userService.getUserProfile();
+    return {message: "User registered", data, user };
   },
   logout: async () => {
     const { data } = await api.post<{ message: string }>("/auth/logout");
