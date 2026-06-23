@@ -21,7 +21,7 @@ export const useAuthStore = create<AuthState>()(
         if (!accessToken || !expiresAt) return false;
 
         return Date.now() < expiresAt;
-      },
+      },  
     }),
     {
       name: "boardworld-auth",
