@@ -14,10 +14,9 @@ export default function Login() {
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const { mutate: loginUser, isPending, isError, error } = useLoginMutation();
-  const errorMessage =
-    error?.response?.data?.message || "An unexpected network error occurred.";
+  const errorMessage = error?.response?.data?.message || "An unexpected network error occurred.";
   const deviceIdRef = useDeviceId();
-  
+
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const deviceId = deviceIdRef.current;
@@ -55,8 +54,8 @@ export default function Login() {
             setChecked={setRememberMe}
             classes="remember-me-container w-fit ps-1"
           />
-          <FormButton isPending={isPending} >
-              {isPending ? "Logging in..." : "Login"}
+          <FormButton isPending={isPending}>
+            {isPending ? "Logging in..." : "Login"}
           </FormButton>
         </form>
         <hr className="my-8 border border-blue-950 rounded-2xl" />
