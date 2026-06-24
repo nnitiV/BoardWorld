@@ -24,7 +24,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const { data } = await axios.post(
+        const { data } = await api.post(
           "/auth/refresh",
           {},
           { withCredentials: true },
@@ -32,7 +32,7 @@ api.interceptors.response.use(
         const accessToken = data.accessToken;
         const decodedToken = jwtDecode<{ exp: number }>(accessToken);
         const expirationTimeInMs = decodedToken.exp * 1000;
-
+        console.log(accessToken, decodedToken, expirationTimeInMs);
         useAuthStore
           .getState()
           .setAuthData(data.accessToken, expirationTimeInMs);
