@@ -11,6 +11,7 @@ import {
 import { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useUserStore } from "@/stores/userStore";
+import { ErrorResponsePayload } from "@/types/error.type";
 
 export function useLoginMutation() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export function useLoginMutation() {
 
   return useMutation<
     LoginResponse,
-    AxiosError<{ message: string }>,
+    AxiosError<ErrorResponsePayload>,
     LoginCredentials
   >({
     mutationFn: authService.login,
@@ -47,7 +48,7 @@ export function useRegisterMutation() {
     RegisterCredentials
   >({
     mutationFn: authService.register,
-    onSuccess: (data) => {
+    onSuccess: () => {
       router.push("/login");
     },
     onError: (error) => {

@@ -19,7 +19,7 @@ export default function NavBar() {
           <h1 className="text-2xl font-bold cursor-pointer">Board World</h1>
           <ul className="hidden justify-around md:flex">
             <li>
-              <Link href={"#"}>Home</Link>
+              <Link href={"/"}>Home</Link>
             </li>
             <li>
               <Link href={"#"}>All Products</Link>
@@ -86,7 +86,7 @@ export default function NavBar() {
           </svg>
           <ul className="mt-9 flex flex-col gap-5">
             <li>
-              <Link href={"#"} onClick={() => setIsToggled((prev) => !prev)}>
+              <Link href={"/"} onClick={() => setIsToggled((prev) => !prev)}>
                 Home
               </Link>
             </li>
@@ -95,6 +95,11 @@ export default function NavBar() {
                 All Products
               </Link>
             </li>
+            {user?.role == "ADMIN" && (
+              <li>
+                <Link href={"/admin"} onClick={() => setIsToggled((prev) => !prev)}>Admin</Link>
+              </li>
+            )}
             <li>
               <Link href={"#"} onClick={() => setIsToggled((prev) => !prev)}>
                 About
