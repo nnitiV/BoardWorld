@@ -1,16 +1,16 @@
 import { ReactNode } from "react";
 
-interface ButtonProps {
+interface SubmitButtonProps {
   classes?: string;
   isPending: boolean;
   children: ReactNode
 }
 
-export default function FormButton({
+export default function SubmitButton({
   classes,
   isPending,
   children
-}: ButtonProps) {
+}: SubmitButtonProps) {
   return (
     <button
       type="submit"
