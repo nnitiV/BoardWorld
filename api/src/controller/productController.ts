@@ -4,6 +4,7 @@ import { AppError } from "../utils/AppError.js";
 import * as productService from "../services/productService.js";
 import { CreateProductSchema, ProductCatalogRequestSchema, UpdateProductSchema } from "../types/product.types.js";
 import fs from "fs/promises";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getProductById =  async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
@@ -14,17 +15,16 @@ export const getProductById =  async (req: AuthRequest, res: Response) => {
   })
 }
 
-export const getProductCatalog = async (req: AuthRequest, res: Response) => {
+export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Response) => {
   const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
   const productCatalog = await productService.getProductCatalog(page, limit);
   res
     .status(200)
     .json({ message: "Product catalog retrieved.", productCatalog });
-};
+});
 
-export const createProduct = async (req: AuthRequest, res: Response) => {
+export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { name, price } = CreateProductSchema.parse(req.body);
-
   if (!req.file) {
     throw new AppError("Please provide an image for the product.", 400);
   }
@@ -41,9 +41,9 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
     message: "Product created.",
     data: { product },
   });
-};
+});
 
-export const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct =  asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
   const product = await productService.getProductById(id.toString());
   if (req.file && product) {
@@ -62,7 +62,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       updateProduct: wasUpdated,
     },
   });
-};
+});
 
 export const restoreProduct = async (req: Request, res: Response) => {
   const { id } = req.params;

@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
 import { LoginUserSchema, RegisterUserSchema } from "../types/user.types.js";
 import * as authService from "../services/authServices.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-export const register = async (req: Request, res: Response) => {
+export const register =  asyncHandler(async (req: Request, res: Response) => {
   const validatedData = RegisterUserSchema.parse(req.body);
   const newUser = await authService.registerUser(validatedData);
   res.status(200).json({ message: "User created.", user: newUser });
-};
+});
 
-export const login = async (req: Request, res: Response) => {
+export const login =  asyncHandler(async (req: Request, res: Response) => {
   const validatedData = LoginUserSchema.parse(req.body);
   const userAgentString = req.headers["user-agent"] || "";
   const deviceId = req.body.deviceId;
@@ -42,7 +43,7 @@ export const login = async (req: Request, res: Response) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   res.status(200).json({ message: "Logged in!", user, accessToken });
-};
+});
 
 export const logout = async (req: Request, res: Response) => {
   const token = req.cookies.refresh_token;

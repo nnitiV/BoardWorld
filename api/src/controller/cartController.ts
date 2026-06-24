@@ -6,6 +6,7 @@ import {
 import { AuthRequest } from "../types/express.js";
 import * as cartService from "../services/cartService.js";
 import { AppError } from "../utils/AppError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getCartByUserId = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
@@ -19,7 +20,7 @@ export const getCartByUserId = async (req: AuthRequest, res: Response) => {
   });
 };
 
-export const addToCart = async (req: AuthRequest, res: Response) => {
+export const addToCart =  asyncHandler(async (req: AuthRequest, res: Response) => {
   const cartItemToAdd = AddCartItemSchema.parse(req.body);
   const user = req.user;
   if (!user) {
@@ -30,9 +31,9 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
     message: "Item added to the cart.",
     cartItem,
   });
-};
+});
 
-export const updateCartItem = async (req: AuthRequest, res: Response) => {
+export const updateCartItem =   asyncHandler(async (req: AuthRequest, res: Response) => {
   const cartItemToUpdate = UpdateCartItemSchema.parse(req.body);
   const userId = req.user?.id;
   if (!userId) {
@@ -46,7 +47,7 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
     message: "Cart item updated.",
     updatedCartItem,
   });
-};
+});
 
 export const deleteCartItem = async (req: AuthRequest, res: Response) => {
   const { id: cartItemId } = req.params;

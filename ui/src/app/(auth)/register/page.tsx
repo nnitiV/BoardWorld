@@ -1,11 +1,11 @@
 "use client";
 import DateInput from "@/components/form/DateInput";
 import ErrorDiv from "@/components/form/ErrorDiv";
-import FormButton from "@/components/form/FormsButton";
+import SubmitButton from "@/components/form/SubmitButton";
 import TextInput from "@/components/form/TextInput";
 import { useRegisterMutation } from "@/hooks/useAuthMutation";
 import { RegisterCredentials } from "@/types/auth.type";
-import { isStrongPassword, isValidEmail } from "@/utils/validator";
+import { getErrorMessage, isStrongPassword, isValidEmail } from "@/utils/validator";
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
 
@@ -20,8 +20,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [localError, setLocalError] = useState<string>("");
   const { mutate: register, isPending, isError, error } = useRegisterMutation();
-  const errorMessage =
-    error?.response?.data?.message || "An unexpected network error occurred.";
+  const errorMessage = getErrorMessage(error);
 
   const handleSettingsChange = (
     event: ChangeEvent<HTMLInputElement, HTMLInputElement>,
@@ -129,11 +128,11 @@ export default function Register() {
             type="email"
             classes="flex flex-col mb-4 gap-2"
           />
-          <FormButton
+          <SubmitButton
             isPending={isPending}
             classes="col-span-2">
               {isPending ? "Regitering..." : "Register"}
-            </FormButton>
+            </SubmitButton>
         </form>
         <hr className="my-8 border border-blue-950 rounded-2xl" />
         <div className="text-center text-sm text-slate-600 space-y-2">
