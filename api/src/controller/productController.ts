@@ -17,10 +17,10 @@ export const getProductById =  async (req: AuthRequest, res: Response) => {
 
 export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Response) => {
   const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
-  const productCatalog = await productService.getProductCatalog(page, limit);
+  const {products, totalItems} = await productService.getProductCatalog(page, limit);
   res
     .status(200)
-    .json({ message: "Product catalog retrieved.", productCatalog });
+    .json({ message: "Product catalog retrieved.", productCatalog: products, totalItems });
 });
 
 export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {

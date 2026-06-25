@@ -15,3 +15,9 @@ export interface CreateProduct {
     imageUrl: string,
     stock: number,
 }
+
+export interface ProductCatalogResponse {
+    message: string,
+    productCatalog: Product[],
+    totalItems: number,
+}
