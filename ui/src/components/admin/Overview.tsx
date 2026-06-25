@@ -8,7 +8,7 @@ export default function Overview() {
   const { data, isLoading } = useGetProductCatalogMutation(page, amount);
   const products = data?.productCatalog || [];
   const totalItems = data?.totalItems || 0;
-const totalPages = Math.max(1, Math.ceil(totalItems / amount));
+  const totalPages = Math.max(1, Math.ceil(totalItems / amount));
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl text-blue-950">Products Overview</h1>
@@ -86,7 +86,7 @@ const totalPages = Math.max(1, Math.ceil(totalItems / amount));
       </ul>
       <div className="flex items-center gap-1 mt-6">
         <button
-          onClick={() => setPage(page => page - 1)}
+          onClick={() => setPage((page) => page - 1)}
           disabled={page === 1}
           className="px-4 py-2 transition-all rounded-l-lg cursor-pointer hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
         >
@@ -111,7 +111,7 @@ const totalPages = Math.max(1, Math.ceil(totalItems / amount));
         )}
 
         <button
-          onClick={() => setPage(page => page + 1)}
+          onClick={() => setPage((page) => page + 1)}
           disabled={page === totalPages}
           className="px-4 py-2 transition-all cursor-pointer rounded-r-lg hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
         >
