@@ -97,7 +97,7 @@ export default function AddProduct() {
           classes="flex flex-col"
         />
         <SubmitButton classes="col-span-2" isPending={isPending}>
-          Add Product
+          {isPending ? "Adding product..." : "Add Product"}
         </SubmitButton>
       </form>
     </div>

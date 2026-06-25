@@ -12,7 +12,7 @@ export const getProductCatalog = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.product.findMany({
+  return {products: await client.product.findMany({
     where: { isActive: true },
     select: {
       id: true,
@@ -23,7 +23,7 @@ export const getProductCatalog = async (
     },
     take: limit,
     skip: skip,
-  });
+  }), totalItems: await client.product.count()};
 };
 
 export const createProduct = async (

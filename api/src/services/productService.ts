@@ -12,8 +12,8 @@ export const getProductById = async (id: string) => {
 
 export const getProductCatalog = async (page: number, limit: number)  => {
   const skip = (page - 1) * limit;
-  const productCatalog = await productRepository.getProductCatalog(skip, limit);
-  return productCatalog;
+  const {products, totalItems} = await productRepository.getProductCatalog(skip, limit);
+  return {products, totalItems};
 };
 
 export const createNewProduct = async (productData: {
