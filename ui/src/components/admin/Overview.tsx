@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function Overview() {
-  const [amount, setAmount] = useState<number>(5);
+  const [amount, setAmount] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
   const { data, isLoading } = useGetProductCatalogMutation(page, amount);
   const products = data?.productCatalog || [];
@@ -57,12 +57,12 @@ export default function Overview() {
             <span className="sr-only">Loading...</span>
           </li>
         ) : (
-          products.map((product) => (
+          products.map((product, index) => (
             <li
               key={product.id}
               className="w-full flex items-center gap-6 p-3 rounded-xl transition-all cursor-pointer hover:bg-slate-50 border border-transparent hover:border-slate-100"
             >
-              <div className="w-24 h-24 relative flex-shrink-0 bg-slate-100 rounded-lg overflow-hidden">
+              <div className="w-24 h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
                 <Image
                   src={`http://localhost:5173${product.imageUrl}`}
                   alt={product.name}
@@ -74,11 +74,17 @@ export default function Overview() {
 
               <div className="flex flex-col">
                 <h2 className="text-lg font-semibold text-slate-900">
-                  {product.name}
+                  {product.name} {index}
                 </h2>
-                <p className="text-sm font-medium text-blue-600">
-                  ${product.price}
-                </p>
+                <div>
+                  <p className="text-sm font-medium text-blue-600">
+                    ${product.price}
+                  </p>
+                  <p className="text-sm font-medium text-blue-600">
+                    Stock
+                    {product.stock}
+                  </p>
+                </div>
               </div>
             </li>
           ))
@@ -94,20 +100,52 @@ export default function Overview() {
         </button>
 
         {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-          (n) => (
-            <button
-              key={n}
-              onClick={() => setPage(n)}
-              className={`w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium
+          (pageNumber) => {
+            if (
+              pageNumber == page ||
+              pageNumber == page + 1 ||
+              pageNumber == page - 1 ||
+              pageNumber == 1 ||
+              pageNumber == totalPages
+            ) {
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setPage(pageNumber)}
+                  className={`w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium
         ${
-          n === page
+          pageNumber === page
             ? "bg-blue-600 text-white shadow-md" // Active state
-            : " cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900" // Inactive state
+            : "cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900" // Inactive state
         }`}
-            >
-              {n}
-            </button>
-          ),
+                >
+                  {pageNumber}
+                </button>
+              );
+            } else if (pageNumber == 2 && page > 3) {
+              return (
+                <p
+                  key={pageNumber}
+                  className="w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
+                  onClick={() => setPage((page) => Math.max(1, page - 5))}
+                >
+                  ...
+                </p>
+              );
+            } else if (pageNumber == totalPages - 1 && page < totalPages - 2) {
+              return (
+                <p
+                  key={pageNumber}
+                  className="w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
+                  onClick={() =>
+                    setPage((page) => Math.min(totalPages, page + 5))
+                  }
+                >
+                  ...
+                </p>
+              );
+            }
+          },
         )}
 
         <button
@@ -115,7 +153,7 @@ export default function Overview() {
           disabled={page === totalPages}
           className="px-4 py-2 transition-all cursor-pointer rounded-r-lg hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
         >
-          &gt; 
+          &gt;
         </button>
       </div>
     </div>
