@@ -13,7 +13,6 @@ export const getProductById = async (id: string) => {
 export const getProductCatalog = async (page: number, limit: number)  => {
   const skip = (page - 1) * limit;
   const {products, totalItems} = await productRepository.getProductCatalog(skip, limit);
-  console.log("==== products =====", products)
   return {products, totalItems};
 };
 
