@@ -82,7 +82,7 @@ export default function Register() {
             inputValue={registerUser.email}
             onChange={handleSettingsChange}
             type="email"
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <TextInput
             label="Name:"
@@ -91,7 +91,7 @@ export default function Register() {
             inputValue={registerUser.name}
             onChange={handleSettingsChange}
             type="email"
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <TextInput
             label="Username:"
@@ -100,7 +100,7 @@ export default function Register() {
             inputValue={registerUser.username}
             onChange={handleSettingsChange}
             type="email"
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <DateInput
             label="Date of birth:"
@@ -108,7 +108,7 @@ export default function Register() {
             id="dateOfBirth"
             value={registerUser.dateOfBirth}
             onChange={handleSettingsChange}
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <TextInput
             label="Password:"
@@ -117,7 +117,7 @@ export default function Register() {
             inputValue={registerUser.password}
             onChange={handleSettingsChange}
             type="email"
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <TextInput
             label="Confirm Password:"
@@ -126,11 +126,11 @@ export default function Register() {
             inputValue={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             type="email"
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <SubmitButton
             isPending={isPending}
-            classes="col-span-2">
+            className="col-span-2">
               {isPending ? "Regitering..." : "Register"}
             </SubmitButton>
         </form>

@@ -6,8 +6,11 @@ export const productService = {
         return data;
     },
     getProductCatalog: async (page: number, limit: number) => {
-        const {data} = await api.get(`/products/catalog?page=${page}&limit=${limit}`)
-        console.log("Data:",data);
+        const {data} = await api.get(`/products/catalog?page=${page}&limit=${limit}`);
+        return data;
+    },
+    updateProduct: async (product: FormData) => {
+        const {data} = await api.put(`/products/${product.get("id")}`, product);
         return data;
     }
 }

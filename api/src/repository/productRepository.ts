@@ -41,12 +41,16 @@ export const createProduct = async (
 export const updateProduct = async (
   id: string,
   data: UpdateProduct,
+  imageUrl: string,
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
   return await client.product.update({
     where: { id },
-    data,
+    data: {
+      ...data,
+      imageUrl
+    },
   });
 };
 

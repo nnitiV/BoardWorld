@@ -35,7 +35,6 @@ export default function AddProduct() {
         : type == "file"
           ? event.target.files && event.target.files[0]
           : value;
-    console.log(name, value, type, product);
     setProduct((product) => ({ ...product, [name]: parsedValue }));
   };
 
@@ -71,7 +70,7 @@ export default function AddProduct() {
           label="Name:"
           inputValue={product.name}
           onChange={handleSettingsChange}
-          classes="flex flex-col"
+          className="flex flex-col"
         />
         <NumberInput
           placeholder="price"
@@ -79,14 +78,14 @@ export default function AddProduct() {
           label="Price:"
           inputValue={product.price}
           onChange={handleSettingsChange}
-          classes="flex flex-col"
+          className="flex flex-col"
         />
         <FileInput
           label="Image:"
           id="imageUrl"
-          fileKey={product.imageUrl}
+          resetKey={product.imageUrl}
           onChange={handleSettingsChange}
-          classes="flex flex-col"
+          className="flex flex-col"
         />
         <NumberInput
           placeholder="stock"
@@ -94,9 +93,9 @@ export default function AddProduct() {
           label="Stock:"
           inputValue={product.stock}
           onChange={handleSettingsChange}
-          classes="flex flex-col"
+          className="flex flex-col"
         />
-        <SubmitButton classes="col-span-2" isPending={isPending}>
+        <SubmitButton className="col-span-2" isPending={isPending}>
           {isPending ? "Adding product..." : "Add Product"}
         </SubmitButton>
       </form>

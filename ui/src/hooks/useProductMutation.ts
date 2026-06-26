@@ -23,3 +23,14 @@ export function useGetProductCatalogMutation(page: number, limit: number) {
     queryFn: () => productService.getProductCatalog(page, limit)
   });
 }
+
+export function useUpdateProductMutation() {
+  return useMutation<Product, AxiosError<ErrorResponsePayload>, FormData>({
+    mutationFn: productService.updateProduct,
+    onError: (error) => {
+      const serverMessage =
+        error.response?.data?.message || "Authentication failed";
+      console.error("Backend Error:", serverMessage);
+    },
+  })
+}

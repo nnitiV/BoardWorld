@@ -38,7 +38,7 @@ export default function Login() {
             label="Login:"
             inputValue={login}
             onChange={(e) => setLogin(e.target.value)}
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <TextInput
             type="password"
@@ -47,14 +47,14 @@ export default function Login() {
             label="Password:"
             inputValue={password}
             onChange={(e) => setPassword(e.target.value)}
-            classes="flex flex-col mb-4 gap-2"
+            className="flex flex-col mb-4 gap-2"
           />
           <CheckboxInput
             label="Remember me"
             id="remember-me"
             checked={rememberMe}
             setChecked={setRememberMe}
-            classes="remember-me-container w-fit ps-1"
+            className="remember-me-container w-fit ps-1"
           />
           <SubmitButton isPending={isPending}>
             {isPending ? "Logging in..." : "Login"}
