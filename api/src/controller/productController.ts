@@ -24,7 +24,7 @@ export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Res
 });
 
 export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { name, price } = CreateProductSchema.parse(req.body);
+  const { name, price, stock } = CreateProductSchema.parse(req.body);
   if (!req.file) {
     throw new AppError("Please provide an image for the product.", 400);
   }
@@ -34,6 +34,7 @@ export const createProduct = asyncHandler(async (req: AuthRequest, res: Response
   const product = await productService.createNewProduct({
     name,
     price,
+    stock,
     imageUrl,
   });
 

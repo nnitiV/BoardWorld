@@ -19,6 +19,7 @@ export const getProductCatalog = async (
       name: true,
       imageUrl: true,
       price: true,
+      stock: true,
       isActive: true,
     },
     take: limit,
@@ -31,7 +32,10 @@ export const createProduct = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.product.create({ data });
+  return await client.product.create({ data: {
+    ...data,
+    stock: data.stock
+  } });
 };
 
 export const updateProduct = async (

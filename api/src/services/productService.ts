@@ -13,18 +13,21 @@ export const getProductById = async (id: string) => {
 export const getProductCatalog = async (page: number, limit: number)  => {
   const skip = (page - 1) * limit;
   const {products, totalItems} = await productRepository.getProductCatalog(skip, limit);
+  console.log("==== products =====", products)
   return {products, totalItems};
 };
 
 export const createNewProduct = async (productData: {
   name: string;
   price: number;
+  stock: number;
   imageUrl: string;
 }) => {
   const payload = {
     name: productData.name,
     price: productData.price,
     imageUrl: productData.imageUrl,
+    stock: productData.stock,
   };
   return await productRepository.createProduct(payload);
 };

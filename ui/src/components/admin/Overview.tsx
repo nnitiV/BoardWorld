@@ -74,14 +74,14 @@ export default function Overview() {
 
               <div className="flex flex-col">
                 <h2 className="text-lg font-semibold text-slate-900">
-                  {product.name} {index}
+                  {product.name}
                 </h2>
                 <div>
                   <p className="text-sm font-medium text-blue-600">
                     ${product.price}
                   </p>
                   <p className="text-sm font-medium text-blue-600">
-                    Stock
+                    Stock {" "}
                     {product.stock}
                   </p>
                 </div>

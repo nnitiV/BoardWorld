@@ -18,4 +18,5 @@ export const ProductCatalogRequestSchema = z.object({
 export const CreateProductSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   price: z.coerce.number().positive("Price must be a positive number"),
+  stock: z.coerce.number().positive("Price must be a positive number"),
 });

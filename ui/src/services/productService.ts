@@ -7,6 +7,7 @@ export const productService = {
     },
     getProductCatalog: async (page: number, limit: number) => {
         const {data} = await api.get(`/products/catalog?page=${page}&limit=${limit}`)
+        console.log("Data:",data);
         return data;
     }
 }
