@@ -1,5 +1,5 @@
 interface NumberInputProps {
-  classes: string,
+  className: string,
   id: string;
   label: string;
   placeholder: string;
@@ -8,7 +8,7 @@ interface NumberInputProps {
 }
 
 export default function NumberInput({
-  classes,
+  className,
   id,
   placeholder,
   inputValue,
@@ -16,7 +16,7 @@ export default function NumberInput({
   onChange,
 }: NumberInputProps) {
   return (
-    <div className={classes}>
+    <div className={className}>
       <label htmlFor={id} className="ms-2 text-blue-950 font-bold">
         {label}
       </label>

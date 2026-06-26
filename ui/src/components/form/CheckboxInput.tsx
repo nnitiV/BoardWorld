@@ -1,5 +1,5 @@
 interface CheckboxInputProps {
-  classes: string;
+  className: string;
   label: string;
   id: string;
   checked: boolean;
@@ -7,14 +7,14 @@ interface CheckboxInputProps {
 }
 
 export default function CheckboxInput({
-  classes,
+  className,
   label,
   id,
   checked,
   setChecked,
 }: CheckboxInputProps) {
   return (
-    <div className={classes}>
+    <div className={className}>
       <input
         type="checkbox"
         id={id}

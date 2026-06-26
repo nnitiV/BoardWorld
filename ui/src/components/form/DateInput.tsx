@@ -1,5 +1,5 @@
 interface DateInputProps {
-  classes: string;
+  className: string;
   label: string;
   id: string;
   placeholder: string;
@@ -8,7 +8,7 @@ interface DateInputProps {
 }
 
 export default function DateInput({
-  classes,
+  className,
   label,
   id,
   placeholder,
@@ -16,7 +16,7 @@ export default function DateInput({
   onChange,
 }: DateInputProps) {
   return (
-    <div className={classes}>
+    <div className={className}>
       <label htmlFor="dateOfBirth" className="ms-2 text-blue-950 font-bold">
         {label}
       </label>

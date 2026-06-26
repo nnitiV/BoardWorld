@@ -24,7 +24,7 @@ export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Res
 });
 
 export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { name, price } = CreateProductSchema.parse(req.body);
+  const { name, price, stock } = CreateProductSchema.parse(req.body);
   if (!req.file) {
     throw new AppError("Please provide an image for the product.", 400);
   }
@@ -34,6 +34,7 @@ export const createProduct = asyncHandler(async (req: AuthRequest, res: Response
   const product = await productService.createNewProduct({
     name,
     price,
+    stock,
     imageUrl,
   });
 
@@ -43,16 +44,26 @@ export const createProduct = asyncHandler(async (req: AuthRequest, res: Response
   });
 });
 
-export const updateProduct =  asyncHandler(async (req: Request, res: Response) => {
+export const updateProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
   const product = await productService.getProductById(id.toString());
   if (req.file && product) {
     await fs.unlink(`${process.cwd()}/${product?.imageUrl}`);
   }
   const productData = UpdateProductSchema.parse(req.body);
+  let image = productData.imageUrl;
+  if (!productData.imageUrl && req.file) {
+    const imageUrl = `/${req.file.path.replace(/\\/g, "/")}`;
+    image = imageUrl;
+  }
+  if(!image) {
+    throw new AppError("Please provide an image for the product.", 400);
+  }
+
   const wasUpdated = await productService.updateProduct(
     id.toString(),
-    productData,
+    productData, 
+    image
   );
 
   res.status(200).json({

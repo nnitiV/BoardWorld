@@ -1,30 +1,36 @@
+import React from "react";
+
 interface FileInputProps {
-  classes?: string,
+  className?: string; // Updated to standard React naming convention
   id: string;
-  fileKey: string,
   label: string;
+  resetKey?: string | number; // Clearly named so devs know what this key is doing
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function FileInput({
-  classes,
+  className = "",
   id,
-  fileKey,
   label,
-  onChange
+  resetKey,
+  onChange,
 }: FileInputProps) {
   return (
-    <div className={classes}>
+    <div className={`flex flex-col gap-1 ${className}`} key={resetKey}>
       <label htmlFor={id} className="ms-2 text-blue-950 font-bold">
         {label}
       </label>
       <input
         type="file"
-        key={fileKey}
         id={id}
         name={id}
         onChange={onChange}
-        className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 focus:outline-none transition-all focus:shadow-sm focus:border-blue-950"
+        className="w-full text-sm text-slate-500 
+          file:mr-4 file:py-2 file:px-4 
+          file:rounded-lg file:border-0 
+          file:text-sm file:font-semibold 
+          file:bg-blue-50 file:text-blue-700 
+          hover:file:bg-blue-100 cursor-pointer transition-all"
       />
     </div>
   );

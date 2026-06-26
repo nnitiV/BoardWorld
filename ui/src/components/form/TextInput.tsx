@@ -1,5 +1,5 @@
 interface TextInputProps {
-  classes: string,
+  className: string,
   type: "text" | "password" | "email";
   id: string;
   label: string;
@@ -9,7 +9,7 @@ interface TextInputProps {
 }
 
 export default function TextInput({
-  classes,
+  className,
   type,
   id,
   placeholder,
@@ -18,7 +18,7 @@ export default function TextInput({
   onChange,
 }: TextInputProps) {
   return (
-    <div className={classes}>
+    <div className={className}>
       <label htmlFor={id} className="ms-2 text-blue-950 font-bold">
         {label}
       </label>
