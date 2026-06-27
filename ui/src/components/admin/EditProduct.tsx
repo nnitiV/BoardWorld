@@ -36,17 +36,16 @@ export default function EditProduct({
 
     if (type === "file") {
       if (files && files.length > 0) {
-        setNewImage(files[0]);
+        setNewImage(files[0]); 
       }
       return; 
     }
 
-    // 3. PROCEED: Handle standard text and number inputs normally
     const parsedValue = type === "number" ? parseFloat(value) : value;
     setProduct((prevProduct) => ({ ...prevProduct, [name]: parsedValue }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => { // Changed to standard React.FormEvent
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const data = new FormData();
     data.append("id", product.id);
@@ -55,12 +54,13 @@ export default function EditProduct({
     data.append("stock", product.stock.toString());
     data.append("isActive", product.isActive.toString());
     
+    // 4. ROUTING: Send the new File or fallback to the old URL
     if (newImage) {
       data.append("imageUrl", newImage);
     } else {
       data.append("imageUrl", product.imageUrl);
     }
-    console.log(data.get("imageUrl"))
+    
     updateProduct(data, {
       onSuccess: () => setUpdateProduct(null),
     });
@@ -68,18 +68,22 @@ export default function EditProduct({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/75 z-0"
+      // Upgraded Backdrop: Added backdrop-blur-sm and padding for small screens
+      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-0 px-4"
       onClick={() => setUpdateProduct(null)}
     >
       <div
-        className="w-1/2 mx-auto bg-blue-50 p-5 flex flex-col rounded-2xl z-10"
+        // Upgraded Modal: Responsive max-width, heavy shadow, and internal scroll guard
+        className="w-full max-w-2xl bg-blue-50 p-8 flex flex-col rounded-2xl shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <ErrorDiv isError={isError} errorMessage={errorMessage} />
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
           Update Product 
         </h1>
-        <form className="grid grid-cols-2 gap-4 py-4" onSubmit={handleSubmit}>
+        
+        {/* Upgraded Grid: Switches to 1 column on mobile, 2 columns on sm+ screens */}
+        <form className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4" onSubmit={handleSubmit}>
           <TextInput
             type="text"
             placeholder="Name"
@@ -100,7 +104,6 @@ export default function EditProduct({
           <FileInput
             label="Image:"
             id="imageUrl"
-            // 5. REMOVED: No more resetKey! This stops the React unmounting loop.
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
@@ -112,7 +115,7 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          <SubmitButton className="col-span-2" isPending={isPending}>
+          <SubmitButton className="col-span-1 sm:col-span-2" isPending={isPending}>
             {isPending ? "Updating product..." : "Update Product"}
           </SubmitButton>
         </form>
