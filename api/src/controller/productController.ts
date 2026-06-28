@@ -15,6 +15,14 @@ export const getProductById =  async (req: AuthRequest, res: Response) => {
   })
 }
 
+export const getActiveProductCatalog =  asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
+  const {products, totalItems} = await productService.getProductCatalog(page, limit, true);
+  res
+    .status(200)
+    .json({ message: "Product catalog retrieved.", productCatalog: products, totalItems });
+});
+
 export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Response) => {
   const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
   const {products, totalItems} = await productService.getProductCatalog(page, limit);

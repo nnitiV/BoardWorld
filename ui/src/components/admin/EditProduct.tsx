@@ -52,9 +52,7 @@ export default function EditProduct({
     data.append("name", product.name);
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
-    data.append("isActive", product.isActive.toString());
     
-    // 4. ROUTING: Send the new File or fallback to the old URL
     if (newImage) {
       data.append("imageUrl", newImage);
     } else {
@@ -68,12 +66,10 @@ export default function EditProduct({
 
   return (
     <div
-      // Upgraded Backdrop: Added backdrop-blur-sm and padding for small screens
       className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-0 px-4"
       onClick={() => setUpdateProduct(null)}
     >
       <div
-        // Upgraded Modal: Responsive max-width, heavy shadow, and internal scroll guard
         className="w-full max-w-2xl bg-blue-50 p-8 flex flex-col rounded-2xl shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
@@ -81,8 +77,6 @@ export default function EditProduct({
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
           Update Product 
         </h1>
-        
-        {/* Upgraded Grid: Switches to 1 column on mobile, 2 columns on sm+ screens */}
         <form className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4" onSubmit={handleSubmit}>
           <TextInput
             type="text"

@@ -1,5 +1,5 @@
 interface CheckboxInputProps {
-  className: string;
+  className?: string;
   label: string;
   id: string;
   checked: boolean;

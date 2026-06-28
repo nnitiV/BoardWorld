@@ -6,6 +6,7 @@ import * as productController from "../controller/productController.js";
 
 const productRoutes = Router();
 
+productRoutes.get("/active", productController.getActiveProductCatalog);
 productRoutes.get("/catalog", productController.getProductCatalog);
 productRoutes.get("/:id", productController.getProductById);
 productRoutes.post(

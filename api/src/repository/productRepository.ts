@@ -12,19 +12,54 @@ export const getProductCatalog = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return {products: await client.product.findMany({
-    where: { isActive: true },
-    select: {
-      id: true,
-      name: true,
-      imageUrl: true,
-      price: true,
-      stock: true,
-      isActive: true,
-    },
-    take: limit,
-    skip: skip,
-  }), totalItems: await client.product.count()};
+  return {
+    products: await client.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        imageUrl: true,
+        price: true,
+        stock: true,
+        isActive: true,
+      },
+      take: limit,
+      skip: skip,
+    }),
+    totalItems: await client.product.count(),
+  };
+};
+
+export const getActiveProductCatalog = async (
+  skip: number,
+  limit: number,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return {
+    products: await client.product.findMany({
+      where: {
+        isActive: true,
+        stock: {
+          gt: 0,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        imageUrl: true,
+        price: true,
+        stock: true,
+        isActive: true,
+      },
+      take: limit,
+      skip: skip,
+    }),
+    totalItems: await client.product.count({
+      where: { isActive: true, stock: {
+        gt: 0,
+      }}
+    }),
+  };
 };
 
 export const createProduct = async (
@@ -32,10 +67,12 @@ export const createProduct = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.product.create({ data: {
-    ...data,
-    stock: data.stock
-  } });
+  return await client.product.create({
+    data: {
+      ...data,
+      stock: data.stock,
+    },
+  });
 };
 
 export const updateProduct = async (
@@ -49,7 +86,7 @@ export const updateProduct = async (
     where: { id },
     data: {
       ...data,
-      imageUrl
+      imageUrl,
     },
   });
 };
