@@ -24,8 +24,8 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const { data } = await api.post(
-          "/auth/refresh",
+        const { data } = await axios.post(
+          "http://localhost:5173/api/auth/refresh",
           {},
           { withCredentials: true },
         );
@@ -41,7 +41,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (_) {
         useAuthStore.getState().logout();
-        window.location.href = "/login";
+        // window.location.href = "/login";
       }
     }
     return Promise.reject(error);

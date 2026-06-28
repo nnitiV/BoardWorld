@@ -65,7 +65,11 @@ export const logout = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: Request, res: Response) => {
   const incomingToken = req.cookies.refresh_token;
-  const { accessToken, refreshToken } =
+  if (!incomingToken) {
+    res.status(401).json({ message: "No refresh token cookie provided." });
+    return;
+  }
+  const { accessToken } =
     await authService.refreshSession(incomingToken);
-  res.status(200).json({ accessToken, refreshToken });
+  res.status(200).json({ accessToken });
 };

@@ -106,7 +106,7 @@ export const refreshSession = async (token: string) => {
     expiresAt
   );
 
-  return { accessToken, refreshToken: newRefreshToken.token };
+  return { accessToken };
 };
 
 export const deleteToken = async (token: string) => {
