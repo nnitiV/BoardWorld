@@ -22,7 +22,7 @@ export default function NavBar() {
               <Link href={"/"}>Home</Link>
             </li>
             <li>
-              <Link href={"#"}>All Products</Link>
+              <Link href={"/allProducts"}>All Products</Link>
             </li>
             {user?.role == "ADMIN" && (
               <li>
@@ -91,7 +91,7 @@ export default function NavBar() {
               </Link>
             </li>
             <li>
-              <Link href={"#"} onClick={() => setIsToggled((prev) => !prev)}>
+              <Link href={"/allProducts"} onClick={() => setIsToggled((prev) => !prev)}>
                 All Products
               </Link>
             </li>

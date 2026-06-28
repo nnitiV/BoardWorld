@@ -7,6 +7,7 @@ import SubmitButton from "../form/SubmitButton";
 import { useUpdateProductMutation } from "@/hooks/useProductMutation";
 import { getErrorMessage } from "@/utils/validator";
 import ErrorDiv from "../form/ErrorDiv";
+import CheckboxInput from "../form/CheckboxInput";
 
 interface EditProductProps {
   editProduct: Product;
@@ -110,6 +111,10 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
+          <CheckboxInput id="isActive" label="isActive" checked={product.isActive} setChecked={() => setProduct(prevProd => ({
+            ...prevProd,
+            isActive: !prevProd.isActive
+          }))}  />
           <SubmitButton className="col-span-1 sm:col-span-2" isPending={isPending}>
             {isPending ? "Updating product..." : "Update Product"}
           </SubmitButton>

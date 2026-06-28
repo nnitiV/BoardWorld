@@ -1,14 +1,14 @@
-import { useGetProductCatalogMutation } from "@/hooks/useProductMutation";
+import { useGetProductCatalogQuery } from "@/hooks/useProductMutation";
 import Image from "next/image";
 import { useState } from "react";
 import EditProduct from "./EditProduct";
 import { Product } from "@/types/product.type";
 
 export default function Overview() {
-  const [amount, setAmount] = useState<number>(1);
+  const [amount, setAmount] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
   const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
-  const { data, isLoading } = useGetProductCatalogMutation(page, amount);
+  const { data, isLoading } = useGetProductCatalogQuery(page, amount);
   const products = data?.productCatalog || [];
   const totalItems = data?.totalItems || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
@@ -27,7 +27,6 @@ export default function Overview() {
               setPage(1);
             }}
           >
-            <option value="1">1</option>
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -39,9 +38,9 @@ export default function Overview() {
             </svg>
           </div>
         </div>
-        <ul className="flex flex-col gap-6 w-full max-w-2xl">
+        <ul className="flex flex-col md:grid md:grid-cols-3 gap-6 w-full">
           {isLoading ? (
-            <li className="flex justify-center py-6" role="status">
+            <li className="flex justify-center py-6 col-span-3" role="status">
               <svg
                 aria-hidden="true"
                 className="w-8 h-8 text-neutral-tertiary animate-spin fill-brand"
@@ -88,13 +87,16 @@ export default function Overview() {
                     <p className="text-sm font-medium text-blue-600">
                       Stock {product.stock}
                     </p>
+                    <p className="text-sm font-medium text-blue-600">
+                      Active: {product.isActive ? "true" : "false"}
+                    </p>
                   </div>
                 </div>
               </li>
             ))
           )}
         </ul>
-        <div className="flex items-center gap-1 mt-6">
+        <div className="flex items-center gap-1 mt-6 mx-auto">
           <button
             onClick={() => setPage((page) => page - 1)}
             disabled={page === 1}

@@ -15,12 +15,17 @@ export function useCreateProductMutation() {
   });
 }
 
-export function useGetProductCatalogMutation(page: number, limit: number) {
-  return useQuery<
-    ProductCatalogResponse,
-    AxiosError<ErrorResponsePayload>>({
-    queryKey: ["product", page, limit  ],
-    queryFn: () => productService.getProductCatalog(page, limit)
+export function useGetProductCatalogQuery(
+  page: number,
+  limit: number,
+  activeOnly: boolean = false,
+) {
+  return useQuery<ProductCatalogResponse, AxiosError<ErrorResponsePayload>>({
+    queryKey: ["product", page, limit, activeOnly],
+    queryFn: () =>
+      activeOnly
+        ? productService.getActiveProductCatalog(page, limit)
+        : productService.getProductCatalog(page, limit),
   });
 }
 
@@ -32,5 +37,5 @@ export function useUpdateProductMutation() {
         error.response?.data?.message || "Authentication failed";
       console.error("Backend Error:", serverMessage);
     },
-  })
+  });
 }

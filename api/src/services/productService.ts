@@ -10,8 +10,12 @@ export const getProductById = async (id: string) => {
   return product;
 };
 
-export const getProductCatalog = async (page: number, limit: number)  => {
+export const getProductCatalog = async (page: number, limit: number, activeOnly?: boolean)  => {
   const skip = (page - 1) * limit;
+  if(activeOnly) {
+    const {products, totalItems} = await productRepository.getActiveProductCatalog(skip, limit);
+    return {products, totalItems};
+  }
   const {products, totalItems} = await productRepository.getProductCatalog(skip, limit);
   return {products, totalItems};
 };
