@@ -54,7 +54,11 @@ export const getActiveProductCatalog = async (
       take: limit,
       skip: skip,
     }),
-    totalItems: await client.product.count(),
+    totalItems: await client.product.count({
+      where: { isActive: true, stock: {
+        gt: 0,
+      }}
+    }),
   };
 };
 

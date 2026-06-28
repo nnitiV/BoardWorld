@@ -75,7 +75,7 @@ export default function AllProducts() {
                 />
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col justify-around h-full ">
                 <h2 className="text-lg font-semibold hover:text-shadow-amber-500">
                   {product.name}
                 </h2>
@@ -83,11 +83,10 @@ export default function AllProducts() {
                   <p className="text-sm font-medium text-blue-600">
                     ${product.price}
                   </p>
-                  <p className="text-sm font-medium text-blue-600">
-                    Active: {product.isActive ? "true" : "false"}
-                  </p>
                 </div>
               </div>
+
+              
             </li>
           ))
         )}
