@@ -1,10 +1,18 @@
-import { useGetProductCatalogQuery } from "@/hooks/useProductMutation";
+import {
+  useDeactivateProductMutation,
+  useGetProductCatalogQuery,
+  useRestoreProductMutation,
+} from "@/hooks/useProductMutation";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditProduct from "./EditProduct";
 import { Product } from "@/types/product.type";
 import Button from "./Button";
 import AddProduct from "./AddProduct";
+import LoadingIcon from "../Icons/LoadingIcon";
+import EditIcon from "../Icons/EditIcon";
+import TrashIcon from "../Icons/TrashIcon";
+import RestoreIcon from "../Icons/RestoreIcon";
 
 export default function Overview() {
   const [amount, setAmount] = useState<number>(10);
@@ -12,7 +20,9 @@ export default function Overview() {
   const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
   const [showAddProduct, setShowAddProduct] = useState<boolean>(false);
   const { data, isLoading } = useGetProductCatalogQuery(page, amount);
-  const products = data?.productCatalog || [];
+  const { mutate: deleteProduct } = useDeactivateProductMutation();
+  const { mutate: restoreProduct } = useRestoreProductMutation();
+  const   products = data?.productCatalog || []
   const totalItems = data?.totalItems || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
   return (
@@ -42,35 +52,25 @@ export default function Overview() {
               </svg>
             </div>
           </div>
-          <Button className="w-fit! m-0!" onClick={() => setShowAddProduct(true)}>Add Product (+)</Button>
+          <Button
+            className="w-fit! m-0!"
+            onClick={() => setShowAddProduct(true)}
+          >
+            Add Product (+)
+          </Button>
         </div>
         <ul className="flex flex-col md:grid md:grid-cols-3 gap-6 w-full pe-12 py-6">
           {isLoading ? (
             <li className="flex justify-center py-6 col-span-3" role="status">
-              <svg
-                aria-hidden="true"
-                className="w-8 h-8 text-neutral-tertiary animate-spin fill-brand"
-                viewBox="0 0 100 101"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentFill"
-                />
-              </svg>
-              <span className="sr-only">Loading...</span>
+              <LoadingIcon />
             </li>
           ) : (
             products.map((product, index) => (
               <li
                 key={product.id}
                 onClick={() => setUpdateProduct(products[index])}
-                className="w-full flex items-center relative gap-6 p-3 rounded-xl transition-all cursor-pointer hover:bg-slate-50 border border-transparent hover:border-slate-100"
+                className="w-full flex items-center relative gap-6 rounded-xl transition-all cursor-pointer
+                hover:bg-slate-50 border border-transparent hover:border-slate-100"
               >
                 <div className="w-24 h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
                   <Image
@@ -78,11 +78,12 @@ export default function Overview() {
                     alt={product.name}
                     width={96}
                     height={96}
+                    loading="eager"
                     className="w-full h-full object-cover"
                   />
                 </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col justify-between h-full p-0">
                   <h2 className="text-lg font-semibold text-slate-900">
                     {product.name}
                   </h2>
@@ -93,19 +94,32 @@ export default function Overview() {
                     <p className="text-sm font-medium text-blue-600">
                       Stock {product.stock}
                     </p>
-                    <p className="text-sm font-medium text-blue-600">
-                      Active: {product.isActive ? "true" : "false"}
+                    <p
+                      className={`text-sm font-medium ${product.isActive ? "text-green-600" : "text-red-600"}`}
+                    >
+                      {product.isActive ? "Product Active" : "Product Inactive"}
                     </p>
                   </div>
                 </div>
 
-                <svg
-                  className="w-7 h-7 absolute top-0 right-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 640 640"
-                >
-                  <path d="M505 122.9L517.1 135C526.5 144.4 526.5 159.6 517.1 168.9L488 198.1L441.9 152L471 122.9C480.4 113.5 495.6 113.5 504.9 122.9zM273.8 320.2L408 185.9L454.1 232L319.8 366.2C316.9 369.1 313.3 371.2 309.4 372.3L250.9 389L267.6 330.5C268.7 326.6 270.8 323 273.7 320.1zM437.1 89L239.8 286.2C231.1 294.9 224.8 305.6 221.5 317.3L192.9 417.3C190.5 425.7 192.8 434.7 199 440.9C205.2 447.1 214.2 449.4 222.6 447L322.6 418.4C334.4 415 345.1 408.7 353.7 400.1L551 202.9C579.1 174.8 579.1 129.2 551 101.1L538.9 89C510.8 60.9 465.2 60.9 437.1 89zM152 128C103.4 128 64 167.4 64 216L64 488C64 536.6 103.4 576 152 576L424 576C472.6 576 512 536.6 512 488L512 376C512 362.7 501.3 352 488 352C474.7 352 464 362.7 464 376L464 488C464 510.1 446.1 528 424 528L152 528C129.9 528 112 510.1 112 488L112 216C112 193.9 129.9 176 152 176L264 176C277.3 176 288 165.3 288 152C288 138.7 277.3 128 264 128L152 128z" />
-                </svg>
+                <EditIcon className="w-7 h-7 absolute top-0 right-0" />
+                {product.isActive ? (
+                  <TrashIcon
+                    className="w-7 h-7 absolute bottom-0 right-0 fill-red-600"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteProduct(product.id);
+                    }}
+                  />
+                ) : (
+                  <RestoreIcon
+                    className="w-7 h-7 absolute bottom-0 right-0 fill-green-600"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      restoreProduct(product.id);
+                    }}
+                  />
+                )}
               </li>
             ))
           )}
@@ -186,7 +200,9 @@ export default function Overview() {
           setUpdateProduct={setUpdateProduct}
         />
       )}
-      {showAddProduct && <AddProduct setShowAddProduct={() => setShowAddProduct(false)} />}
+      {showAddProduct && (
+        <AddProduct setShowAddProduct={() => setShowAddProduct(false)} />
+      )}
     </>
   );
 }

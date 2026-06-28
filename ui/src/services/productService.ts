@@ -16,5 +16,13 @@ export const productService = {
     updateProduct: async (product: FormData) => {
         const {data} = await api.put(`/products/${product.get("id")}`, product);
         return data;
+    },
+    restoreProduct: async (id: string) => {
+        const {data} = await api.put(`/products/restore/${id}`);
+        return data;
+    }, 
+    deactivateProduct: async (id: string) => {
+        const {data} = await api.delete(`/products/${id}`);
+        return data;
     }
 }
