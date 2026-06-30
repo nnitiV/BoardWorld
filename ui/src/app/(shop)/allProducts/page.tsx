@@ -13,8 +13,8 @@ export default function AllProducts() {
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
 
   return (
-    <div className="w-full flex flex-col gap-4 p-12 ">
-      <h1 className="text-2xl text-blue-950 ms-6">All Products</h1>
+    <div className="w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
+      <h1 className="text-2xl text-blue-950 ms-6 mb-4">All Products</h1>
       <div className="relative inline-block w-20 ms-6">
         <select
           name="amount"
@@ -63,7 +63,8 @@ export default function AllProducts() {
             <li
               key={product.id}
               className="w-full flex items-center gap-6 p-3 rounded-xl transition-all cursor-pointer
-              border border-transparent hover:border-slate-100 hover:bg-slate-700"
+              border border-transparent hover:border-slate-100 hover:bg-slate-200"
+              onClick={() => (window.location.href = `/product/${product.id}`)}
             >
               <div className="w-24 h-24 relative shrink-0 rounded-lg overflow-hidden">
                 <Image

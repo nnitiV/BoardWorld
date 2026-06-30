@@ -1,6 +1,6 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Product, ProductCatalogResponse } from "@/types/product.type";
+import { Product, ProductCatalogResponse, ProductResponse } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -26,6 +26,13 @@ export function useGetProductCatalogQuery(
       activeOnly
         ? productService.getActiveProductCatalog(page, limit)
         : productService.getProductCatalog(page, limit),
+  });
+}
+
+export function useGetProductByIdQuery(id: string) {
+  return useQuery<ProductResponse, AxiosError<ErrorResponsePayload>>({
+    queryKey: ["product", id],
+    queryFn: () => productService.getProductById(id),
   });
 }
 
