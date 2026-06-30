@@ -21,3 +21,8 @@ export interface ProductCatalogResponse {
     productCatalog: Product[],
     totalItems: number,
 }
+
+export interface ProductResponse {
+    message: string,
+    product: Product,
+}

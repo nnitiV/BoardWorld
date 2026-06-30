@@ -27,7 +27,7 @@ export default function Overview() {
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
   return (
     <>
-      <div className="flex flex-col gap-4 px-12">
+      <div className="w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
         <h1 className="text-2xl text-blue-950">Products Overview</h1>
         <div className="flex justify-between items-center pe-12">
           <div className="relative inline-block w-20">

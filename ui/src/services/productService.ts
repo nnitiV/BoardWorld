@@ -9,6 +9,10 @@ export const productService = {
         const {data} = await api.get(`/products/catalog?page=${page}&limit=${limit}`);
         return data;
     },
+    getProductById: async (id: string) => {
+        const {data} = await api.get(`/products/${id}`);
+        return data;
+    },
     getActiveProductCatalog: async (page: number, limit: number) => {
         const {data} = await api.get(`/products/active?page=${page}&limit=${limit}`);
         return data;
