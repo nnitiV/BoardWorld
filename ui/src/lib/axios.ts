@@ -1,3 +1,4 @@
+import { authService } from "@/services/authService";
 import { useAuthStore } from "@/stores/authStore";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -41,7 +42,8 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (_) {
         useAuthStore.getState().logout();
-        // window.location.href = "/login";
+        await authService.logout();
+        window.location.href = "/login";
       }
     }
     return Promise.reject(error);

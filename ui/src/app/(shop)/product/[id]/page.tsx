@@ -65,7 +65,6 @@ export default function ProductPage() {
                       value={amount}
                       onChange={(e) => {
                         setAmount(Number(e.target.value));
-                        setAmount(1);
                       }}
                     >
                       {Array.from(

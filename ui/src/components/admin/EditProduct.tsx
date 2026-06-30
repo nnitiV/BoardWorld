@@ -49,6 +49,7 @@ export default function EditProduct({
     e.preventDefault();
     const data = new FormData();
     data.append("id", product.id);
+    data.append("isActive", product.isActive.toString());
     data.append("name", product.name);
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
