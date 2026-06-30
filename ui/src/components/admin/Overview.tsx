@@ -4,7 +4,7 @@ import {
   useRestoreProductMutation,
 } from "@/hooks/useProductMutation";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditProduct from "./EditProduct";
 import { Product } from "@/types/product.type";
 import Button from "./Button";
