@@ -51,10 +51,12 @@ model UserDevice {
 
 model Product {
   id String @id @default(uuid())
+  productId String @unique
   name String
+  description String?
   price Decimal
   stock Int @default(0)
-  imageUrl String
+  imageUrl String[]
   isActive Boolean @default(true)
   cartItems CartItem[]
   createdAt DateTime @default(now())
