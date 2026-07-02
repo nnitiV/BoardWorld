@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
         port: "5173",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "hatrabbits.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };
