@@ -7,6 +7,7 @@ import SubmitButton from "../form/SubmitButton";
 import { useUpdateProductMutation } from "@/hooks/useProductMutation";
 import { getErrorMessage } from "@/utils/validator";
 import ErrorDiv from "../form/ErrorDiv";
+import TextAreaInput from "../form/TextAreaInput";
 
 interface EditProductProps {
   editProduct: Product;
@@ -18,7 +19,7 @@ export default function EditProduct({
   setUpdateProduct,
 }: EditProductProps) {
   const [product, setProduct] = useState<Product>(editProduct);
-  const [newImage, setNewImage] = useState<File | null>(null);
+  const [newImages, setNewImages] = useState<File[] | null>(null);
 
   const {
     mutate: updateProduct,
@@ -30,33 +31,41 @@ export default function EditProduct({
   const errorMessage = getErrorMessage(error);
 
   const handleSettingsChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { name, value, type, files } = event.target;
-
-    if (type === "file") {
-      if (files && files.length > 0) {
-        setNewImage(files[0]); 
+      event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+      const { name, value, type } = event.target;
+      if (event.target instanceof HTMLInputElement) {
+        const parsedValue =
+          type === "number"
+            ? parseFloat(value)
+            : type == "file"
+              ? event.target.files
+                ? setNewImages(Array.from(event.target.files))
+                : []
+              : value;
+        if(type !== "file") {
+          setProduct((product) => ({ ...product, [name]: parsedValue }));
+        }
+      } else {
+        setProduct((product) => ({ ...product, [name]: value }));
       }
-      return; 
-    }
-
-    const parsedValue = type === "number" ? parseFloat(value) : value;
-    setProduct((prevProduct) => ({ ...prevProduct, [name]: parsedValue }));
-  };
+      };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const data = new FormData();
     data.append("id", product.id);
     data.append("name", product.name);
+    data.append("description", product.description);
+    data.append("isActive", product.isActive.toString());
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
     
-    if (newImage) {
-      data.append("imageUrl", newImage);
+    if (newImages && newImages.length > 0) {
+      data.append("imagesUrl", "");
+      newImages.forEach((file) => data.append("image", file));
     } else {
-      data.append("imageUrl", product.imageUrl);
+      data.append("imagesUrl", product.imagesUrl.join(","));
     }
     
     updateProduct(data, {
@@ -75,9 +84,12 @@ export default function EditProduct({
       >
         <ErrorDiv isError={isError} errorMessage={errorMessage} />
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
-          Update Product 
+          Update Product
         </h1>
-        <form className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4" onSubmit={handleSubmit}>
+        <form
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4"
+          onSubmit={handleSubmit}
+        >
           <TextInput
             type="text"
             placeholder="Name"
@@ -95,9 +107,18 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
+          <TextAreaInput
+            placeholder="Description"
+            id="description"
+            label="Description:"
+            inputValue={product.description}
+            onChange={handleSettingsChange}
+            className="flex flex-col col-span-2"
+          />
           <FileInput
             label="Image:"
-            id="imageUrl"
+            id="imagesUrl"
+            isMultiple={true}
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
@@ -109,7 +130,10 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          <SubmitButton className="col-span-1 sm:col-span-2" isPending={isPending}>
+          <SubmitButton
+            className="col-span-1 sm:col-span-2"
+            isPending={isPending}
+          >
             {isPending ? "Updating product..." : "Update Product"}
           </SubmitButton>
         </form>

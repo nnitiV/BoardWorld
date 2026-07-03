@@ -28,7 +28,7 @@ export default function ImageCarousel({ src, alt }: ImageCarouselProps) {
                 key={index}
               >
                 <Image
-                  src={src[index]}
+                  src={`http://localhost:5173${src[index]}`}
                   alt={alt}
                   className="object-fill"
                   onClick={() => setActiveIndex(index)}
@@ -45,7 +45,8 @@ export default function ImageCarousel({ src, alt }: ImageCarouselProps) {
             <button
               key={index}
               type="button"
-              className={`w-3 h-3 rounded-base bg-slate-950 rounded-2xl p-2 cursor-pointer transition-all hover:bg-slate-950/75 ${activeIndex === index ? "bg-slate-950/50" : "bg-slate-950"}`}
+              className={`w-3 h-3 rounded-base bg-slate-950 rounded-2xl p-2 cursor-pointer transition-all hover:bg-slate-950/75 
+                ${activeIndex === index ? "bg-slate-950" : "bg-slate-950/50"}`}
               aria-current="true"
               onClick={() => setActiveIndex(index)}
               aria-label="Slide 1"

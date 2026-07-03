@@ -66,7 +66,7 @@ export default function Register() {
 
   return (
     <div className="min-h-[calc(100vh-80px)] w-full flex items-center justify-center py-12">
-      <div className="shadow-2xl w-full max-w-2xl mx-auto p-4 py-8 border text-blue-950 border-black/10 rounded-2xl">
+      <div className="shadow-2xl w-full max-w-2xl mx-auto p-4 py-8 border bg-white text-blue-950 border-black/10 rounded-2xl">
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
           Register
         </h1>
@@ -90,7 +90,7 @@ export default function Register() {
             id="name"
             inputValue={registerUser.name}
             onChange={handleSettingsChange}
-            type="email"
+            type="text"
             className="flex flex-col mb-4 gap-2"
           />
           <TextInput
@@ -99,7 +99,7 @@ export default function Register() {
             id="username"
             inputValue={registerUser.username}
             onChange={handleSettingsChange}
-            type="email"
+            type="text"
             className="flex flex-col mb-4 gap-2"
           />
           <DateInput
@@ -116,7 +116,7 @@ export default function Register() {
             id="password"
             inputValue={registerUser.password}
             onChange={handleSettingsChange}
-            type="email"
+            type="password"
             className="flex flex-col mb-4 gap-2"
           />
           <TextInput
@@ -125,7 +125,7 @@ export default function Register() {
             id="confirmPassword"
             inputValue={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            type="email"
+            type="password"
             className="flex flex-col mb-4 gap-2"
           />
           <SubmitButton

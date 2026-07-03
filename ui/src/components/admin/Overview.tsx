@@ -13,6 +13,7 @@ import LoadingIcon from "../Icons/LoadingIcon";
 import EditIcon from "../Icons/EditIcon";
 import TrashIcon from "../Icons/TrashIcon";
 import RestoreIcon from "../Icons/RestoreIcon";
+import EmptyProductState from "../product/EmptyProductState";
 
 export default function Overview() {
   const [amount, setAmount] = useState<number>(10);
@@ -59,22 +60,27 @@ export default function Overview() {
             Add Product (+)
           </Button>
         </div>
+        {products.length <= 0 ?
+              <EmptyProductState onAddProduct={() => setShowAddProduct(true)} />
+            :
         <ul className="flex flex-col md:grid md:grid-cols-3 gap-6 w-full pe-12 py-6">
           {isLoading ? (
             <li className="flex justify-center py-6 col-span-3" role="status">
               <LoadingIcon />
             </li>
           ) : (
-            products.map((product, index) => (
+            products.map((product, index) => {
+              console.log(product);
+              return (
               <li
-                key={product.id}
-                onClick={() => setUpdateProduct(products[index])}
-                className="w-full flex items-center relative gap-6 rounded-xl transition-all cursor-pointer
-                hover:bg-slate-50 border border-transparent hover:border-slate-100"
+              key={product.id}
+              onClick={() => setUpdateProduct(products[index])}
+              className="w-full flex items-center relative gap-6 rounded-xl transition-all cursor-pointer
+              hover:bg-slate-50 border border-transparent hover:border-slate-100"
               >
                 <div className="w-24 h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
                   <Image
-                    src={`http://localhost:5173${product.imageUrl}`}
+                    src={`http://localhost:5173${product.imagesUrl[0]}`}
                     alt={product.name}
                     width={96}
                     height={96}
@@ -85,7 +91,7 @@ export default function Overview() {
 
                 <div className="flex flex-col justify-between h-full p-0">
                   <h2 className="text-lg font-semibold text-slate-900">
-                    {product.name}
+                  {product.name}
                   </h2>
                   <div>
                     <p className="text-sm font-medium text-blue-600">
@@ -96,7 +102,7 @@ export default function Overview() {
                     </p>
                     <p
                       className={`text-sm font-medium ${product.isActive ? "text-green-600" : "text-red-600"}`}
-                    >
+                      >
                       {product.isActive ? "Product Active" : "Product Inactive"}
                     </p>
                   </div>
@@ -105,25 +111,26 @@ export default function Overview() {
                 <EditIcon className="w-7 h-7 absolute top-0 right-0" />
                 {product.isActive ? (
                   <TrashIcon
-                    className="w-7 h-7 absolute bottom-0 right-0 fill-red-600"
-                    onClick={(e) => {
+                  className="w-7 h-7 absolute bottom-0 right-0 fill-red-600"
+                  onClick={(e) => {
                       e.stopPropagation();
                       deleteProduct(product.id);
                     }}
                   />
                 ) : (
                   <RestoreIcon
-                    className="w-7 h-7 absolute bottom-0 right-0 fill-green-600"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      restoreProduct(product.id);
-                    }}
+                  className="w-7 h-7 absolute bottom-0 right-0 fill-green-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    restoreProduct(product.id);
+                  }}
                   />
                 )}
               </li>
-            ))
-          )}
+            );
+          }))}
         </ul>
+        }
         <div className="flex items-center gap-1 mt-6 mx-auto">
           <button
             onClick={() => setPage((page) => page - 1)}
