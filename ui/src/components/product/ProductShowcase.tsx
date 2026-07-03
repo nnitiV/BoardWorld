@@ -16,18 +16,16 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
     <div className="flex justify-between gap-12 w-full">
       <div className="w-3/5 flex flex-col gap-6">
         <ImageCarousel
-          src={[
-            `http://localhost:5173${product.imageUrl}`,
-            `http://localhost:5173${product.imageUrl}`,
-          ]}
+          src={product.imagesUrl}
           alt={product.name.toString()}
         />
       </div>
 
       <main className="w-2/5 pt-8 flex flex-col justify-between">
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <h1 className="text-2xl text-slate-800 font-bold">{product.name}</h1>
           <p className="text-slate-700/85 font-bold">$ {product.price}</p>
+          <p className="text-slate-900 text-sm font-bold my-2">{product.description}</p>
         </div>
         <div className="flex flex-col gap-4">
           <p
@@ -41,7 +39,9 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
               <select
                 name="amount"
                 id="amount"
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg 
+                cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2
+                focus:ring-blue-500/20 focus:border-blue-500"
                 value={amount}
                 onChange={(e) => {
                   setAmount(Number(e.target.value));

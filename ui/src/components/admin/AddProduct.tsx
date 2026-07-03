@@ -8,6 +8,7 @@ import ErrorDiv from "../form/ErrorDiv";
 import { getErrorMessage } from "@/utils/validator";
 import FileInput from "../form/FileInput";
 import SuccessDiv from "../form/SuccessDiv";
+import TextAreaInput from "../form/TextAreaInput";
 
 interface AddProductProps {
   setShowAddProduct: (value: SetStateAction<boolean>) => void;
@@ -16,9 +17,10 @@ interface AddProductProps {
 export default function AddProduct({ setShowAddProduct }: AddProductProps) {
   const [product, setProduct] = useState<CreateProduct>({
     name: "",
+    description: "",
     price: 0.0,
     stock: 0,
-    imageUrl: "",
+    imagesUrl: [],
   });
   const {
     mutate: createProduct,
@@ -30,32 +32,40 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
   const errorMessage = getErrorMessage(error);
 
   const handleSettingsChange = (
-    event: ChangeEvent<HTMLInputElement, HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = event.target;
-    const parsedValue =
-      type === "number"
-        ? parseFloat(value)
-        : type == "file"
-          ? event.target.files && event.target.files[0]
-          : value;
-    setProduct((product) => ({ ...product, [name]: parsedValue }));
+    if (event.target instanceof HTMLInputElement) {
+      const parsedValue =
+        type === "number"
+          ? parseFloat(value)
+          : type == "file"
+            ? event.target.files
+              ? Array.from(event.target.files)
+              : []
+            : value;
+      setProduct((product) => ({ ...product, [name]: parsedValue }));
+    } else {
+      setProduct((product) => ({ ...product, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData();
     data.append("name", product.name);
+    data.append("description", product.description);
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
-    data.append("image", product.imageUrl);
+    product.imagesUrl.forEach((file) => data.append("image", file));
     createProduct(data, {
       onSuccess: () =>
         setProduct({
           name: "",
+          description: "",
           price: 0.0,
           stock: 0,
-          imageUrl: "",
+          imagesUrl: [],
         }),
     });
   };
@@ -92,10 +102,19 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
+          <TextAreaInput
+            placeholder="Description"
+            id="description"
+            label="Description:"
+            inputValue={product.description}
+            onChange={handleSettingsChange}
+            className="flex flex-col col-span-2"
+          />
           <FileInput
             label="Image:"
-            id="imageUrl"
-            resetKey={product.imageUrl}
+            id="imagesUrl"
+            isMultiple={true}
+            resetKey={product.imagesUrl[0]}
             onChange={handleSettingsChange}
             className="flex flex-col"
           />

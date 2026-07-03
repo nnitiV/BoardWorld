@@ -4,6 +4,7 @@ interface FileInputProps {
   className?: string; // Updated to standard React naming convention
   id: string;
   label: string;
+  isMultiple?: boolean;
   resetKey?: string | number; // Clearly named so devs know what this key is doing
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -12,6 +13,7 @@ export default function FileInput({
   className = "",
   id,
   label,
+  isMultiple = false,
   resetKey,
   onChange,
 }: FileInputProps) {
@@ -24,6 +26,7 @@ export default function FileInput({
         type="file"
         id={id}
         name={id}
+        multiple={isMultiple}
         onChange={onChange}
         className="w-full text-sm text-slate-500 
           file:mr-4 file:py-2 file:px-4 

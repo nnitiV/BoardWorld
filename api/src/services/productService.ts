@@ -24,23 +24,25 @@ export const createNewProduct = async (productData: {
   name: string;
   price: number;
   stock: number;
-  imageUrl: string;
+  description: string;
+  imagesUrl: string[];
 }) => {
   const payload = {
     name: productData.name,
     price: productData.price,
-    imageUrl: productData.imageUrl,
+    description: productData.description,
+    imagesUrl: productData.imagesUrl,
     stock: productData.stock,
   };
   return await productRepository.createProduct(payload);
 };
 
-export const updateProduct = async (id: string, productData: UpdateProduct, imageUrl: string) => {
+export const updateProduct = async (id: string, productData: UpdateProduct, imagesUrl: string[]) => {
   const product = await getProductById(id);
   if (!product) {
     throw new AppError("Couldn't find product.", 404);
   }
-  return await productRepository.updateProduct(id, productData, imageUrl);
+  return await productRepository.updateProduct(id, productData, imagesUrl);
 };
 
 export const restoreProduct = async (id: string) => {

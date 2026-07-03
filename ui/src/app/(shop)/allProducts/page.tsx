@@ -68,7 +68,7 @@ export default function AllProducts() {
             >
               <div className="w-24 h-24 relative shrink-0 rounded-lg overflow-hidden">
                 <Image
-                  src={`http://localhost:5173${product.imageUrl}`}
+                  src={`http://localhost:5173${product.imagesUrl[0]}`}
                   alt={product.name}
                   width={96}
                   height={96}

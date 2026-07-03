@@ -1,18 +1,20 @@
 export interface Product {
     id: string,
     name: string,
+    description: string,
     price: number,
     isActive: boolean,
     stock: number,
-    imageUrl: string,
+    imagesUrl: string[],
     createdAt: Date,
     updatedAt: Date,
 }
-
+    
 export interface CreateProduct {
     name: string,
+    description: string,
     price: number,
-    imageUrl: string,
+    imagesUrl: string[],
     stock: number,
 }
 
