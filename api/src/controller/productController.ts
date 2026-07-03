@@ -32,18 +32,24 @@ export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Res
 });
 
 export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { name, price, stock } = CreateProductSchema.parse(req.body);
-  if (!req.file) {
-    throw new AppError("Please provide an image for the product.", 400);
+  const { name, price, stock, description } = CreateProductSchema.parse(req.body);
+  
+  if (!req.files || req.files.length === 0) {
+    throw new AppError("Please provide at least one image for the product.", 400);
   }
 
-  const imageUrl = `/${req.file.path.replace(/\\/g, "/")}`;
+  if (!Array.isArray(req.files)) {
+    throw new AppError("Unexpected file upload format.", 400);
+  }
+
+  const imagesUrl = req.files.map((file) => `/${file.path.replace(/\\/g, "/")}`);
 
   const product = await productService.createNewProduct({
     name,
     price,
     stock,
-    imageUrl,
+    description,
+    imagesUrl,
   });
 
   res.status(201).json({
@@ -55,24 +61,37 @@ export const createProduct = asyncHandler(async (req: AuthRequest, res: Response
 export const updateProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
   const product = await productService.getProductById(id.toString());
-  if (req.file && product) {
-    await fs.unlink(`${process.cwd()}/${product?.imageUrl}`);
-  }
-  const productData = UpdateProductSchema.parse(req.body);
-  let image = productData.imageUrl;
-  if (!productData.imageUrl && req.file) {
-    const imageUrl = `/${req.file.path.replace(/\\/g, "/")}`;
-    image = imageUrl;
-  }
-  if(!image) {
-    throw new AppError("Please provide an image for the product.", 400);
+  if(!product) {
+    throw new AppError("Product not found.", 404);
   }
 
+  const productData = UpdateProductSchema.parse(req.body);
+  
+  let imagesUrl = productData.imagesUrl;
+  if ((!productData.imagesUrl || productData.imagesUrl.length <= 0)  && req.files && Array.isArray(req.files) && req.files.length > 0) {
+    imagesUrl = req.files.map((file) => `/${file.path.replace(/\\/g, "/")}`);
+  }
+  if(!imagesUrl || imagesUrl.length === 0) {
+    throw new AppError("Please provide at least one image for the product.", 400);
+  }
+  
   const wasUpdated = await productService.updateProduct(
     id.toString(),
     productData, 
-    image
+    imagesUrl
   );
+
+  if (wasUpdated && req.files && Array.isArray(req.files) && product) {
+    await Promise.all(
+      product.imagesUrl.map(async (url) => {
+        await fs.unlink(`${process.cwd()}/${url}`).catch((err) => {
+          if (err.code !== 'ENOENT') {
+            console.error(`Failed to delete old image: ${url}`, err);
+          }
+        });
+      })
+    );
+  }
 
   res.status(200).json({
     message: "Product updated.",

@@ -17,7 +17,8 @@ export const getProductCatalog = async (
       select: {
         id: true,
         name: true,
-        imageUrl: true,
+        description: true,
+        imagesUrl: true,
         price: true,
         stock: true,
         isActive: true,
@@ -46,7 +47,7 @@ export const getActiveProductCatalog = async (
       select: {
         id: true,
         name: true,
-        imageUrl: true,
+        imagesUrl: true,
         price: true,
         stock: true,
         isActive: true,
@@ -78,7 +79,7 @@ export const createProduct = async (
 export const updateProduct = async (
   id: string,
   data: UpdateProduct,
-  imageUrl: string,
+  imagesUrl: string[],
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
@@ -86,7 +87,7 @@ export const updateProduct = async (
     where: { id },
     data: {
       ...data,
-      imageUrl,
+      imagesUrl: imagesUrl,
     },
   });
 };
