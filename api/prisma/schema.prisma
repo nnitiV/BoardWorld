@@ -11,18 +11,27 @@ enum Role {
   ADMIN
 }
 
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+  SUSPENDED
+}
+
 model User {
   id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String? 
-  username  String? @unique
+  email     String?  @unique
+  password  String?
+  name      String
+  username  String?  @unique
+  userStatus UserStatus @default(ACTIVE)
   role Role @default(USER)
   cart Cart?
   userDevice  UserDevice[]
-  dateOfBirth       DateTime
+  dateOfBirth DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  reviews Review[]
   refreshTokens     RefreshToken[] 
   @@map("users")
 }
@@ -49,18 +58,43 @@ model UserDevice {
   @@unique([userId, deviceId])
 }
 
+model Category {
+  id String @id @default(uuid())
+  name String @unique
+  description String?
+  products Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Product {
   id String @id @default(uuid())
   productId Int @default(autoincrement()) @unique
   name String
   description String?
+  review Review[]
   price Decimal
   stock Int @default(0)
   imagesUrl String[]
   isActive Boolean @default(true)
   cartItems CartItem[]
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id String @id @default(uuid())
+  productId String
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction)
+  rating Int
+  comment String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([productId, userId])
 }
 
 model Cart {
