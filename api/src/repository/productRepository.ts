@@ -22,6 +22,12 @@ export const getProductCatalog = async (
         price: true,
         stock: true,
         isActive: true,
+        category: {
+          select: {
+            id: true,
+            name: true, // Pull only the fields your frontend actually needs
+          }
+        }
       },
       take: limit,
       skip: skip,
@@ -73,6 +79,98 @@ export const createProduct = async (
       ...data,
       stock: data.stock,
     },
+  });
+};
+
+export const getCategories = async (tx?: Prisma.TransactionClient) => {
+  const client = tx || prisma;
+  return await client.category.findMany();
+}
+
+export const getCategoryById = async (id: string, tx?: Prisma.TransactionClient) => {
+  const client = tx || prisma;
+  return await client.category.findUnique({ where: { id } });
+}
+
+export const createCategory = async (
+  data: Prisma.CategoryCreateInput,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.category.create({
+    data: {
+      ...data,
+    },
+  });
+};
+
+export const updateCategory = async (
+  id: string,
+  data: Prisma.CategoryUpdateInput,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.category.update({
+    where: { id },
+    data: {
+      ...data,
+    },
+  });
+};
+
+export const deleteCategoryById = async (
+  id: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.category.delete({
+    where: { id },
+  });
+};
+
+export const getReviewById = async (id: string, tx?: Prisma.TransactionClient) => {
+  const client = tx || prisma;
+  return await client.review.findUnique({ where: { id } });
+}
+
+export const getReviewsByProductId = async (productId: string, tx?: Prisma.TransactionClient) => {
+  const client = tx || prisma;
+  return await client.review.findMany({ where: { productId } });
+}
+
+export const createReview = async (
+  data: Prisma.ReviewCreateInput,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.review.create({
+    data: {
+      ...data,
+    },
+  });
+};
+
+export const updateReview = async (
+  id: string,
+  data: Prisma.ReviewUpdateInput,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.review.update({
+    where: { id },
+    data: {
+      ...data,
+    },
+  });
+};
+
+export const deleteReviewById = async (
+  id: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.review.delete({
+    where: { id },
   });
 };
 

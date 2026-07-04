@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../types/express.js";
 import { AppError } from "../utils/AppError.js";
 import * as productService from "../services/productService.js";
-import { CreateProductSchema, ProductCatalogRequestSchema, UpdateProductSchema } from "../types/product.types.js";
+import { CreateCategorySchema, CreateProductSchema, CreateReviewSchema, ProductCatalogRequestSchema, UpdateProductSchema } from "../types/product.types.js";
 import fs from "fs/promises";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
@@ -32,7 +32,7 @@ export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Res
 });
 
 export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { name, price, stock, description } = CreateProductSchema.parse(req.body);
+  const { name, price, stock, description, categoryId } = CreateProductSchema.parse(req.body);
   
   if (!req.files || req.files.length === 0) {
     throw new AppError("Please provide at least one image for the product.", 400);
@@ -50,11 +50,106 @@ export const createProduct = asyncHandler(async (req: AuthRequest, res: Response
     stock,
     description,
     imagesUrl,
+    categoryId,
   });
 
   res.status(201).json({
     message: "Product created.",
-    data: { product },
+    product,
+  });
+});
+
+export const getCategories = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const categories = await productService.getCategories();
+  return res.status(200).json({
+    message: "Categories retrieved.",
+    categories,
+  });
+});
+
+export const getCategoryById = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const category = await productService.getCategoryById(id);
+  return res.status(200).json({
+    message: "Category found.",
+    category,
+  });
+});
+
+export const createCategory = asyncHandler(async (req: AuthRequest, res: Response) => {
+   const data = CreateCategorySchema.parse(req.body);
+    const category = await productService.createCategory(data);
+    return res.status(201).json({
+      message: "Category created.",
+      category,
+    });
+});
+
+export const updateCategory = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const data = CreateCategorySchema.parse(req.body);
+  const category = await productService.updateCategory(id, data);
+  return res.status(200).json({
+    message: "Category updated.",
+    category,
+  });
+});
+
+export const deleteCategoryById = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  await productService.deleteCategoryById(id);
+  return res.status(200).json({
+    message: "Category deleted.",
+  });
+});
+
+export const getReviewsByProductId = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { productId } = req.params;
+  const reviews = await productService.getReviewsByProductId(productId);
+  return res.status(200).json({
+    message: "Reviews retrieved.",
+    reviews,
+  });
+});
+
+export const getReviewById = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const review = await productService.getReviewById(id);
+  return res.status(200).json({
+    message: "Review found.",
+    review,
+  });
+});
+
+export const createReview = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { productId } = req.params;
+  const { rating, comment } = CreateReviewSchema.parse(req.body);
+  const userId = req.user?.id;
+  if(!userId) {
+    throw new AppError("User not authenticated.", 401);
+  }
+  const review = await productService.createReview(productId, userId, { rating, comment });
+  return res.status(201).json({
+    message: "Review created.",
+    review,
+  });
+});
+
+export const updateReview = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const { rating, comment } = CreateReviewSchema.parse(req.body);
+  const review = await productService.updateReview(id, { rating, comment });
+  return res.status(200).json({
+    message: "Review updated.",
+    review,
+  });
+});
+
+export const deleteReviewById = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  await productService.deleteReviewById(id);
+  return res.status(200).json({
+    message: "Review deleted.",
   });
 });
 

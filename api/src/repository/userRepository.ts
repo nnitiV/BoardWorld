@@ -1,3 +1,4 @@
+import { UserStatus } from "@prisma/client";
 import { prisma } from "../config/db.js";
 
 export const getUserByEmail = async (email: string) => {
@@ -26,7 +27,14 @@ export const getUserRole = async (id: string) => {
 };
 
 export const deleteUserById = async (id: string) => {
-  return await prisma.user.delete({
+  return await prisma.user.update({
     where: { id },
+    data: {
+      userStatus: UserStatus.INACTIVE,
+      name: "Anonymous Player",
+      username: `anonymous_${Math.floor(100000 + Math.random() * 900000)}`, // e.g., anonymous_482910
+      email: null,
+      password: null, // Wipe the hash completely
+    },
   });
 };
