@@ -2,6 +2,10 @@ export interface Product {
     id: string,
     name: string,
     description: string,
+    category: {
+        id: string,
+        name: string,
+    }
     price: number,
     isActive: boolean,
     stock: number,
@@ -9,13 +13,27 @@ export interface Product {
     createdAt: Date,
     updatedAt: Date,
 }
+
+export interface Category {
+    id: string,
+    name: string,
+    description: string;
+    createdAt: Date,
+    updatedAt: Date;
+}
     
 export interface CreateProduct {
     name: string,
     description: string,
     price: number,
     imagesUrl: string[],
+    categoryId: string,
     stock: number,
+}
+
+export interface CreateCategory {
+    name: string,
+    description: string | undefined,
 }
 
 export interface ProductCatalogResponse {
@@ -27,4 +45,9 @@ export interface ProductCatalogResponse {
 export interface ProductResponse {
     message: string,
     product: Product,
+}
+
+export interface CategoriesResponse {
+    message: string,
+    categories: Category[],
 }

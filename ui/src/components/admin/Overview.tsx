@@ -4,7 +4,7 @@ import {
   useRestoreProductMutation,
 } from "@/hooks/useProductMutation";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import EditProduct from "./EditProduct";
 import { Product } from "@/types/product.type";
 import Button from "./Button";
@@ -14,12 +14,14 @@ import EditIcon from "../Icons/EditIcon";
 import TrashIcon from "../Icons/TrashIcon";
 import RestoreIcon from "../Icons/RestoreIcon";
 import EmptyProductState from "../product/EmptyProductState";
+import AddCategory from "./AddCategory";
 
 export default function Overview() {
   const [amount, setAmount] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
   const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
   const [showAddProduct, setShowAddProduct] = useState<boolean>(false);
+  const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
   const { data, isLoading } = useGetProductCatalogQuery(page, amount);
   const { mutate: deleteProduct } = useDeactivateProductMutation();
   const { mutate: restoreProduct } = useRestoreProductMutation();
@@ -53,84 +55,98 @@ export default function Overview() {
               </svg>
             </div>
           </div>
-          <Button
-            className="w-fit! m-0!"
-            onClick={() => setShowAddProduct(true)}
-          >
-            Add Product (+)
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              className="w-fit! m-0!"
+              onClick={() => setShowAddCategory(true)}
+            >
+              Add Category (+)
+            </Button>
+            <Button
+              className="w-fit! m-0!"
+              onClick={() => setShowAddProduct(true)}
+            >
+              Add Product (+)
+            </Button>
+          </div>
         </div>
-        {products.length <= 0 ?
-              <EmptyProductState onAddProduct={() => setShowAddProduct(true)} />
-            :
-        <ul className="flex flex-col md:grid md:grid-cols-3 gap-6 w-full pe-12 py-6">
-          {isLoading ? (
-            <li className="flex justify-center py-6 col-span-3" role="status">
-              <LoadingIcon />
-            </li>
-          ) : (
-            products.map((product, index) => {
-              console.log(product);
-              return (
-              <li
-              key={product.id}
-              onClick={() => setUpdateProduct(products[index])}
-              className="w-full flex items-center relative gap-6 rounded-xl transition-all cursor-pointer
-              hover:bg-slate-50 border border-transparent hover:border-slate-100"
-              >
-                <div className="w-24 h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
-                  <Image
-                    src={`http://localhost:5173${product.imagesUrl[0]}`}
-                    alt={product.name}
-                    width={96}
-                    height={96}
-                    loading="eager"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="flex flex-col justify-between h-full p-0">
-                  <h2 className="text-lg font-semibold text-slate-900">
-                  {product.name}
-                  </h2>
-                  <div>
-                    <p className="text-sm font-medium text-blue-600">
-                      ${product.price}
-                    </p>
-                    <p className="text-sm font-medium text-blue-600">
-                      Stock {product.stock}
-                    </p>
-                    <p
-                      className={`text-sm font-medium ${product.isActive ? "text-green-600" : "text-red-600"}`}
-                      >
-                      {product.isActive ? "Product Active" : "Product Inactive"}
-                    </p>
-                  </div>
-                </div>
-
-                <EditIcon className="w-7 h-7 absolute top-0 right-0" />
-                {product.isActive ? (
-                  <TrashIcon
-                  className="w-7 h-7 absolute bottom-0 right-0 fill-red-600"
-                  onClick={(e) => {
-                      e.stopPropagation();
-                      deleteProduct(product.id);
-                    }}
-                  />
-                ) : (
-                  <RestoreIcon
-                  className="w-7 h-7 absolute bottom-0 right-0 fill-green-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    restoreProduct(product.id);
-                  }}
-                  />
-                )}
+        {products.length <= 0 ? (
+          <EmptyProductState onAddProduct={() => setShowAddProduct(true)} />
+        ) : (
+          <ul className="flex flex-col md:grid md:grid-cols-3 gap-6 w-full pe-12 py-6">
+            {isLoading ? (
+              <li className="flex justify-center py-6 col-span-3" role="status">
+                <LoadingIcon />
               </li>
-            );
-          }))}
-        </ul>
-        }
+            ) : (
+              products.map((product, index) => {
+                console.log(product);
+                return (
+                  <li
+                    key={product.id}
+                    onClick={() => setUpdateProduct(products[index])}
+                    className="w-full flex items-center relative gap-6 rounded-xl transition-all cursor-pointer
+              hover:bg-slate-50 border border-transparent hover:border-slate-100"
+                  >
+                    <div className="w-24 h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={`http://localhost:5173${product.imagesUrl[0]}`}
+                        alt={product.name}
+                        width={96}
+                        height={96}
+                        loading="eager"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <div className="flex flex-col justify-between h-full p-0">
+                      <h2 className="text-lg font-semibold text-slate-900">
+                        {product.name}
+                      </h2>
+                      <div>
+                        <p className="text-sm font-medium text-blue-600">
+                          Price: ${product.price}
+                        </p>
+                        <p className="text-sm font-medium text-blue-600">
+                          Category: {product.category.name}
+                        </p>
+                        <p className="text-sm font-medium text-blue-600">
+                          Stock: {product.stock}
+                        </p>
+                        <p
+                          className={`text-sm font-medium ${product.isActive ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {product.isActive
+                            ? "Product Active"
+                            : "Product Inactive"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <EditIcon className="w-7 h-7 absolute top-0 right-0" />
+                    {product.isActive ? (
+                      <TrashIcon
+                        className="w-7 h-7 absolute bottom-0 right-0 fill-red-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteProduct(product.id);
+                        }}
+                      />
+                    ) : (
+                      <RestoreIcon
+                        className="w-7 h-7 absolute bottom-0 right-0 fill-green-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          restoreProduct(product.id);
+                        }}
+                      />
+                    )}
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        )}
         <div className="flex items-center gap-1 mt-6 mx-auto">
           <button
             onClick={() => setPage((page) => page - 1)}
@@ -209,6 +225,9 @@ export default function Overview() {
       )}
       {showAddProduct && (
         <AddProduct setShowAddProduct={() => setShowAddProduct(false)} />
+      )}
+      {showAddCategory && (
+        <AddCategory setShowAddCategory={() => setShowAddCategory(false)} />
       )}
     </>
   );

@@ -1,8 +1,8 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Product, ProductCatalogResponse, ProductResponse } from "@/types/product.type";
+import { Category, CategoriesResponse, CreateCategory, Product, ProductCatalogResponse, ProductResponse } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { Axios, AxiosError } from "axios";
 
 export function useCreateProductMutation() {
   return useMutation<Product, AxiosError<ErrorResponsePayload>, FormData>({
@@ -12,6 +12,17 @@ export function useCreateProductMutation() {
         error.response?.data?.message || "Authentication failed";
       console.error("Backend Error:", serverMessage);
     },
+  });
+}
+
+export const useCreateCategoryMutation = () => {
+  return useMutation<Category, AxiosError<ErrorResponsePayload>, CreateCategory>({
+    mutationFn: productService.createCategory,
+    onError: (error) => {
+      const serverMessage =
+        error.response?.data?.message || "Authentication failed";
+      console.error("Backend Error:", serverMessage);
+    }
   });
 }
 
@@ -26,6 +37,13 @@ export function useGetProductCatalogQuery(
       activeOnly
         ? productService.getActiveProductCatalog(page, limit)
         : productService.getProductCatalog(page, limit),
+  });
+}
+
+export function useGetCategoriesQuery() {
+  return useQuery<CategoriesResponse, AxiosError<ErrorResponsePayload>>({
+    queryFn: productService.getCategories,
+    queryKey: ["category"],
   });
 }
 

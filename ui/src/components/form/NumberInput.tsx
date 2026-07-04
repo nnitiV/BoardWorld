@@ -27,7 +27,9 @@ export default function NumberInput({
         placeholder={placeholder}
         value={inputValue}
         onChange={onChange}
-        className="border border-transparent border-b-black/25 rounded-xl px-4 py-2 focus:outline-none transition-all focus:shadow-sm focus:border-blue-950"
+        className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg 
+                transition-all hover:border-blue-400 focus:outline-none focus:ring-2
+                focus:ring-blue-500/20 focus:border-blue-500"
       />
     </div>
   );

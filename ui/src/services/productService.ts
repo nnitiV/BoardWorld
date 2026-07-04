@@ -1,12 +1,21 @@
 import api from "@/lib/axios";
+import { CreateCategory } from "@/types/product.type";
 
 export const productService = {
     createProduct: async (product: FormData) => {
         const {data} = await api.post("/products", product);
         return data;
     },
+    createCategory: async (category: CreateCategory) => {
+        const {data} = await api.post("/products/category", category);
+        return data;
+    },
     getProductCatalog: async (page: number, limit: number) => {
         const {data} = await api.get(`/products/catalog?page=${page}&limit=${limit}`);
+        return data;
+    },
+    getCategories: async () => {
+        const {data} = await api.get("/products/categories");
         return data;
     },
     getProductById: async (id: string) => {

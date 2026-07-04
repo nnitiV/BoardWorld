@@ -71,6 +71,7 @@ export function useLogoutMutation() {
     mutationFn: authService.logout,
     onSuccess: () => {
       logoutStore();
+      window.cookieStore.delete("is_logged_in");
       router.push("/login");
     },
     onError: (error) => {
