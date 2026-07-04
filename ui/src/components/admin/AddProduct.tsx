@@ -136,8 +136,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
                   ...oldProduct,
                   categoryId: e.target.value,
                 }));
-              }}
-              defaultValue={categories.length > 0 ? categories[0].id : ""}
+              }} 
             >
               <option value="" disabled>
                 {categories.length > 0
