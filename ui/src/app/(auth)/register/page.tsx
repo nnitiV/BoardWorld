@@ -18,7 +18,8 @@ export default function Register() {
     dateOfBirth: "",
   });
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [localError, setLocalError] = useState<string>("");
+  const [localError, setLocalError] = useState<string | null>(null);
+  const [isLocalError, setIsLocalError] = useState<boolean>(false);
   const { mutate: register, isPending, isError, error } = useRegisterMutation();
   const errorMessage = getErrorMessage(error);
 
@@ -36,6 +37,8 @@ export default function Register() {
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLocalError(false);
+    setLocalError(null);
     if (
       !registerUser.email ||
       !registerUser.username ||
@@ -44,20 +47,24 @@ export default function Register() {
       !registerUser.dateOfBirth ||
       !confirmPassword
     ) {
+      setIsLocalError(true);
       setLocalError("Please, provide value for all fields.");
       return;
     }
     if (!isValidEmail(registerUser.email)) {
+      setIsLocalError(true);
       setLocalError("Please, provide a valid email.");
       return;
     }
     if (!isStrongPassword(registerUser.password)) {
+      setIsLocalError(true);
       setLocalError(
         "Please, provide a strong password (Bigger than 8 characters, lowercase, uppercase and a number).",
       );
       return;
     }
     if (registerUser.password !== confirmPassword) {
+      setIsLocalError(true);
       setLocalError("Passwords do not match. Please try again.");
       return;
     }
@@ -70,7 +77,7 @@ export default function Register() {
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
           Register
         </h1>
-        <ErrorDiv isError={isError} errorMessage={errorMessage || localError} />
+        <ErrorDiv isError={isError || isLocalError} errorMessage={localError || errorMessage} />
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"

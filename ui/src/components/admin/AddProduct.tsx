@@ -16,6 +16,8 @@ interface AddProductProps {
 
 export default function AddProduct({ setShowAddProduct }: AddProductProps) {
   const { data: response } = useGetCategoriesQuery();
+  const [localError, setLocalError] = useState<string | null>("");
+  const [isLocalError, setIsLocalError] = useState<boolean>(false);
   const categories = response?.categories || [];
   const [product, setProduct] = useState<CreateProduct>({
     name: "",
@@ -53,27 +55,56 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
     }
   };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(product)
+    setIsLocalError(false);
+    setLocalError(null);
+
+    if (!product.name || product.name.trim().length === 0) {
+      setIsLocalError(true);
+      setLocalError("Please provide a valid product name.");
+      return;
+    }
+
+    if (product.price <= 0) {
+      setIsLocalError(true);
+      setLocalError("Please provide a positive price.");
+      return;
+    }
+    
+    if (!product.categoryId || product.categoryId.trim().length === 0) {
+      setIsLocalError(true);
+      setLocalError("Please choose a category.");
+      return;
+    }
+
+    if (product.imagesUrl.length === 0) {
+      setIsLocalError(true);
+      setLocalError("Please upload at least one product image.");
+      return;
+    }
+    
+
     const data = new FormData();
-    data.append("name", product.name);
-    data.append("description", product.description);
+    data.append("name", product.name.trim());
+    data.append("description", product.description || "");
     data.append("categoryId", product.categoryId);
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
+
     product.imagesUrl.forEach((file) => data.append("image", file));
+
     createProduct(data, {
-      onSuccess: () =>
+      onSuccess: () => {
         setProduct({
           name: "",
           description: "",
-          price: 0.0,
+          price: 0,
           stock: 0,
           categoryId: "",
           imagesUrl: [],
-        }),
-    });
+        });
+      }});
   };
 
   return (
@@ -101,7 +132,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
           <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
         </svg>
         <SuccessDiv isSuccess={isSuccess} successMessage="Product created!" />
-        <ErrorDiv isError={isError} errorMessage={errorMessage} />
+        <ErrorDiv isError={isLocalError || isError} errorMessage={localError || errorMessage} />
         <form className="grid grid-cols-2 gap-4 py-4" onSubmit={handleSubmit}>
           <TextInput
             type="text"
