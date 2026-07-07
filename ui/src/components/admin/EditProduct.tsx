@@ -4,7 +4,7 @@ import { Product } from "@/types/product.type";
 import FileInput from "../form/FileInput";
 import NumberInput from "../form/NumberInput";
 import SubmitButton from "../form/SubmitButton";
-import { useUpdateProductMutation } from "@/hooks/useProductMutation";
+import { useGetCategoriesQuery, useUpdateProductMutation } from "@/hooks/useProductMutation";
 import { getErrorMessage } from "@/utils/validator";
 import ErrorDiv from "../form/ErrorDiv";
 import TextAreaInput from "../form/TextAreaInput";
@@ -20,36 +20,40 @@ export default function EditProduct({
 }: EditProductProps) {
   const [product, setProduct] = useState<Product>(editProduct);
   const [newImages, setNewImages] = useState<File[] | null>(null);
-
+  const { data } = useGetCategoriesQuery();
+  const categories = data?.categories || [];
   const {
     mutate: updateProduct,
     isPending,
     isError,
     error,
   } = useUpdateProductMutation();
-  
+
   const errorMessage = getErrorMessage(error);
 
   const handleSettingsChange = (
-      event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-      const { name, value, type } = event.target;
-      if (event.target instanceof HTMLInputElement) {
-        const parsedValue =
-          type === "number"
-            ? parseFloat(value)
-            : type == "file"
-              ? event.target.files
-                ? setNewImages(Array.from(event.target.files))
-                : []
-              : value;
-        if(type !== "file") {
-          setProduct((product) => ({ ...product, [name]: parsedValue }));
-        }
-      } else {
-        setProduct((product) => ({ ...product, [name]: value }));
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement,
+      HTMLInputElement | HTMLTextAreaElement
+    >,
+  ) => {
+    const { name, value, type } = event.target;
+    if (event.target instanceof HTMLInputElement) {
+      const parsedValue =
+        type === "number"
+          ? parseFloat(value)
+          : type == "file"
+            ? event.target.files
+              ? setNewImages(Array.from(event.target.files))
+              : []
+            : value;
+      if (type !== "file") {
+        setProduct((product) => ({ ...product, [name]: parsedValue }));
       }
-      };
+    } else {
+      setProduct((product) => ({ ...product, [name]: value }));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,17 +61,18 @@ export default function EditProduct({
     data.append("id", product.id);
     data.append("name", product.name);
     data.append("description", product.description);
+    data.append("categoryId", product.category.id.toString());
     data.append("isActive", product.isActive.toString());
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
-    
+
     if (newImages && newImages.length > 0) {
       data.append("imagesUrl", "");
       newImages.forEach((file) => data.append("image", file));
     } else {
       data.append("imagesUrl", product.imagesUrl.join(","));
     }
-    
+
     updateProduct(data, {
       onSuccess: () => setUpdateProduct(null),
     });
@@ -119,6 +124,41 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
+          <div className="flex flex-col col-span-2 gap-2 ">
+            <label htmlFor="category" className="ms-2 text-blue-950 font-bold">
+              Category:
+            </label>
+            <select
+              name="category"
+              id="category"
+              className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg 
+                cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2
+                focus:ring-blue-500/20 focus:border-blue-500"
+              value={product.category.id}
+              onChange={(e) => {
+                const category = categories.find(cat => cat.id === e.target.value);
+                if(!category) return;
+                setProduct((oldProduct) => ({
+                  ...oldProduct,
+                  category: {
+                    id: e.target.value,
+                    name: category.name
+                  },
+                }));
+              }} 
+            >
+              <option value="" disabled>
+                {categories.length > 0
+                  ? "Select a category"
+                  : "Loading categories..."}
+              </option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <TextAreaInput
             placeholder="Description"
             id="description"

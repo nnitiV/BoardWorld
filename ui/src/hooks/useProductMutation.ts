@@ -72,6 +72,9 @@ export function useUpdateProductMutation() {
           const id = updatedProduct.get("id")?.toString();
           const name = updatedProduct.get("name")?.toString();
           const description = updatedProduct.get("description")?.toString();
+          const categories = queryClient.getQueryData<UpdateCategoryResponse>(["category"] );
+          const categoryId = updatedProduct.get("categoryId")?.toString();
+          const category = categories?.categories.find(cat => cat.id === categoryId);
           const price = updatedProduct.get("price") ? Number(updatedProduct.get("price")) : undefined;
           const stock = updatedProduct.get("stock") ? parseInt(updatedProduct.get("stock") as string, 10) : undefined;
           const isActive = updatedProduct.get("isActive") === "true";
@@ -82,15 +85,21 @@ export function useUpdateProductMutation() {
             ...oldData,
             productCatalog: oldData.productCatalog.map((product) =>
               product.id === id
-                ? { 
-                    ...product, 
+                ? {
+                    ...product,
                     ...(name && { name }),
                     ...(description && { description }),
                     ...(price !== undefined && { price }),
                     ...(stock !== undefined && { stock }),
+                    ...(category && {
+                      category: {
+                        id: category.id,
+                        name: category.name,
+                      },
+                    }),
                     isActive,
                   }
-                : product
+                : product,
             ),
           };
         },

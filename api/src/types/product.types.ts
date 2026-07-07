@@ -4,6 +4,7 @@ export const UpdateProductSchema = z.object({
   name: z.string(),
   price: z.coerce.number().positive("Price must be a positive number"),
   description: z.string().max(700, "Description must be at most 700 characters"),
+  categoryId: z.uuid(),
   stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
   imagesUrl: z.string().nullable().transform((val) => val ? val.split(",") : []),
   isActive: z.enum(["true", "false"]).transform((val) => val === "true"),

@@ -186,6 +186,7 @@ export const updateProduct = async (
     data: {
       ...data,
       imagesUrl: imagesUrl,
+      categoryId: data.categoryId
     },
   });
 };

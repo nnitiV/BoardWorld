@@ -88,7 +88,6 @@ export default function Overview() {
               </li>
             ) : (
               products.map((product, index) => {
-                console.log(product);
                 return (
                   <li
                     key={product.id}
