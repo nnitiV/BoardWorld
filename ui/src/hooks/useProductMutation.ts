@@ -1,8 +1,8 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Category, CategoriesResponse, CreateCategory, Product, ProductCatalogResponse, ProductResponse } from "@/types/product.type";
+import { Category, CategoriesResponse, CreateCategory, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Axios, AxiosError } from "axios";
+import { AxiosError } from "axios";
 
 export function useCreateProductMutation() {
   return useMutation<Product, AxiosError<ErrorResponsePayload>, FormData>({
@@ -55,14 +55,94 @@ export function useGetProductByIdQuery(id: string) {
 }
 
 export function useUpdateProductMutation() {
+  const queryClient =  useQueryClient();
+  const queryKey = ["product"];
+
   return useMutation<Product, AxiosError<ErrorResponsePayload>, FormData>({
     mutationFn: productService.updateProduct,
+    onMutate: async (updatedProduct: FormData) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousCatalog = queryClient.getQueryData<ProductCatalogResponse>(queryKey);
+
+      queryClient.setQueriesData<ProductCatalogResponse>(
+        { queryKey },
+        (oldData) => {
+          if (!oldData) return undefined;
+
+          const id = updatedProduct.get("id")?.toString();
+          const name = updatedProduct.get("name")?.toString();
+          const description = updatedProduct.get("description")?.toString();
+          const price = updatedProduct.get("price") ? Number(updatedProduct.get("price")) : undefined;
+          const stock = updatedProduct.get("stock") ? parseInt(updatedProduct.get("stock") as string, 10) : undefined;
+          const isActive = updatedProduct.get("isActive") === "true";
+
+          if (!id) return oldData;
+
+          return {
+            ...oldData,
+            productCatalog: oldData.productCatalog.map((product) =>
+              product.id === id
+                ? { 
+                    ...product, 
+                    ...(name && { name }),
+                    ...(description && { description }),
+                    ...(price !== undefined && { price }),
+                    ...(stock !== undefined && { stock }),
+                    isActive,
+                  }
+                : product
+            ),
+          };
+        },
+      );
+
+      return { previousCatalog };
+    },
     onError: (error) => {
       const serverMessage =
         error.response?.data?.message || "Authentication failed";
       console.error("Backend Error:", serverMessage);
     },
   });
+}
+
+export function useUpdateCategoryMutation() {
+  const queryClient = useQueryClient();
+  const queryKey = ["category"];
+
+  return useMutation<Category, AxiosError<ErrorResponsePayload>, UpdateCategory>({
+    mutationFn: productService.updateCategory,
+    onMutate: async (updatedCategory) => {
+      await queryClient.cancelQueries({ queryKey });
+      const oldCategories = queryClient.getQueryData<UpdateCategoryResponse>(queryKey);
+
+      queryClient.setQueriesData<UpdateCategoryResponse>(
+        { queryKey },
+        (oldData) => {
+          if (!oldData) return undefined;
+
+          const name = updatedCategory.name;
+          const description = updatedCategory.description;
+
+          if (!updatedCategory.id) return oldData;
+
+          return {
+            ...oldData,
+            categories: oldData?.categories.map((category) =>
+              category.id == updatedCategory.id
+                ? {
+                    ...category,
+                    ...(name && { name }),
+                    ...(description && { description }),
+                  }
+                : category,
+            ),
+          };
+        },
+      );
+      return { oldCategories };
+    }
+  })
 }
 
 export function useDeactivateProductMutation() {

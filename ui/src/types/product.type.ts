@@ -36,10 +36,21 @@ export interface CreateCategory {
     description: string | undefined,
 }
 
+export interface UpdateCategory {
+    id: string,
+    name: string,
+    description: string | undefined,
+}
+
 export interface ProductCatalogResponse {
     message: string,
     productCatalog: Product[],
     totalItems: number,
+}
+
+export interface UpdateCategoryResponse {
+    message: string,
+    categories: Category[],
 }
 
 export interface ProductResponse {

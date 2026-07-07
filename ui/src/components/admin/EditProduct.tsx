@@ -55,7 +55,6 @@ export default function EditProduct({
     e.preventDefault();
     const data = new FormData();
     data.append("id", product.id);
-    data.append("isActive", product.isActive.toString());
     data.append("name", product.name);
     data.append("description", product.description);
     data.append("isActive", product.isActive.toString());
@@ -83,10 +82,10 @@ export default function EditProduct({
         className="w-full max-w-2xl bg-blue-50 p-8 flex flex-col rounded-2xl shadow-2xl z-10 max-h-[90vh] overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <ErrorDiv isError={isError} errorMessage={errorMessage} />
         <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
           Update Product
         </h1>
+        <ErrorDiv isError={isError} errorMessage={errorMessage} />
         <svg
           xmlns="http://www.w3.org/2000/svg"
           x="0px"

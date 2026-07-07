@@ -15,6 +15,7 @@ import TrashIcon from "../Icons/TrashIcon";
 import RestoreIcon from "../Icons/RestoreIcon";
 import EmptyProductState from "../product/EmptyProductState";
 import AddCategory from "./AddCategory";
+import EditCategoriesModal from "./EditCategoriesModal";
 
 export default function Overview() {
   const [amount, setAmount] = useState<number>(10);
@@ -22,6 +23,7 @@ export default function Overview() {
   const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
   const [showAddProduct, setShowAddProduct] = useState<boolean>(false);
   const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
+  const [showEditCategories, setShowEditCategories] = useState<boolean>(false);
   const { data, isLoading } = useGetProductCatalogQuery(page, amount);
   const { mutate: deleteProduct } = useDeactivateProductMutation();
   const { mutate: restoreProduct } = useRestoreProductMutation();
@@ -56,6 +58,12 @@ export default function Overview() {
             </div>
           </div>
           <div className="flex gap-2">
+            <Button
+              className="w-fit! m-0!"
+              onClick={() => setShowEditCategories(true)}
+            >
+              Edit Categories
+            </Button>
             <Button
               className="w-fit! m-0!"
               onClick={() => setShowAddCategory(true)}
@@ -222,6 +230,9 @@ export default function Overview() {
           editProduct={updateProduct}
           setUpdateProduct={setUpdateProduct}
         />
+      )}
+      {showEditCategories && (
+        <EditCategoriesModal setShowEditCategories={setShowEditCategories} />
       )}
       {showAddProduct && (
         <AddProduct setShowAddProduct={() => setShowAddProduct(false)} />

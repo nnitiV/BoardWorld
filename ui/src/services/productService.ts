@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { CreateCategory } from "@/types/product.type";
+import { CreateCategory, UpdateCategory } from "@/types/product.type";
 
 export const productService = {
     createProduct: async (product: FormData) => {
@@ -29,6 +29,10 @@ export const productService = {
     updateProduct: async (product: FormData) => {
         const {data} = await api.put(`/products/${product.get("id")}`, product);
         return data;
+    },
+    updateCategory: async (category: UpdateCategory) => {
+      const {data} = await api.put(`/products/category/${category.id}`, category);
+      return data;
     },
     restoreProduct: async (id: string) => {
         const {data} = await api.put(`/products/restore/${id}`);

@@ -1,5 +1,5 @@
 interface TextInputProps {
-  className: string,
+  className: string;
   type: "text" | "password" | "email";
   id: string;
   label: string;

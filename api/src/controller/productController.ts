@@ -192,7 +192,7 @@ export const updateProduct = asyncHandler(async (req: AuthRequest, res: Response
     message: "Product updated.",
     data: {
       message: "Product updated successfully.",
-      updateProduct: wasUpdated,
+      updatdeProduct: wasUpdated,
     },
   });
 });
