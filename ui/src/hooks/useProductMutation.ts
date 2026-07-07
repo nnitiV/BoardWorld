@@ -190,6 +190,54 @@ export function useDeactivateProductMutation() {
   });
 }
 
+interface DeleteCategoryContext {
+  oldCategories: UpdateCategoryResponse | undefined;
+}
+
+export function useDeleteCategoryMutation() {
+  const queryClient = useQueryClient();
+  const queryKey = ["category"]
+
+  return useMutation<
+    void,
+    AxiosError<ErrorResponsePayload>,
+    string,
+    DeleteCategoryContext
+  >({
+    mutationFn: productService.deleteCategory,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const oldCategories =
+        queryClient.getQueryData<UpdateCategoryResponse>(queryKey);
+
+      queryClient.setQueriesData<UpdateCategoryResponse>(
+        { queryKey },
+        (oldData) => {
+          if (!oldData) return undefined;
+          return {
+            ...oldData,
+            categories: oldData.categories.filter(
+              (category) => category.id !== id,
+            ),
+          };
+        },
+      );
+
+      return { oldCategories };
+    },
+    onError: (error, _, onMutateResult) => {
+      const serverMessage =
+        error.response?.data?.message || "Deactivation failed";
+      console.error("Backend Error:", serverMessage);
+      if (onMutateResult?.oldCategories) {
+        queryClient.setQueryData(queryKey, onMutateResult.oldCategories);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey }),
+  });
+}
+
 export function useRestoreProductMutation() {
   const queryClient = useQueryClient();
   return useMutation<Product, AxiosError<ErrorResponsePayload>, string>({

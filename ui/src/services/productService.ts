@@ -41,5 +41,9 @@ export const productService = {
     deactivateProduct: async (id: string) => {
         const {data} = await api.delete(`/products/${id}`);
         return data;
+    },
+    deleteCategory: async (id: string) => {
+        const {data} = await api.delete(`/products/category/${id}`);
+        return data;
     }
 }

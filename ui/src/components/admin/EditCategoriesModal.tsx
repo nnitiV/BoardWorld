@@ -1,4 +1,5 @@
 import {
+  useDeleteCategoryMutation,
   useGetCategoriesQuery,
 } from "@/hooks/useProductMutation";
 import TrashIcon from "../Icons/TrashIcon";
@@ -17,6 +18,7 @@ export default function EditCategoriesModal({
   const [categoryToEdit, setCategoryToEdit] = useState<UpdateCategory | null>(null);
   const { data } = useGetCategoriesQuery();
   const categories = data?.categories || [];
+  const { mutate: deleteCategory } = useDeleteCategoryMutation();
 
   const handleSetCategoryToEdit = (id: string) =>{
     const editCategory = categories.find(cat => cat.id == id);
@@ -63,7 +65,7 @@ export default function EditCategoriesModal({
                       className="w-10 h-10 fill-slate-950"
                       onClick={() => handleSetCategoryToEdit(category.id)}
                     />
-                    <TrashIcon className="w-10 h-10 fill-red-600" />
+                    <TrashIcon className="w-10 h-10 fill-red-600" onClick={() => deleteCategory(category.id)} />
                   </p>
                 </li>
               ))}
