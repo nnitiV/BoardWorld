@@ -15,6 +15,8 @@ interface AddProductProps {
 }
 
 export default function AddProduct({ setShowAddProduct }: AddProductProps) {
+  // eslint-disable-next-line react-hooks/purity
+  const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const { data: response } = useGetCategoriesQuery();
   const [localError, setLocalError] = useState<string | null>("");
   const [isLocalError, setIsLocalError] = useState<boolean>(false);
@@ -106,6 +108,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
           categoryId: "",
           imagesUrl: [],
         });
+        setFileInputKey(Date.now());
       }
     });
   };
@@ -122,7 +125,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
         <h1 className="text-center text-xl md:text-2xl text-blue-950 font-bold mb-4 md:mb-6 pr-8 md:pr-0">
           Add Product
         </h1>
-        
+
         <button
           className="absolute right-4 top-4 md:right-5 md:top-5 cursor-pointer fill-blue-950 hover:fill-red-600 transition-colors"
           onClick={() => setShowAddProduct(false)}
@@ -142,9 +145,15 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
         </button>
 
         <SuccessDiv isSuccess={isSuccess} successMessage="Product created!" />
-        <ErrorDiv isError={isLocalError || isError} errorMessage={localError || errorMessage} />
-        
-        <form className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 py-2 md:py-4" onSubmit={handleSubmit}>
+        <ErrorDiv
+          isError={isLocalError || isError}
+          errorMessage={localError || errorMessage}
+        />
+
+        <form
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 py-2 md:py-4"
+          onSubmit={handleSubmit}
+        >
           <TextInput
             type="text"
             placeholder="Name"
@@ -162,9 +171,12 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          
+
           <div className="flex flex-col col-span-1 sm:col-span-2 gap-1 md:gap-2">
-            <label htmlFor="category" className="ms-1 md:ms-2 text-blue-950 font-bold text-sm md:text-base">
+            <label
+              htmlFor="category"
+              className="ms-1 md:ms-2 text-blue-950 font-bold text-sm md:text-base"
+            >
               Category:
             </label>
             <select
@@ -177,7 +189,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
                   ...oldProduct,
                   categoryId: e.target.value,
                 }));
-              }} 
+              }}
             >
               <option value="" disabled>
                 {categories.length > 0
@@ -191,7 +203,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
               ))}
             </select>
           </div>
-          
+
           <TextAreaInput
             placeholder="Description"
             id="description"
@@ -200,16 +212,16 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
             onChange={handleSettingsChange}
             className="flex flex-col col-span-1 sm:col-span-2"
           />
-          
+
           <FileInput
             label="Image:"
             id="imagesUrl"
             isMultiple={true}
-            resetKey={product.imagesUrl.length.toString()}
+            resetKey={fileInputKey}
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          
+
           <NumberInput
             placeholder="stock"
             id="stock"
@@ -218,8 +230,11 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          
-          <SubmitButton className="col-span-1 sm:col-span-2 mt-2 md:mt-0" isPending={isPending}>
+
+          <SubmitButton
+            className="col-span-1 sm:col-span-2 mt-2 md:mt-0"
+            isPending={isPending}
+          >
             {isPending ? "Adding product..." : "Add Product"}
           </SubmitButton>
         </form>
