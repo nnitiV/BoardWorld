@@ -24,17 +24,24 @@ export default function Overview() {
   const [showAddProduct, setShowAddProduct] = useState<boolean>(false);
   const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
   const [showEditCategories, setShowEditCategories] = useState<boolean>(false);
+  
   const { data, isLoading } = useGetProductCatalogQuery(page, amount);
   const { mutate: deleteProduct } = useDeactivateProductMutation();
   const { mutate: restoreProduct } = useRestoreProductMutation();
-  const   products = data?.productCatalog || []
+  
+  const products = data?.productCatalog || [];
   const totalItems = data?.totalItems || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
+
   return (
     <>
-      <div className="w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
-        <h1 className="text-2xl text-blue-950">Products Overview</h1>
-        <div className="flex justify-between items-center pe-12">
+      {/* 1. Main Container: Fluid width on mobile, max-width on desktop. Reduced padding on mobile. */}
+      <div className="w-[95%] md:w-11/12 lg:w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-4 md:p-6 overflow-hidden">
+        <h1 className="text-xl md:text-2xl text-blue-950 mb-4 md:mb-0">Products Overview</h1>
+        
+        {/* 2. Header & Controls: Stack on mobile, flex-row on desktop. Adjusted padding-end. */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:pe-12">
+          
           <div className="relative inline-block w-20">
             <select
               name="amount"
@@ -57,7 +64,9 @@ export default function Overview() {
               </svg>
             </div>
           </div>
-          <div className="flex gap-2">
+
+          {/* 3. Buttons: Added flex-wrap so they don't break the layout on smaller screens. */}
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <Button
               className="w-fit! m-0!"
               onClick={() => setShowEditCategories(true)}
@@ -78,12 +87,14 @@ export default function Overview() {
             </Button>
           </div>
         </div>
+
         {products.length <= 0 ? (
           <EmptyProductState onAddProduct={() => setShowAddProduct(true)} />
         ) : (
-          <ul className="flex flex-col md:grid md:grid-cols-3 gap-6 w-full pe-12 py-6">
+          /* 4. Product Grid: Switched from mix of flex/grid to a pure responsive grid. */
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full pe-0 md:pe-12 py-6">
             {isLoading ? (
-              <li className="flex justify-center py-6 col-span-3" role="status">
+              <li className="flex justify-center py-6 col-span-1 sm:col-span-2 lg:col-span-3" role="status">
                 <LoadingIcon />
               </li>
             ) : (
@@ -92,10 +103,9 @@ export default function Overview() {
                   <li
                     key={product.id}
                     onClick={() => setUpdateProduct(products[index])}
-                    className="w-full flex items-center relative gap-6 rounded-xl transition-all cursor-pointer
-              hover:bg-slate-50 border border-transparent hover:border-slate-100"
+                    className="w-full flex items-center relative gap-4 md:gap-6 rounded-xl transition-all cursor-pointer hover:bg-slate-50 border border-transparent hover:border-slate-100 p-2 md:p-0"
                   >
-                    <div className="w-24 h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
+                    <div className="w-20 h-20 md:w-24 md:h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
                       <Image
                         src={`http://localhost:5173${product.imagesUrl[0]}`}
                         alt={product.name}
@@ -107,21 +117,21 @@ export default function Overview() {
                     </div>
 
                     <div className="flex flex-col justify-between h-full p-0">
-                      <h2 className="text-lg font-semibold text-slate-900">
+                      <h2 className="text-base md:text-lg font-semibold text-slate-900">
                         {product.name}
                       </h2>
                       <div>
-                        <p className="text-sm font-medium text-blue-600">
+                        <p className="text-xs md:text-sm font-medium text-blue-600">
                           Price: ${product.price}
                         </p>
-                        <p className="text-sm font-medium text-blue-600">
+                        <p className="text-xs md:text-sm font-medium text-blue-600">
                           Category: {product.category.name}
                         </p>
-                        <p className="text-sm font-medium text-blue-600">
+                        <p className="text-xs md:text-sm font-medium text-blue-600">
                           Stock: {product.stock}
                         </p>
                         <p
-                          className={`text-sm font-medium ${product.isActive ? "text-green-600" : "text-red-600"}`}
+                          className={`text-xs md:text-sm font-medium ${product.isActive ? "text-green-600" : "text-red-600"}`}
                         >
                           {product.isActive
                             ? "Product Active"
@@ -130,10 +140,10 @@ export default function Overview() {
                       </div>
                     </div>
 
-                    <EditIcon className="w-7 h-7 absolute top-0 right-0" />
+                    <EditIcon className="w-6 h-6 md:w-7 md:h-7 absolute top-2 right-2 md:top-0 md:right-0" />
                     {product.isActive ? (
                       <TrashIcon
-                        className="w-7 h-7 absolute bottom-0 right-0 fill-red-600"
+                        className="w-6 h-6 md:w-7 md:h-7 absolute bottom-2 right-2 md:bottom-0 md:right-0 fill-red-600"
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteProduct(product.id);
@@ -141,7 +151,7 @@ export default function Overview() {
                       />
                     ) : (
                       <RestoreIcon
-                        className="w-7 h-7 absolute bottom-0 right-0 fill-green-600"
+                        className="w-6 h-6 md:w-7 md:h-7 absolute bottom-2 right-2 md:bottom-0 md:right-0 fill-green-600"
                         onClick={(e) => {
                           e.stopPropagation();
                           restoreProduct(product.id);
@@ -154,11 +164,13 @@ export default function Overview() {
             )}
           </ul>
         )}
-        <div className="flex items-center gap-1 mt-6 mx-auto">
+
+        {/* 5. Pagination: Added flex-wrap to prevent overflow on mobile devices. */}
+        <div className="flex flex-wrap justify-center items-center gap-1 mt-4 md:mt-6 w-full">
           <button
             onClick={() => setPage((page) => page - 1)}
             disabled={page === 1}
-            className="px-4 py-2 transition-all rounded-l-lg cursor-pointer hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
+            className="px-3 py-2 md:px-4 transition-all rounded-l-lg cursor-pointer hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
           >
             &lt;
           </button>
@@ -176,11 +188,11 @@ export default function Overview() {
                   <button
                     key={pageNumber}
                     onClick={() => setPage(pageNumber)}
-                    className={`w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium
+                    className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center transition-all rounded-lg font-medium text-sm md:text-base
         ${
           pageNumber === page
-            ? "bg-blue-600 text-white shadow-md" // Active state
-            : "cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900" // Inactive state
+            ? "bg-blue-600 text-white shadow-md"
+            : "cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
         }`}
                   >
                     {pageNumber}
@@ -190,7 +202,7 @@ export default function Overview() {
                 return (
                   <p
                     key={pageNumber}
-                    className="w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
+                    className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
                     onClick={() => setPage((page) => Math.max(1, page - 5))}
                   >
                     ...
@@ -203,7 +215,7 @@ export default function Overview() {
                 return (
                   <p
                     key={pageNumber}
-                    className="w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
+                    className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
                     onClick={() =>
                       setPage((page) => Math.min(totalPages, page + 5))
                     }
@@ -218,12 +230,13 @@ export default function Overview() {
           <button
             onClick={() => setPage((page) => page + 1)}
             disabled={page === totalPages}
-            className="px-4 py-2 transition-all cursor-pointer rounded-r-lg hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
+            className="px-3 py-2 md:px-4 transition-all cursor-pointer rounded-r-lg hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
           >
             &gt;
           </button>
         </div>
       </div>
+
       {updateProduct && (
         <EditProduct
           editProduct={updateProduct}

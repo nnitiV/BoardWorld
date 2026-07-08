@@ -18,6 +18,7 @@ export default function EditCategory({
 }: EditCategoryProps) {
   const [localError, setLocalError] = useState<string | null>(null);
   const [isLocalError, setIsLocalError] = useState<boolean>(false);
+  
   const [category, setCategory] = useState<UpdateCategory>(
     editCategory || {
       id: "",
@@ -25,19 +26,18 @@ export default function EditCategory({
       description: "",
     },
   );
+  
   const {
     mutate: updateCategory,
     isPending,
     isError,
     error,
   } = useUpdateCategoryMutation();
+  
   const errorMessage = getErrorMessage(error);
 
   const handleSettingsChange = (
-    event: ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement,
-      HTMLInputElement | HTMLTextAreaElement
-    >,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = event.target;
     if (event.target instanceof HTMLInputElement) {
@@ -55,16 +55,17 @@ export default function EditCategory({
     }
   };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLocalError(null);
     setIsLocalError(false);
-    if (!category.name || category.name.trim().length == 0) {
-      setLocalError("Please, provide a valid name or desecription.");
+    
+    if (!category.name || category.name.trim().length === 0) {
+      setLocalError("Please provide a valid name or description.");
       setIsLocalError(true);
       return;
     }
-    e.preventDefault();
+    
     updateCategory(category, {
       onSuccess: () => {
         setCategory({
@@ -76,12 +77,14 @@ export default function EditCategory({
       },
     });
   };
+
   return (
-    <form className="grid grid-cols-2 gap-4 p-4" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-4 md:gap-5 p-3 md:p-5 w-full" onSubmit={handleSubmit}>
       <ErrorDiv
         isError={isLocalError || isError}
         errorMessage={localError || errorMessage}
       />
+      
       <TextInput
         type="text"
         placeholder="Name"
@@ -89,17 +92,19 @@ export default function EditCategory({
         label="Name:"
         inputValue={category.name}
         onChange={handleSettingsChange}
-        className="flex flex-col col-span-2"
+        className="w-full"
       />
+      
       <TextAreaInput
         placeholder="Description"
         id="description"
         label="Description:"
         inputValue={category.description || ""}
         onChange={handleSettingsChange}
-        className="flex flex-col col-span-2"
+        className="w-full"
       />
-      <SubmitButton className="col-span-2" isPending={isPending}>
+      
+      <SubmitButton className="w-full mt-2" isPending={isPending}>
         {isPending ? "Updating category..." : "Update Category"}
       </SubmitButton>
     </form>

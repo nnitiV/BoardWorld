@@ -80,17 +80,22 @@ export default function EditProduct({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-0 px-4"
+      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4"
       onClick={() => setUpdateProduct(null)}
     >
+      {/* 1. Modal Container: Adaptive padding to save vertical and horizontal space on small screens */}
       <div
-        className="w-full max-w-2xl bg-blue-50 p-8 flex flex-col rounded-2xl shadow-2xl z-10 max-h-[90vh] overflow-y-auto relative"
+        className="w-full max-w-2xl bg-blue-50 p-5 md:p-8 flex flex-col rounded-2xl shadow-2xl z-10 max-h-[95vh] md:max-h-[90vh] overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
+        {/* 2. Header: Added padding-right (pr-8) so the text never overlaps the absolute positioned close button on a tiny screen */}
+        <h1 className="text-center text-xl md:text-2xl text-blue-950 font-bold mb-4 md:mb-6 pr-8 md:pr-0">
           Update Product
         </h1>
+        
         <ErrorDiv isError={isError} errorMessage={errorMessage} />
+        
+        {/* 3. Close Button: Adjusted positioning slightly for better touch targets on mobile */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           x="0px"
@@ -98,13 +103,17 @@ export default function EditProduct({
           width="25"
           height="25"
           viewBox="0 0 30 30"
-          className="absolute right-5 top-5 cursor-pointer"
+          className="absolute right-4 top-4 md:right-5 md:top-5 cursor-pointer fill-blue-950 hover:fill-red-600 transition-colors"
           onClick={() => setUpdateProduct(null)}
+          aria-label="Close modal"
+          role="button"
         >
           <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
         </svg>
+
+        {/* 4. Form Grid: Refined the gaps so inputs aren't too spread out on mobile */}
         <form
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 py-2 md:py-4"
           onSubmit={handleSubmit}
         >
           <TextInput
@@ -124,16 +133,15 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          <div className="flex flex-col col-span-2 gap-2 ">
-            <label htmlFor="category" className="ms-2 text-blue-950 font-bold">
+          
+          <div className="flex flex-col col-span-1 sm:col-span-2 gap-1 md:gap-2">
+            <label htmlFor="category" className="ms-1 md:ms-2 text-blue-950 font-bold text-sm md:text-base">
               Category:
             </label>
             <select
               name="category"
               id="category"
-              className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg 
-                cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2
-                focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               value={product.category.id}
               onChange={(e) => {
                 const category = categories.find(cat => cat.id === e.target.value);
@@ -159,14 +167,16 @@ export default function EditProduct({
               ))}
             </select>
           </div>
+
           <TextAreaInput
             placeholder="Description"
             id="description"
             label="Description:"
             inputValue={product.description}
             onChange={handleSettingsChange}
-            className="flex flex-col col-span-2"
+            className="flex flex-col col-span-1 sm:col-span-2"
           />
+          
           <FileInput
             label="Image:"
             id="imagesUrl"
@@ -174,6 +184,7 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
+          
           <NumberInput
             placeholder="stock"
             id="stock"
@@ -182,8 +193,9 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
+          
           <SubmitButton
-            className="col-span-1 sm:col-span-2"
+            className="col-span-1 sm:col-span-2 mt-2 md:mt-0"
             isPending={isPending}
           >
             {isPending ? "Updating product..." : "Update Product"}

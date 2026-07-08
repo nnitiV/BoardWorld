@@ -19,6 +19,7 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
     name: "",
     description: "",
   });
+  
   const {
     mutate: createCategory,
     isPending,
@@ -26,10 +27,11 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
     isError,
     error,
   } = useCreateCategoryMutation();
+  
   const errorMessage = getErrorMessage(error);
 
   const handleSettingsChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, HTMLInputElement | HTMLTextAreaElement>,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = event.target;
     if (event.target instanceof HTMLInputElement) {
@@ -47,52 +49,65 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
     }
   };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLocalError(null);
     setIsLocalError(false);
-    if(!category.name  || category.name.trim().length == 0) {
-        setLocalError("Please, provide a valid name or desecription.");
-        setIsLocalError(true);
-        return;
+    
+    if (!category.name || category.name.trim().length === 0) {
+      setLocalError("Please provide a valid name.");
+      setIsLocalError(true);
+      return;
     }
-    e.preventDefault();
+    
     createCategory(category, {
-      onSuccess: () =>
+      onSuccess: () => {
         setCategory({
           name: "",
           description: "",
-        }),
+        });
+      },
     });
   };
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-0 px-4"
+      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4"
       onClick={() => setShowAddCategory(false)}
     >
+      {/* Replaced w-1/2 with fluid max-w-xl and adaptive padding */}
       <div
-        className="w-1/2 mx-auto z-1 bg-white p-5 rounded-2xl relative"
+        className="w-full max-w-xl bg-white p-5 md:p-8 rounded-2xl shadow-2xl relative max-h-[95vh] md:max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <h1 className="text-center text-2xl text-blue-950 font-bold mb-6">
+        <h1 className="text-center text-xl md:text-2xl text-blue-950 font-bold mb-4 md:mb-6 pr-8 md:pr-0">
           Add Category
         </h1>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          x="0px"
-          y="0px"
-          width="25"
-          height="25"
-          viewBox="0 0 30 30"
-          className="absolute right-5 top-5 cursor-pointer"
+        
+        {/* Converted to a semantic <button> with better mobile positioning */}
+        <button
+          className="absolute right-4 top-4 md:right-5 md:top-5 cursor-pointer fill-blue-950 hover:fill-red-600 transition-colors"
           onClick={() => setShowAddCategory(false)}
+          aria-label="Close modal"
+          type="button"
         >
-          <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
-        </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            x="0px"
+            y="0px"
+            width="25"
+            height="25"
+            viewBox="0 0 30 30"
+          >
+            <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
+          </svg>
+        </button>
+
         <SuccessDiv isSuccess={isSuccess} successMessage="Category created!" />
         <ErrorDiv isError={isLocalError || isError} errorMessage={localError || errorMessage} />
-        <form className="grid grid-cols-2 gap-4 py-4" onSubmit={handleSubmit}>
+        
+        {/* Replaced the redundant grid with a simple flex column */}
+        <form className="flex flex-col gap-4 py-2 md:py-4 w-full" onSubmit={handleSubmit}>
           <TextInput
             type="text"
             placeholder="Name"
@@ -100,7 +115,7 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
             label="Name:"
             inputValue={category.name}
             onChange={handleSettingsChange}
-            className="flex flex-col col-span-2"
+            className="w-full"
           />
           <TextAreaInput
             placeholder="Description"
@@ -108,9 +123,9 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
             label="Description:"
             inputValue={category.description || ""}
             onChange={handleSettingsChange}
-            className="flex flex-col col-span-2"
+            className="w-full"
           />
-          <SubmitButton className="col-span-2" isPending={isPending}>
+          <SubmitButton className="w-full mt-2" isPending={isPending}>
             {isPending ? "Adding category..." : "Add Category"}
           </SubmitButton>
         </form>
