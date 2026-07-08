@@ -1,4 +1,4 @@
-import React from "react";
+import Button from "../admin/Button";
 
 interface EmptyProductStateProps {
   onAddProduct?: () => void;
@@ -6,14 +6,16 @@ interface EmptyProductStateProps {
 
 export default function EmptyProductState({ onAddProduct }: EmptyProductStateProps) {
   return (
-    <div className="w-full flex flex-col items-center justify-center py-24 px-4 text-center rounded-2xl border-2 border-dashed border-slate-200">
+    // 1. Added responsive padding and a subtle background for contrast against the main page
+    <div className="w-full flex flex-col items-center justify-center py-16 md:py-24 px-4 text-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50">
       
       <svg
-        className="w-20 h-20 text-slate-300 mb-4"
+        className="w-16 h-16 md:w-20 md:h-20 text-slate-400 mb-4 shrink-0"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true" // 2. Critical for a11y: Hide decorative SVGs from screen readers
       >
         <path
           strokeLinecap="round"
@@ -23,21 +25,25 @@ export default function EmptyProductState({ onAddProduct }: EmptyProductStatePro
         />
       </svg>
 
-      <h2 className="text-xl font-bold text-slate-700 mb-2">
+      <h2 className="text-lg md:text-xl font-bold text-slate-800 mb-2">
         No products found
       </h2>
 
-      <p className="text-slate-500 max-w-sm mb-6">
+      {/* 3. Improved line height (leading-relaxed) for better readability */}
+      <p className="text-sm md:text-base text-slate-500 max-w-sm mb-6 md:mb-8 leading-relaxed">
         Your catalog is currently empty. Get started by adding your first board game to the inventory.
       </p>
 
       {onAddProduct && (
-        <button
+        /* 4. Composition: We use our custom Button. 
+           I added your cursor-pointer, plus active:scale-95 so it physically clicks down when pressed! */
+        <Button
+          variant="primary"
           onClick={onAddProduct}
-          className="bg-blue-950 text-white px-6 py-2.5 rounded-xl font-semibold transition-all cursor-pointer hover:bg-blue-900 hover:scale-105 shadow-sm"
+          className="cursor-pointer shadow-sm hover:scale-105 active:scale-95 w-full sm:w-auto"
         >
           + Add New Product
-        </button>
+        </Button>
       )}
     </div>
   );

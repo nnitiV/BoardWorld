@@ -8,78 +8,79 @@ interface ImageCarouselProps {
 
 export default function ImageCarousel({ src, alt }: ImageCarouselProps) {
   const [activeIndex, setActiveIndex] = useState<number>(0);
+
   const nextImage = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % src.length);
   };
+
   const prevImage = () => {
     setActiveIndex((prevIndex) => (prevIndex - 1 + src.length) % src.length);
   };
+
+  if (!src || src.length === 0) return null;
+
   return (
-    <div className={"relative"}>
-      <div className="flex h-8/9 w-3/4 mx-auto gap-6 overflow-hidden transition-all  scrollbar-none">
+    // 1. Removed w-3/4. This component should simply fill whatever container it is placed in.
+    <div className="relative w-full group">
+      
+      {/* 2. Swapped to aspect-square and a white background so product images look natural */}
+      <div className="relative overflow-hidden rounded-xl aspect-square bg-white border border-slate-200 shadow-sm">
+        
         <div
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-          className={`h-full w-full flex transition-transform duration-500 ease-in-out`}
+          className="flex h-full w-full transition-transform duration-500 ease-in-out"
         >
-          {src.length > 0 &&
-            src.map((_, index) => (
-              <div
-                className={`w-full h-full mx-auto relative flex shrink-0 rounded-lg overflow-hidden`}
-                key={index}
-              >
-                <Image
-                  src={`http://localhost:5173${src[index]}`}
-                  alt={alt}
-                  className="object-fill"
-                  onClick={() => setActiveIndex(index)}
-                  width={900}
-                  height={900}
-                />
-              </div>
-            ))}
+          {src.map((imageSrc, index) => (
+            <div className="w-full h-full relative shrink-0" key={index}>
+              <Image
+                src={`http://localhost:5173${imageSrc}`}
+                alt={`${alt} - Image ${index + 1}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                // 3. Changed to object-contain so board game boxes aren't violently cropped!
+                className="object-contain p-4 cursor-pointer"
+                onClick={() => setActiveIndex(index)}
+                priority={index === 0}
+              />
+            </div>
+          ))}
         </div>
+
+        {src.length > 1 && (
+          <>
+            <button
+              className="absolute cursor-pointer left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-2 rounded-full shadow-md transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10"
+              onClick={prevImage}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-2 rounded-full shadow-md transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10"
+              onClick={nextImage}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
-      <div className="absolute z-30 flex -translate-x-1/2 bottom-0 left-1/2 space-x-3 rtl:space-x-reverse ">
-        {src.length > 1 &&
-          src.map((_, index) => (
+
+      {src.length > 1 && (
+        <div className="absolute z-20 flex -translate-x-1/2 bottom-4 left-1/2 space-x-2">
+          {src.map((_, index) => (
             <button
               key={index}
               type="button"
-              className={`w-3 h-3 rounded-base bg-slate-950 rounded-2xl p-2 cursor-pointer transition-all hover:bg-slate-950/75 
-                ${activeIndex === index ? "bg-slate-950" : "bg-slate-950/50"}`}
-              aria-current="true"
+              className={`h-2 rounded-full transition-all duration-300 ${
+                activeIndex === index ? "bg-blue-950 w-6" : "bg-slate-300 w-2 hover:bg-slate-400"
+              }`}
               onClick={() => setActiveIndex(index)}
-              aria-label="Slide 1"
-            ></button>
+            />
           ))}
-      </div>
-      {src.length > 1 && (
-        <>
-          <button
-            className="flex justify-center items-center absolute left-5 top-0 h-full rounded-2xl cursor-pointer"
-            onClick={prevImage}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 640 640"
-              className="w-12 h-fit bg-slate-300 rounded-full p-2 transition-all hover:bg-slate-300 hover:scale-110"
-            >
-              <path d="M201.4 297.4C188.9 309.9 188.9 330.2 201.4 342.7L361.4 502.7C373.9 515.2 394.2 515.2 406.7 502.7C419.2 490.2 419.2 469.9 406.7 457.4L269.3 320L406.6 182.6C419.1 170.1 419.1 149.8 406.6 137.3C394.1 124.8 373.8 124.8 361.3 137.3L201.3 297.3z" />
-            </svg>
-          </button>
-          <button
-            className="flex justify-center items-center absolute right-5 top-0 h-full rounded-2xl cursor-pointer"
-            onClick={nextImage}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 640 640"
-              className="w-12 h-fit bg-slate-300 rounded-full p-2 transition-all hover:bg-slate-300 hover:scale-110"
-            >
-              <path d="M439.1 297.4C451.6 309.9 451.6 330.2 439.1 342.7L279.1 502.7C266.6 515.2 246.3 515.2 233.8 502.7C221.3 490.2 221.3 469.9 233.8 457.4L371.2 320L233.9 182.6C221.4 170.1 221.4 149.8 233.9 137.3C246.4 124.8 266.7 124.8 279.2 137.3L439.2 297.3z" />
-            </svg>
-          </button>
-        </>
+        </div>
       )}
     </div>
   );

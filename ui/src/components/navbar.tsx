@@ -7,114 +7,139 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function NavBar() {
-  const [isToggled, setIsToggled] = useState<boolean>(true);
+  // 1. Bug Fix: State should default to false (closed), not true!
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  
   const accessToken = useAuthStore((state) => state.accessToken);
   const { mutate: logout } = useLogoutMutation();
   const user = useUserStore(state => state.user);
 
+  // 2. DRY Principle: Define your routes ONCE as a data array.
+  const navLinks = [
+    { label: "Home", href: "/" },
+    { label: "All Products", href: "/allProducts" },
+    ...(user?.role === "ADMIN" ? [{ label: "Admin", href: "/admin" }] : []),
+    { label: "About", href: "#" },
+  ];
+
+  // Helper to ensure we strictly close the menu (rather than toggling it) when a link is clicked
+  const handleCloseMenu = () => setIsOpen(false);
+
+  // 3. Centralize the auth logic so mobile and desktop behave identically
+  const renderAuthLink = (isMobile: boolean) => {
+    if (accessToken) {
+      return (
+        <button
+          onClick={() => {
+            logout();
+            if (isMobile) handleCloseMenu();
+          }}
+          className="text-left font-medium transition-colors hover:text-blue-300 w-full"
+        >
+          Logout
+        </button>
+      );
+    }
+    return (
+      <Link 
+        href="/login" 
+        onClick={isMobile ? handleCloseMenu : undefined}
+        className="font-medium transition-colors hover:text-blue-300"
+      >
+        Log in
+      </Link>
+    );
+  };
+
   return (
     <>
-      <header className="bg-blue-950 text-slate-100 shadow-md border-b border-slate-950 py-4 px-6">
-        <div className="container mx-auto grid grid-cols-2 items-center">
-          <h1 className="text-2xl font-bold cursor-pointer">Board World</h1>
-          <ul className="hidden justify-around md:flex">
-            <li>
-              <Link href={"/"}>Home</Link>
-            </li>
-            <li>
-              <Link href={"/allProducts"}>All Products</Link>
-            </li>
-            {user?.role == "ADMIN" && (
-              <li>
-                <Link href={"/admin"}>Admin</Link>
-              </li>
-            )}
-            <li>
-              <Link href={"#"}>About</Link>
-            </li>
-            <li>
-              {accessToken ? (
-                <Link href={"#"} onClick={() => logout()}>
-                  Logout
-                </Link>
-              ) : (
-                <Link href={"/login"}>Log in</Link>
-              )}
-            </li>
-          </ul>
-          <div
-            className="w-fit ms-auto hover:pointer"
-            onClick={() => setIsToggled((prev) => !prev)}
+      {/* 4. Added sticky positioning and z-index to the header so it stays on top while scrolling */}
+      <header className="bg-blue-950 text-slate-100 shadow-md border-b border-slate-900 py-4 px-4 md:px-6 sticky top-0 z-40">
+        {/* Swapped grid for flex. Grid-cols-2 can cause weird centering issues with navigations. */}
+        <div className="container mx-auto flex justify-between items-center">
+          <Link href="/" className="text-2xl font-bold transition-transform hover:scale-105">
+            Board World
+          </Link>
+          
+          {/* Desktop Nav */}
+          <nav className="hidden md:block">
+            <ul className="flex items-center gap-8">
+              {navLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="font-medium transition-colors hover:text-blue-300">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              <li>{renderAuthLink(false)}</li>
+            </ul>
+          </nav>
+          
+          {/* Mobile Hamburger Button - Wrapped in a semantic <button> */}
+          <button
+            className="md:hidden p-2 -mr-2 text-slate-100 hover:text-blue-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-lg"
+            onClick={() => setIsOpen(true)}
+            aria-label="Open main menu"
+            aria-expanded={isOpen}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width="30"
-              height="30"
-              viewBox="0 0 50 50"
-              className="fill-current cursor-pointer text-slate-100 md:hidden"
-            >
-              <path d="M 3 8 A 2.0002 2.0002 0 1 0 3 12 L 47 12 A 2.0002 2.0002 0 1 0 47 8 L 3 8 z M 3 23 A 2.0002 2.0002 0 1 0 3 27 L 47 27 A 2.0002 2.0002 0 1 0 47 23 L 3 23 z M 3 38 A 2.0002 2.0002 0 1 0 3 42 L 47 42 A 2.0002 2.0002 0 1 0 47 38 L 3 38 z"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
-          </div>
+          </button>
         </div>
       </header>
+
+      {/* 5. Fixed Mobile Overlay positioning (inset-0) and z-index (z-50) */}
       <div
         className={clsx(
-          "w-full h-full bg-black/50 fixed transition-opacity duration-300 md:hidden",
-          !isToggled ? "opacity-0 pointer-events-none" : "opacity-100",
+          "fixed inset-0 z-50 transition-opacity duration-300 md:hidden",
+          !isOpen ? "opacity-0 pointer-events-none" : "opacity-100",
         )}
       >
-        <div
+        {/* Separate backdrop div allows the user to click the dark area to close the menu */}
+        <div 
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={handleCloseMenu}
+          aria-hidden="true"
+        />
+
+        <nav
           className={clsx(
-            "h-full fixed top-0 right-0 bg-slate-950 text-slate-100 p-4 index-10 transition-transform duration-300",
-            !isToggled ? "translate-x-full" : "translate-x-0",
+            "absolute top-0 right-0 h-full w-64 bg-slate-950 text-slate-100 p-6 shadow-2xl transition-transform duration-300 ease-in-out",
+            !isOpen ? "translate-x-full" : "translate-x-0",
           )}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            x="0px"
-            y="0px"
-            width="25"
-            height="25"
-            viewBox="0 0 30 30"
-            className="fill-current z-10 text-slate-100 fixed top-3 right-2 cursor-pointer"
-            onClick={() => setIsToggled((prev) => !prev)}
+          <button
+            className="absolute top-4 right-4 p-2 text-slate-300 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-lg"
+            onClick={handleCloseMenu}
+            aria-label="Close main menu"
           >
-            <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
-          </svg>
-          <ul className="mt-9 flex flex-col gap-5">
-            <li>
-              <Link href={"/"} onClick={() => setIsToggled((prev) => !prev)}>
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href={"/allProducts"} onClick={() => setIsToggled((prev) => !prev)}>
-                All Products
-              </Link>
-            </li>
-            {user?.role == "ADMIN" && (
-              <li>
-                <Link href={"/admin"} onClick={() => setIsToggled((prev) => !prev)}>Admin</Link>
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          
+          {/* 6. Dynamic Mapping ensures mobile and desktop ALWAYS match */}
+          <ul className="mt-12 flex flex-col gap-6">
+            {navLinks.map((link) => (
+              <li key={link.label}>
+                <Link 
+                  href={link.href} 
+                  onClick={handleCloseMenu}
+                  className="block text-lg font-medium transition-colors hover:text-blue-300"
+                >
+                  {link.label}
+                </Link>
               </li>
-            )}
-            <li>
-              <Link href={"#"} onClick={() => setIsToggled((prev) => !prev)}>
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                href={"/login"}
-                onClick={() => setIsToggled((prev) => !prev)}
-              >
-                Log in
-              </Link>
+            ))}
+            <li className="pt-6 border-t border-slate-800 text-lg">
+              {renderAuthLink(true)}
             </li>
           </ul>
-        </div>
+        </nav>
       </div>
     </>
   );

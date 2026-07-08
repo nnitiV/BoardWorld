@@ -89,7 +89,7 @@ export default function Register() {
             inputValue={registerUser.email}
             onChange={handleSettingsChange}
             type="email"
-            className="flex flex-col mb-4 gap-2"
+            className="flex flex-col col-span-2 md:col-span-1 mb-4 gap-2"
           />
           <TextInput
             label="Name:"
@@ -98,7 +98,7 @@ export default function Register() {
             inputValue={registerUser.name}
             onChange={handleSettingsChange}
             type="text"
-            className="flex flex-col mb-4 gap-2"
+            className="flex flex-col col-span-2 md:col-span-1 mb-4 gap-2"
           />
           <TextInput
             label="Username:"
@@ -107,7 +107,7 @@ export default function Register() {
             inputValue={registerUser.username}
             onChange={handleSettingsChange}
             type="text"
-            className="flex flex-col mb-4 gap-2"
+            className="flex flex-col col-span-2 md:col-span-1 mb-4 gap-2"
           />
           <DateInput
             label="Date of birth:"
@@ -115,7 +115,7 @@ export default function Register() {
             id="dateOfBirth"
             value={registerUser.dateOfBirth}
             onChange={handleSettingsChange}
-            className="flex flex-col mb-4 gap-2"
+            className="flex flex-col col-span-2 md:col-span-1 mb-4 gap-2"
           />
           <TextInput
             label="Password:"
@@ -124,7 +124,7 @@ export default function Register() {
             inputValue={registerUser.password}
             onChange={handleSettingsChange}
             type="password"
-            className="flex flex-col mb-4 gap-2"
+            className="flex flex-col col-span-2 md:col-span-1 mb-4 gap-2"
           />
           <TextInput
             label="Confirm Password:"
@@ -133,7 +133,7 @@ export default function Register() {
             inputValue={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             type="password"
-            className="flex flex-col mb-4 gap-2"
+            className="flex flex-col col-span-2 md:col-span-1 mb-4 gap-2"
           />
           <SubmitButton
             isPending={isPending}
