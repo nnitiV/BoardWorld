@@ -18,7 +18,7 @@ import AddCategory from "./AddCategory";
 import EditCategoriesModal from "./EditCategoriesModal";
 
 export default function Overview() {
-  const [amount, setAmount] = useState<number>(10);
+  const [amount, setAmount] = useState<number>(6);
   const [page, setPage] = useState<number>(1);
   const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
   const [showAddProduct, setShowAddProduct] = useState<boolean>(false);
@@ -53,10 +53,10 @@ export default function Overview() {
                 setPage(1);
               }}
             >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
+              <option value="6">6</option>
+              <option value="9">9</option>
+              <option value="12">12</option>
+              <option value="15">15</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
               <svg className="fill-current h-4 w-4" viewBox="0 0 20 20">
@@ -68,19 +68,19 @@ export default function Overview() {
           {/* 3. Buttons: Added flex-wrap so they don't break the layout on smaller screens. */}
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <Button
-              className="w-fit! m-0!"
+              className="w-fit! m-0! cursor-pointer"
               onClick={() => setShowEditCategories(true)}
             >
               Edit Categories
             </Button>
             <Button
-              className="w-fit! m-0!"
+              className="w-fit! m-0! cursor-pointer"
               onClick={() => setShowAddCategory(true)}
             >
               Add Category (+)
             </Button>
             <Button
-              className="w-fit! m-0!"
+              className="w-fit! m-0! cursor-pointer"
               onClick={() => setShowAddProduct(true)}
             >
               Add Product (+)

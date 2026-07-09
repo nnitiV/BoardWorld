@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function AllProducts() {
-  const [amount, setAmount] = useState<number>(10);
+  const [amount, setAmount] = useState<number>(20);
   const [page, setPage] = useState<number>(1);
   const { data, isLoading } = useGetProductCatalogQuery(page, amount, true);
   const products = data?.productCatalog || [];
@@ -14,7 +14,7 @@ export default function AllProducts() {
 
   return (
     <div className="w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
-      <h1 className="text-2xl text-blue-950 ms-6 mb-4">All Products</h1>
+      <h1 className="text-2xl font-bold text-blue-950 ms-6 mb-4">All Products</h1>
       <div className="relative inline-block w-20 ms-6">
         <select
           name="amount"
@@ -26,10 +26,10 @@ export default function AllProducts() {
             setPage(1);
           }}
         >
-          <option value="5">5</option>
-          <option value="10">10</option>
           <option value="20">20</option>
-          <option value="50">50</option>
+          <option value="40">40</option>
+          <option value="60">60</option>
+          <option value="80">80</option>
         </select>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
           <svg className="fill-current h-4 w-4" viewBox="0 0 20 20">
@@ -74,6 +74,7 @@ export default function AllProducts() {
                   height={96}
                   className="w-full h-full object-cover"
                 />
+                
               </div>
 
               <div className="flex flex-col justify-around h-full ">

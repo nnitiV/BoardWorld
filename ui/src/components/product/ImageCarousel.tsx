@@ -29,7 +29,7 @@ export default function ImageCarousel({ src, alt }: ImageCarouselProps) {
         <div
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
           className="flex h-full w-full transition-transform duration-500 ease-in-out"
-        >
+        > 
           {src.map((imageSrc, index) => (
             <div className="w-full h-full relative shrink-0" key={index}>
               <Image
