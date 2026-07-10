@@ -1,18 +1,20 @@
 "use client";
 import { useGetProductCatalogQuery } from "@/hooks/useProductMutation";
+import { Product } from "@/types/product.type";
 import Image from "next/image";
 import { useState } from "react";
 
 interface ProductCarouselProps {
   className?: string;
   amountToShow: number;
+  productsToShow?: Product[];
   title: string;
 }
 
-export default function ProductCarousel({ className, amountToShow, title }: ProductCarouselProps) {
-  const { data } = useGetProductCatalogQuery(1, 15, true);
+export default function ProductCarousel({ className, amountToShow, productsToShow, title }: ProductCarouselProps) {
+  const { data } = useGetProductCatalogQuery(1, 20, true);
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const products = data?.productCatalog || [];
+  const products = productsToShow?.slice(0, 20) || data?.productCatalog || [];
   const totalPages = Math.ceil(products.length / amountToShow);
 
   const nextProduct = () => {
@@ -27,7 +29,7 @@ export default function ProductCarousel({ className, amountToShow, title }: Prod
 
   return (
     <div
-      className={`w-3/4 rounded-2xl p-6 py-8 border border-slate-700/15 mx-auto ${className}`}
+      className={`w-3/4 rounded-2xl p-6 py-8 bg-white border border-slate-700/15 mx-auto ${className}`}
     >
       <h1 className="text-2xl text-slate-950 font-bold">
         {title}
@@ -35,7 +37,7 @@ export default function ProductCarousel({ className, amountToShow, title }: Prod
       <div className="relative group mx-auto h-75 w-full overflow-hidden rounded-xl aspect-square">
         <div
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-          className="flex gap-12 h-full w-full transition-transform duration-500 ease-in-out z-0"
+          className="flex h-full w-full transition-transform duration-500 ease-in-out z-0"
         >
           {products.map((product, index) => (
             <div

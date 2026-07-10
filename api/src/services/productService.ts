@@ -10,6 +10,26 @@ export const getProductById = async (id: string) => {
   return product;
 };
 
+export const getProductByCategory = async (categoryName: string) => {
+  const products = await productRepository.getProductByCategory(categoryName);
+  if (!products) {
+    return [];
+  }
+  return products;
+}
+
+export const getActivePopularProductCatalog = async (
+  page: number,
+  limit: number,
+) => {
+  const skip = (page - 1) * limit;
+  const { products } = await productRepository.getActivePopularProductCatalog(
+    skip,
+    limit,
+  );
+  return { products };
+};
+
 export const getProductCatalog = async (page: number, limit: number, activeOnly?: boolean)  => {
   const skip = (page - 1) * limit;
   if(activeOnly) {
@@ -39,8 +59,8 @@ export const createNewProduct = async (productData: {
   return await productRepository.createProduct(payload);
 };
 
-export const createCategory = async (categoryData: CreateCategory) => {
-  return await productRepository.createCategory(categoryData);
+export const createCategory = async (name: string) => {
+  return await productRepository.createCategory(name);
 };
 
 export const updateCategory = async (id: string, categoryData: CreateCategory) => {

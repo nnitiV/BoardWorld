@@ -27,7 +27,6 @@ export const CreateProductSchema = z.object({
 
 export const CreateCategorySchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
-  description: z.string().max(700, "Description must be at most 700 characters").optional(),
 });
 
 export type CreateCategory = z.infer<typeof CreateCategorySchema>;

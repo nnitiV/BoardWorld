@@ -6,6 +6,7 @@ export interface Product {
         id: string,
         name: string,
     }
+    totalRating: number,
     price: number,
     isActive: boolean,
     stock: number,
@@ -31,11 +32,6 @@ export interface CreateProduct {
     stock: number,
 }
 
-export interface CreateCategory {
-    name: string,
-    description: string | undefined,
-}
-
 export interface UpdateCategory {
     id: string,
     name: string,
@@ -56,6 +52,11 @@ export interface UpdateCategoryResponse {
 export interface ProductResponse {
     message: string,
     product: Product,
+}
+
+export interface ProductsResponse {
+    message: string,
+    products: Product[],
 }
 
 export interface CategoriesResponse {

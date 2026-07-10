@@ -15,13 +15,43 @@ export const getProductById =  async (req: AuthRequest, res: Response) => {
   })
 }
 
-export const getActiveProductCatalog =  asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
-  const {products, totalItems} = await productService.getProductCatalog(page, limit, true);
-  res
-    .status(200)
-    .json({ message: "Product catalog retrieved.", productCatalog: products, totalItems });
-});
+export const getProductByCategory = async (req: AuthRequest, res: Response) => {
+  const { category } = req.params;
+  const products = await productService.getProductByCategory(category);
+  res.status(200).json({
+    messaage: `Fetched products by category ${category}`,
+    products
+  })
+}
+
+export const getActivePopularProductCatalog = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
+    const { products } = await productService.getActivePopularProductCatalog(
+      page,
+      limit,
+    );
+    res.status(200).json({ message: "Product catalog retrieved.", products });
+  },
+);
+
+export const getActiveProductCatalog = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
+    const { products, totalItems } = await productService.getProductCatalog(
+      page,
+      limit,
+      true,
+    );
+    res
+      .status(200)
+      .json({
+        message: "Product catalog retrieved.",
+        productCatalog: products,
+        totalItems,
+      });
+  },
+);
 
 export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Response) => {
   const { page, limit } = ProductCatalogRequestSchema.parse(req.query);
@@ -77,8 +107,8 @@ export const getCategoryById = asyncHandler(async (req: AuthRequest, res: Respon
 });
 
 export const createCategory = asyncHandler(async (req: AuthRequest, res: Response) => {
-   const data = CreateCategorySchema.parse(req.body);
-    const category = await productService.createCategory(data);
+   const { name } = CreateCategorySchema.parse(req.body);
+    const category = await productService.createCategory(name);
     return res.status(201).json({
       message: "Category created.",
       category,

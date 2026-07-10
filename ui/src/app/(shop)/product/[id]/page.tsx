@@ -8,7 +8,7 @@ export default function ProductPage() {
   const params = useParams();
   const id = params.id;
   const { data } = useGetProductByIdQuery(id as string);
-  const product = (data?.product as Product) || null;
+  const product = data?.product as Product;
   return (
     <>
       {product && (

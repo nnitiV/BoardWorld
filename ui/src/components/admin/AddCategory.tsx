@@ -1,11 +1,9 @@
 import React, { ChangeEvent, SetStateAction, useState } from "react";
-import { CreateCategory } from "@/types/product.type";
 import TextInput from "../form/TextInput";
 import SubmitButton from "../form/SubmitButton";
 import ErrorDiv from "../form/ErrorDiv";
 import { getErrorMessage } from "@/utils/validator";
 import SuccessDiv from "../form/SuccessDiv";
-import TextAreaInput from "../form/TextAreaInput";
 import { useCreateCategoryMutation } from "@/hooks/useProductMutation";
 
 interface AddCategoryProps {
@@ -15,10 +13,7 @@ interface AddCategoryProps {
 export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
   const [localError, setLocalError] = useState<string | null>(null);
   const [isLocalError, setIsLocalError] = useState<boolean>(false);
-  const [category, setCategory] = useState<CreateCategory>({
-    name: "",
-    description: "",
-  });
+  const [categoryName, setCategoryName] = useState<string | undefined>("");
   
   const {
     mutate: createCategory,
@@ -33,19 +28,9 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
   const handleSettingsChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const { name, value, type } = event.target;
+    const { value } = event.target;
     if (event.target instanceof HTMLInputElement) {
-      const parsedValue =
-        type === "number"
-          ? parseFloat(value)
-          : type == "file"
-            ? event.target.files
-              ? Array.from(event.target.files)
-              : []
-            : value;
-      setCategory((category) => ({ ...category, [name]: parsedValue }));
-    } else {
-      setCategory((category) => ({ ...category, [name]: value }));
+      setCategoryName(value);
     }
   };
 
@@ -54,18 +39,15 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
     setLocalError(null);
     setIsLocalError(false);
     
-    if (!category.name || category.name.trim().length === 0) {
+    if (!categoryName || categoryName.trim().length === 0) {
       setLocalError("Please provide a valid name.");
       setIsLocalError(true);
       return;
     }
     
-    createCategory(category, {
+    createCategory({ name: categoryName }, {
       onSuccess: () => {
-        setCategory({
-          name: "",
-          description: "",
-        });
+        setCategoryName("");
       },
     });
   };
@@ -113,15 +95,7 @@ export default function AddCategory({ setShowAddCategory }: AddCategoryProps) {
             placeholder="Name"
             id="name"
             label="Name:"
-            inputValue={category.name}
-            onChange={handleSettingsChange}
-            className="w-full"
-          />
-          <TextAreaInput
-            placeholder="Description"
-            id="description"
-            label="Description:"
-            inputValue={category.description || ""}
+            inputValue={categoryName}
             onChange={handleSettingsChange}
             className="w-full"
           />

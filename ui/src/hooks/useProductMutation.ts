@@ -1,6 +1,6 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Category, CategoriesResponse, CreateCategory, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory } from "@/types/product.type";
+import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -16,7 +16,7 @@ export function useCreateProductMutation() {
 }
 
 export const useCreateCategoryMutation = () => {
-  return useMutation<Category, AxiosError<ErrorResponsePayload>, CreateCategory>({
+  return useMutation<Category, AxiosError<ErrorResponsePayload>, { name: string }>({
     mutationFn: productService.createCategory,
     onError: (error) => {
       const serverMessage =
@@ -25,6 +25,17 @@ export const useCreateCategoryMutation = () => {
     }
   });
 }
+
+export function useGetPopularProductCatalogQuery(
+  page: number,
+  limit: number,
+) {
+  return useQuery<ProductsResponse, AxiosError<ErrorResponsePayload>>({
+    queryKey: ["product", page, limit ],
+    queryFn: () => productService.getPopularProductCatalog(page, limit),
+  });
+}
+
 
 export function useGetProductCatalogQuery(
   page: number,
@@ -51,6 +62,13 @@ export function useGetProductByIdQuery(id: string) {
   return useQuery<ProductResponse, AxiosError<ErrorResponsePayload>>({
     queryKey: ["product", id],
     queryFn: () => productService.getProductById(id),
+  });
+}
+
+export function useGetProductsByCategoroy(category: string) {
+  return useQuery<ProductsResponse, AxiosError<ErrorResponsePayload>>({
+    queryKey: ["product", category],
+    queryFn: () => productService.getProductByCategoryName(category),
   });
 }
 

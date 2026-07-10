@@ -1,49 +1,66 @@
 import api from "@/lib/axios";
-import { CreateCategory, UpdateCategory } from "@/types/product.type";
+import { UpdateCategory } from "@/types/product.type";
 
 export const productService = {
-    createProduct: async (product: FormData) => {
-        const {data} = await api.post("/products", product);
-        return data;
-    },
-    createCategory: async (category: CreateCategory) => {
-        const {data} = await api.post("/products/category", category);
-        return data;
-    },
-    getProductCatalog: async (page: number, limit: number) => {
-        const {data} = await api.get(`/products/catalog?page=${page}&limit=${limit}`);
-        return data;
-    },
-    getCategories: async () => {
-        const {data} = await api.get("/products/categories");
-        return data;
-    },
-    getProductById: async (id: string) => {
-        const {data} = await api.get(`/products/${id}`);
-        return data;
-    },
-    getActiveProductCatalog: async (page: number, limit: number) => {
-        const {data} = await api.get(`/products/active?page=${page}&limit=${limit}`);
-        return data;
-    },
-    updateProduct: async (product: FormData) => {
-        const {data} = await api.put(`/products/${product.get("id")}`, product);
-        return data;
-    },
-    updateCategory: async (category: UpdateCategory) => {
-      const {data} = await api.put(`/products/category/${category.id}`, category);
-      return data;
-    },
-    restoreProduct: async (id: string) => {
-        const {data} = await api.put(`/products/restore/${id}`);
-        return data;
-    }, 
-    deactivateProduct: async (id: string) => {
-        const {data} = await api.delete(`/products/${id}`);
-        return data;
-    },
-    deleteCategory: async (id: string) => {
-        const {data} = await api.delete(`/products/category/${id}`);
-        return data;
-    }
-}
+  createProduct: async (product: FormData) => {
+    const { data } = await api.post("/products", product);
+    return data;
+  },
+  createCategory: async (categoryName: { name: string }) => {
+    const { data } = await api.post("/products/category", categoryName);
+    return data;
+  },
+  getPopularProductCatalog: async (page: number, limit: number) => {
+    const { data } = await api.get(
+      `/products/popular?page=${page}&limit=${limit}`,
+    );
+    return data;
+  },
+  getProductCatalog: async (page: number, limit: number) => {
+    const { data } = await api.get(
+      `/products/catalog?page=${page}&limit=${limit}`,
+    );
+    return data;
+  },
+  getCategories: async () => {
+    const { data } = await api.get("/products/categories");
+    return data;
+  },
+  getProductById: async (id: string) => {
+    const { data } = await api.get(`/products/${id}`);
+    return data;
+  },
+  getProductByCategoryName: async (category: string) => {
+    const { data } = await api.get(`/products/productCategory/${category}`);
+    return data;
+  },
+  getActiveProductCatalog: async (page: number, limit: number) => {
+    const { data } = await api.get(
+      `/products/active?page=${page}&limit=${limit}`,
+    );
+    return data;
+  },
+  updateProduct: async (product: FormData) => {
+    const { data } = await api.put(`/products/${product.get("id")}`, product);
+    return data;
+  },
+  updateCategory: async (category: UpdateCategory) => {
+    const { data } = await api.put(
+      `/products/category/${category.id}`,
+      category,
+    );
+    return data;
+  },
+  restoreProduct: async (id: string) => {
+    const { data } = await api.put(`/products/restore/${id}`);
+    return data;
+  },
+  deactivateProduct: async (id: string) => {
+    const { data } = await api.delete(`/products/${id}`);
+    return data;
+  },
+  deleteCategory: async (id: string) => {
+    const { data } = await api.delete(`/products/category/${id}`);
+    return data;
+  },
+};

@@ -6,6 +6,10 @@ export const getProductById = async (id: string) => {
   return await prisma.product.findUnique({ where: { id } });
 };
 
+export const getProductByCategory = async (categoryName: string) => {
+  return await prisma.product.findMany({where: { category: { name: categoryName } }});
+}
+
 export const getProductCatalog = async (
   skip: number,
   limit: number,
@@ -36,6 +40,35 @@ export const getProductCatalog = async (
   };
 };
 
+export const getActivePopularProductCatalog = async (
+  skip: number,
+  limit: number,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return {
+    products: await client.product.findMany({
+      where: {
+        isActive: true,
+      },
+      orderBy: {
+        totalRating: "desc"
+      },
+      select: {
+        id: true,
+        name: true,
+        imagesUrl: true,
+        price: true,
+        totalRating: true,
+        stock: true,
+        isActive: true,
+      },
+      take: limit,
+      skip: skip,
+    }),
+  };
+};
+
 export const getActiveProductCatalog = async (
   skip: number,
   limit: number,
@@ -56,6 +89,7 @@ export const getActiveProductCatalog = async (
         imagesUrl: true,
         price: true,
         stock: true,
+        totalRating: true,
         isActive: true,
       },
       take: limit,
@@ -93,13 +127,13 @@ export const getCategoryById = async (id: string, tx?: Prisma.TransactionClient)
 }
 
 export const createCategory = async (
-  data: Prisma.CategoryCreateInput,
+  name: string,
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
   return await client.category.create({
     data: {
-      ...data,
+      name,
     },
   });
 };

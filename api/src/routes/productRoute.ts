@@ -7,9 +7,11 @@ import * as productController from "../controller/productController.js";
 const productRoutes = Router();
 
 productRoutes.get("/active", productController.getActiveProductCatalog);
+productRoutes.get("/popular", productController.getActivePopularProductCatalog);
 productRoutes.get("/catalog", productController.getProductCatalog);
 productRoutes.get("/categories", productController.getCategories);
 productRoutes.get("/category/:id", productController.getCategoryById);
+productRoutes.get("/productCategory/:category", productController.getProductByCategory);
 productRoutes.get("/reviews/product/:productId", productController.getReviewsByProductId);
 productRoutes.get("/review/:id", productController.getReviewById);
 productRoutes.get("/:id", productController.getProductById);
