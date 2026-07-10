@@ -19,14 +19,14 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
 
   return (
     // 3. Mobile-first stacking (flex-col) to side-by-side (md:flex-row)
-    <div className="flex flex-col md:flex-row justify-between gap-8 md:gap-12 w-full max-w-7xl mx-auto px-4 md:px-0">
+    <div className="flex flex-col md:flex-row justify-between gap-8 md:gap-12 w-full md:max-w-7xl mx-auto px-0 md:px-0">
       {/* 4. Fluid widths instead of hardcoded fractions on mobile */}
-      <div className="w-full md:w-1/2 flex flex-col">
+      <div className="w-full md:w-3/5 mx-auto flex flex-col">
         <ImageCarousel src={product.imagesUrl} alt={product.name.toString()} />
       </div>
 
       {/* 5. Semantic HTML: Changed <main> to <section> */}
-      <section className="w-full md:w-1/2 flex flex-col justify-start gap-6">
+      <section className="w-full md:w-1/2 flex flex-col justify-start md:my-auto gap-6 md:gap-32">
         {" "}
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl md:text-3xl text-slate-800 font-bold leading-tight">
@@ -38,9 +38,6 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
               style: "currency",
               currency: "USD",
             }).format(product.price)}
-          </p>
-          <p className="text-slate-700 text-sm md:text-base leading-relaxed mt-2">
-            {product.description}
           </p>
         </div>
         <div className="flex flex-col gap-4 mt-4 md:mt-0">
@@ -89,10 +86,18 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
 
           {/* 7. Action buttons dynamically disabled based on stock */}
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mt-4">
-            <Button variant="primary" className="cursor-pointer" disabled={isOutOfStock}>
+            <Button
+              variant="primary"
+              className="cursor-pointer"
+              disabled={isOutOfStock}
+            >
               Purchase now
             </Button>
-            <Button variant="secondary" className="cursor-pointer" disabled={isOutOfStock}>
+            <Button
+              variant="secondary"
+              className="cursor-pointer"
+              disabled={isOutOfStock}
+            >
               Add to Cart
             </Button>
           </div>
