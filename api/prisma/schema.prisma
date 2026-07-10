@@ -61,7 +61,6 @@ model UserDevice {
 model Category {
   id String @id @default(uuid())
   name String @unique
-  description String?
   products Product[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,6 +72,7 @@ model Product {
   name String
   description String?
   review Review[]
+  totalRating Int @default(0)
   price Decimal
   stock Int @default(0)
   imagesUrl String[]
