@@ -5,8 +5,8 @@ import {
 } from "@/hooks/useProductMutation";
 import Image from "next/image";
 import { useState } from "react";
-import EditProduct from "./EditProduct";
-import { Product } from "@/types/product.type";
+import { default as EditProductModal} from "./EditProduct";
+import { EditProduct } from "@/types/product.type";
 import Button from "./Button";
 import AddProduct from "./AddProduct";
 import LoadingIcon from "../Icons/LoadingIcon";
@@ -20,7 +20,7 @@ import EditCategoriesModal from "./EditCategoriesModal";
 export default function Overview() {
   const [amount, setAmount] = useState<number>(6);
   const [page, setPage] = useState<number>(1);
-  const [updateProduct, setUpdateProduct] = useState<Product | null>(null);
+  const [updateProduct, setUpdateProduct] = useState<EditProduct | null>(null);
   const [showAddProduct, setShowAddProduct] = useState<boolean>(false);
   const [showAddCategory, setShowAddCategory] = useState<boolean>(false);
   const [showEditCategories, setShowEditCategories] = useState<boolean>(false);
@@ -32,6 +32,24 @@ export default function Overview() {
   const products = data?.productCatalog || [];
   const totalItems = data?.totalItems || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
+
+  const setProductToUpdate = (index: number) => {
+    const product = products[index];
+    const productToUpdate: EditProduct = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      categories: product.categories.map((category) => category.id),
+      totalRating: product.totalRating,
+      price: product.price,
+      isActive: product.isActive,
+      stock: product.stock,
+      imagesUrl: product.imagesUrl,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    };
+    setUpdateProduct(productToUpdate);
+  }
 
   return (
     <>
@@ -102,7 +120,7 @@ export default function Overview() {
                 return (
                   <li
                     key={product.id}
-                    onClick={() => setUpdateProduct(products[index])}
+                    onClick={() => setProductToUpdate(index)}
                     className="w-full flex items-center relative gap-4 md:gap-6 rounded-xl transition-all cursor-pointer hover:bg-slate-50 border border-transparent hover:border-slate-100 p-2 md:p-0"
                   >
                     <div className="w-20 h-20 md:w-24 md:h-24 relative shrink-0 bg-slate-100 rounded-lg overflow-hidden">
@@ -125,7 +143,7 @@ export default function Overview() {
                           Price: ${product.price}
                         </p>
                         <p className="text-xs md:text-sm font-medium text-blue-600">
-                          Category: {product.category.name}
+                          Category: {product.categories.map(category => category.name).join(", ")}
                         </p>
                         <p className="text-xs md:text-sm font-medium text-blue-600">
                           Stock: {product.stock}
@@ -238,7 +256,7 @@ export default function Overview() {
       </div>
 
       {updateProduct && (
-        <EditProduct
+        <EditProductModal
           editProduct={updateProduct}
           setUpdateProduct={setUpdateProduct}
         />

@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import TextInput from "../form/TextInput";
-import { Product } from "@/types/product.type";
+import { EditProduct as EditProductType, Product } from "@/types/product.type";
 import FileInput from "../form/FileInput";
 import NumberInput from "../form/NumberInput";
 import SubmitButton from "../form/SubmitButton";
@@ -10,15 +10,15 @@ import ErrorDiv from "../form/ErrorDiv";
 import TextAreaInput from "../form/TextAreaInput";
 
 interface EditProductProps {
-  editProduct: Product;
-  setUpdateProduct: (value: Product | null) => void;
+  editProduct: EditProductType;
+  setUpdateProduct: (value: EditProductType | null) => void;
 }
 
 export default function EditProduct({
   editProduct,
   setUpdateProduct,
 }: EditProductProps) {
-  const [product, setProduct] = useState<Product>(editProduct);
+  const [product, setProduct] = useState<EditProductType>(editProduct);
   const [newImages, setNewImages] = useState<File[] | null>(null);
   const { data } = useGetCategoriesQuery();
   const categories = data?.categories || [];
@@ -61,10 +61,11 @@ export default function EditProduct({
     data.append("id", product.id);
     data.append("name", product.name);
     data.append("description", product.description);
-    data.append("categoryId", product.category.id.toString());
+    data.append("categories", product.categories.toString());
     data.append("isActive", product.isActive.toString());
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
+    data.append("updatedAt", Date.now().toString());
 
     if (newImages && newImages.length > 0) {
       data.append("imagesUrl", "");
@@ -92,9 +93,9 @@ export default function EditProduct({
         <h1 className="text-center text-xl md:text-2xl text-blue-950 font-bold mb-4 md:mb-6 pr-8 md:pr-0">
           Update Product
         </h1>
-        
+
         <ErrorDiv isError={isError} errorMessage={errorMessage} />
-        
+
         {/* 3. Close Button: Adjusted positioning slightly for better touch targets on mobile */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -133,39 +134,51 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          
+
           <div className="flex flex-col col-span-1 sm:col-span-2 gap-1 md:gap-2">
-            <label htmlFor="category" className="ms-1 md:ms-2 text-blue-950 font-bold text-sm md:text-base">
+            <label
+              htmlFor="category"
+              className="ms-1 md:ms-2 text-blue-950 font-bold text-sm md:text-base"
+            >
               Category:
             </label>
-            <select
-              name="category"
-              id="category"
-              className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-              value={product.category.id}
-              onChange={(e) => {
-                const category = categories.find(cat => cat.id === e.target.value);
-                if(!category) return;
-                setProduct((oldProduct) => ({
-                  ...oldProduct,
-                  category: {
-                    id: e.target.value,
-                    name: category.name
-                  },
-                }));
-              }} 
-            >
-              <option value="" disabled>
-                {categories.length > 0
-                  ? "Select a category"
-                  : "Loading categories..."}
-              </option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+
+            {categories.length === 0 ? (
+              <p className="text-sm text-slate-400 animate-pulse">
+                Loading categories...
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => {
+                  const isSelected = product.categories?.includes(
+                      category.id,
+                    );
+
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => {
+                        setProduct((oldProduct) => {
+                          const currentCats = oldProduct.categories || [];
+                          const nextCats = isSelected
+                            ? currentCats.filter((id) => id !== category.id)
+                            : [...currentCats, category.id];
+                          return { ...oldProduct, categories: nextCats };
+                        });
+                      }}
+                      className={`px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200 cursor-pointer ${
+                        isSelected
+                          ? "bg-blue-500 border-blue-500 text-white shadow-md shadow-blue-500/10 scale-102"
+                          : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <TextAreaInput
@@ -176,7 +189,7 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col col-span-1 sm:col-span-2"
           />
-          
+
           <FileInput
             label="Image:"
             id="imagesUrl"
@@ -184,7 +197,7 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          
+
           <NumberInput
             placeholder="stock"
             id="stock"
@@ -193,7 +206,7 @@ export default function EditProduct({
             onChange={handleSettingsChange}
             className="flex flex-col"
           />
-          
+
           <SubmitButton
             className="col-span-1 sm:col-span-2 mt-2 md:mt-0"
             isPending={isPending}

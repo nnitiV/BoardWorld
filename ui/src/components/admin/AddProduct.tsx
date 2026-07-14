@@ -27,7 +27,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
     description: "",
     price: 0.0,
     stock: 0,
-    categoryId: "",
+    categories: [],
     imagesUrl: [],
   });
   
@@ -77,7 +77,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
       return;
     }
     
-    if (!product.categoryId || product.categoryId.trim().length === 0) {
+    if (!product.categories || product.categories.length <= 0) {
       setIsLocalError(true);
       setLocalError("Please choose a category.");
       return;
@@ -92,7 +92,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
     const data = new FormData();
     data.append("name", product.name.trim());
     data.append("description", product.description || "");
-    data.append("categoryId", product.categoryId);
+    data.append("categories", product.categories.toString());
     data.append("price", product.price.toString());
     data.append("stock", product.stock.toString());
 
@@ -105,7 +105,7 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
           description: "",
           price: 0,
           stock: 0,
-          categoryId: "",
+          categories: [],
           imagesUrl: [],
         });
         setFileInputKey(Date.now());
@@ -177,31 +177,46 @@ export default function AddProduct({ setShowAddProduct }: AddProductProps) {
               htmlFor="category"
               className="ms-1 md:ms-2 text-blue-950 font-bold text-sm md:text-base"
             >
-              Category:
+              Categories:
             </label>
-            <select
-              name="categoryId"
-              id="category"
-              className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-              value={product.categoryId}
-              onChange={(e) => {
-                setProduct((oldProduct) => ({
-                  ...oldProduct,
-                  categoryId: e.target.value,
-                }));
-              }}
-            >
-              <option value="" disabled>
-                {categories.length > 0
-                  ? "Select a category"
-                  : "Loading categories..."}
-              </option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+              
+
+              {categories.length === 0 ? (
+                <p className="text-sm text-slate-400 animate-pulse">
+                  Loading categories...
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => {
+                    const isSelected = product.categories?.includes(
+                      category.id,
+                    );
+
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={() => {
+                          setProduct((oldProduct) => {
+                            const currentCats = oldProduct.categories || [];
+                            const nextCats = isSelected
+                              ? currentCats.filter((id) => id !== category.id)
+                              : [...currentCats, category.id];
+                            return { ...oldProduct, categories: nextCats };
+                          });
+                        }}
+                        className={`px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200 cursor-pointer ${
+                          isSelected
+                            ? "bg-blue-500 border-blue-500 text-white shadow-md shadow-blue-500/10 scale-102"
+                            : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                        }`}
+                      >
+                        {category.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
           </div>
 
           <TextAreaInput
