@@ -4,10 +4,24 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  category: {
+  categories: {
     id: string;
     name: string;
-  };
+  }[];
+  totalRating: number;
+  price: number;
+  isActive: boolean;
+  stock: number;
+  imagesUrl: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface EditProduct {
+  id: string;
+  name: string;
+  description: string;
+  categories: string[];
   totalRating: number;
   price: number;
   isActive: boolean;
@@ -30,7 +44,7 @@ export interface CreateProduct {
   description: string;
   price: number;
   imagesUrl: string[];
-  categoryId: string;
+  categories: string[];
   stock: number;
 }
 
