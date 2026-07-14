@@ -45,7 +45,7 @@ export const createNewProduct = async (productData: {
   price: number;
   stock: number;
   description: string;
-  categoryId: string;
+  categories: string[];
   imagesUrl: string[];
 }) => {
   const payload = {
@@ -53,7 +53,7 @@ export const createNewProduct = async (productData: {
     price: productData.price,
     description: productData.description,
     imagesUrl: productData.imagesUrl,
-    category: { connect: { id: productData.categoryId } },
+    categories: { connect: productData.categories.map((id) => ({ id })) },
     stock: productData.stock,
   };
   return await productRepository.createProduct(payload);

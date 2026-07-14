@@ -62,7 +62,7 @@ export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Res
 });
 
 export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { name, price, stock, description, categoryId } = CreateProductSchema.parse(req.body);
+  const { name, price, stock, description, categories } = CreateProductSchema.parse(req.body);
   
   if (!req.files || req.files.length === 0) {
     throw new AppError("Please provide at least one image for the product.", 400);
@@ -80,7 +80,7 @@ export const createProduct = asyncHandler(async (req: AuthRequest, res: Response
     stock,
     description,
     imagesUrl,
-    categoryId,
+    categories,
   });
 
   res.status(201).json({

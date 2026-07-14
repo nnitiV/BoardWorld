@@ -3,11 +3,14 @@ import { prisma } from "../config/db.js";
 import { UpdateProduct } from "../types/product.types.js";
 
 export const getProductById = async (id: string) => {
-  return await prisma.product.findUnique({ where: { id } });
+  return await prisma.product.findUnique({
+    where: { id },
+    include: { categories: { where: { products: { some: { id } } } } },
+  });
 };
 
 export const getProductByCategory = async (categoryName: string) => {
-  return await prisma.product.findMany({where: { category: { name: categoryName } }});
+  return await prisma.product.findMany({where: { categories: { some: { name: categoryName } } } });
 }
 
 export const getProductCatalog = async (
@@ -26,10 +29,10 @@ export const getProductCatalog = async (
         price: true,
         stock: true,
         isActive: true,
-        category: {
+        categories: {
           select: {
             id: true,
-            name: true, // Pull only the fields your frontend actually needs
+            name: true, 
           }
         }
       },
@@ -220,7 +223,9 @@ export const updateProduct = async (
     data: {
       ...data,
       imagesUrl: imagesUrl,
-      categoryId: data.categoryId
+      categories: {
+        set: data.categories.map(catId => ({ id: catId }))
+      }
     },
   });
 };
