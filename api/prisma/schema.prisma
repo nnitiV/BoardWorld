@@ -78,8 +78,7 @@ model Product {
   imagesUrl String[]
   isActive Boolean @default(true)
   cartItems CartItem[]
-  categoryId String?
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  categories Category[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
