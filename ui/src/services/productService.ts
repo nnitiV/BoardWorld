@@ -10,6 +10,10 @@ export const productService = {
     const { data } = await api.post("/products/category", categoryName);
     return data;
   },
+  createReview: async ({ productId, comment, rating }: { productId: string, comment: string, rating: number  }) => {
+    const { data } = await api.post(`/products/review/${productId}`, { comment, rating });
+    return data;
+  },
   getPopularProductCatalog: async (page: number, limit: number) => {
     const { data } = await api.get(
       `/products/popular?page=${page}&limit=${limit}`,
@@ -24,6 +28,11 @@ export const productService = {
   },
   getCategories: async () => {
     const { data } = await api.get("/products/categories");
+    return data;
+  },
+  getReviewsByProductId: async (id: string) => {
+    const { data } = await api.get(`/products/reviews/product/${id}`);
+    console.log("Service:", data);
     return data;
   },
   getProductById: async (id: string) => {

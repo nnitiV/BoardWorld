@@ -56,7 +56,7 @@ export interface UpdateCategory {
 
 export interface ProductCatalogResponse {
   message: string;
-  productCatalog: Product[];
+  products: Product[];
   totalItems: number;
 }
 
@@ -68,6 +68,11 @@ export interface UpdateCategoryResponse {
 export interface ProductResponse {
   message: string;
   product: Product;
+}
+
+export interface UpdateProductResponse {
+  message: string;
+  updatedProduct: Product;
 }
 
 export interface ProductsResponse {
@@ -89,4 +94,9 @@ export interface Review {
   comment?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ReviewsResponse {
+  message: string;
+  reviews: Review[];
 }

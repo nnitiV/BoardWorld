@@ -1,8 +1,9 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse } from "@/types/product.type";
+import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse, Review, ReviewsResponse } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+
 
 export function useCreateProductMutation() {
   return useMutation<Product, AxiosError<ErrorResponsePayload>, FormData>({
@@ -26,6 +27,21 @@ export const useCreateCategoryMutation = () => {
   });
 }
 
+export const useCreateReviewMutation = (productId: string) => {
+  return useMutation<Review, AxiosError<ErrorResponsePayload>, { comment: string, rating: number }>({
+    mutationFn: (variables) => productService.createReview({
+        productId,
+        comment: variables.comment,
+        rating: variables.rating,
+      }),
+    onError: (error) => {
+      const serverMessage =
+        error.response?.data?.message || "Authentication failed";
+      console.error("Backend Error:", serverMessage);
+    }
+  });
+}
+
 export function useGetPopularProductCatalogQuery(
   page: number,
   limit: number,
@@ -35,7 +51,6 @@ export function useGetPopularProductCatalogQuery(
     queryFn: () => productService.getPopularProductCatalog(page, limit),
   });
 }
-
 
 export function useGetProductCatalogQuery(
   page: number,
@@ -58,14 +73,21 @@ export function useGetCategoriesQuery() {
   });
 }
 
+export function useGetReviewsByproductIdQuery(id: string) {
+  return useQuery<ReviewsResponse, AxiosError<ErrorResponsePayload>>({
+    queryKey: ["review", id],
+    queryFn: () => productService.getReviewsByProductId(id),
+  });
+}
+
 export function useGetProductByIdQuery(id: string) {
   return useQuery<ProductResponse, AxiosError<ErrorResponsePayload>>({
-    queryKey: ["product", id],
+    queryKey: ["productId", id],
     queryFn: () => productService.getProductById(id),
   });
 }
 
-export function useGetProductsByCategoroy(category: string) {
+export function useGetProductsByCategory(category: string) {
   return useQuery<ProductsResponse, AxiosError<ErrorResponsePayload>>({
     queryKey: ["product", category],
     queryFn: () => productService.getProductByCategoryName(category),
@@ -90,18 +112,17 @@ export function useUpdateProductMutation() {
           const id = updatedProduct.get("id")?.toString();
           const name = updatedProduct.get("name")?.toString();
           const description = updatedProduct.get("description")?.toString();
-          const categories = queryClient.getQueryData<UpdateCategoryResponse>(["category"] );
-          const categoryId = updatedProduct.get("categoryId")?.toString();
-          const category = categories?.categories.find(cat => cat.id === categoryId);
+          const categoriesStored = queryClient.getQueryData<UpdateCategoryResponse>(["category"] );
+          const categories = updatedProduct.get("categories")?.toString().split(",");
+          const newCategories = categoriesStored?.categories.filter(category => categories?.find(cat => cat == category.id));
           const price = updatedProduct.get("price") ? Number(updatedProduct.get("price")) : undefined;
           const stock = updatedProduct.get("stock") ? parseInt(updatedProduct.get("stock") as string, 10) : undefined;
           const isActive = updatedProduct.get("isActive") === "true";
 
           if (!id) return oldData;
-
           return {
             ...oldData,
-            productCatalog: oldData.productCatalog.map((product) =>
+            products: oldData.products.map((product) =>
               product.id === id
                 ? {
                     ...product,
@@ -109,11 +130,8 @@ export function useUpdateProductMutation() {
                     ...(description && { description }),
                     ...(price !== undefined && { price }),
                     ...(stock !== undefined && { stock }),
-                    ...(category && {
-                      category: {
-                        id: category.id,
-                        name: category.name,
-                      },
+                    ...(newCategories && {
+                      categories: [...newCategories]
                     }),
                     isActive,
                   }
@@ -187,14 +205,13 @@ export function useDeactivateProductMutation() {
         { queryKey: ["product"] },
         (oldData) => {
           if (!oldData) return undefined;
-
           return {
             ...oldData,
             // 4. MAP INSTEAD OF FILTER: Flip the status, keep the product!
-            productCatalog: oldData.productCatalog.map(
+            products: oldData.products.map(
               (product) =>
                 product.id === productId
-                  ? { ...product, isActive: false } // Update this specific product
+                  ? { ...product, isActive: false, name: "HAHAH" } // Update this specific product
                   : product, // Leave all others alone
             ),
           };
@@ -277,7 +294,7 @@ export function useRestoreProductMutation() {
           if (!oldData) return undefined;
           return {
             ...oldData,
-            productCatalog: oldData.productCatalog.map((product) =>
+            productCatalog: oldData.products.map((product) =>
               product.id === productId
                 ? { ...product, isActive: true }
                 : product,
