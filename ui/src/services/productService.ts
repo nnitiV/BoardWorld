@@ -12,6 +12,7 @@ export const productService = {
   },
   createReview: async ({ productId, comment, rating }: { productId: string, comment: string, rating: number  }) => {
     const { data } = await api.post(`/products/review/${productId}`, { comment, rating });
+    console.log(data);
     return data;
   },
   getPopularProductCatalog: async (page: number, limit: number) => {

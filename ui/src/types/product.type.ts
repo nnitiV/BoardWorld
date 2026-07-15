@@ -88,7 +88,7 @@ export interface CategoriesResponse {
 export interface Review {
   id: string;
   productId: string;
-  user: UserProfile,
+  user: UserProfile;
   userId: string;
   rating: number;
   comment?: string;
@@ -96,7 +96,21 @@ export interface Review {
   updatedAt: Date;
 }
 
+export interface ReviewResponse {
+  message: string;
+  review: Review;
+}
+
 export interface ReviewsResponse {
   message: string;
   reviews: Review[];
+}
+
+export interface Reviews {
+  reviews: Review[]
+}
+
+export interface CreateReview {
+  comment: string;
+  rating: number;
 }

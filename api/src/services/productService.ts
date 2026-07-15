@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import * as productRepository from "../repository/productRepository.js";
 import { CreateCategory, UpdateProduct } from "../types/product.types.js";
 import { AppError } from "../utils/AppError.js";
+import { prisma } from "../config/db.js";
 
 export const getProductById = async (id: string) => {
   const product = await productRepository.getProductById(id);
@@ -107,11 +108,16 @@ export const getReviewsByProductId = async (productId: string) => {
 export const createReview = async (productId: string, userId: string, reviewData: { rating: number; comment: string | undefined }) => {
   const payload: Prisma.ReviewCreateInput = {
     rating: reviewData.rating,
-    comment: reviewData.comment || null, // Convert undefined to null for SQL compatibility
+    comment: reviewData.comment || null, 
     user: { connect: { id: userId } },
     product: { connect: { id: productId } },
   };
-  return await productRepository.createReview(payload);
+  return await prisma.$transaction(async (tx) => {
+    const product = await getProductById(productId);
+    const newTotalRating = product.totalRating + reviewData.rating;
+    await productRepository.updateProductTotalRating(newTotalRating, productId, tx);
+    return await productRepository.createReview(payload, tx);
+  })
 };
 
 export const updateReview = async (id: string, reviewData: { rating: number; comment: string | undefined }) => {
@@ -119,7 +125,13 @@ export const updateReview = async (id: string, reviewData: { rating: number; com
   if (!review) {
     throw new AppError("Couldn't find review.", 404);
   }
-  return await productRepository.updateReview(id, reviewData);
+  return await prisma.$transaction(async (tx) => {
+    const review = await getReviewById(id);
+    const product = await getProductById(review.productId);
+    const newTotalRating = (product.totalRating - review.rating) + reviewData.rating;
+    await productRepository.updateProductTotalRating(newTotalRating, product.id, tx);
+    return await productRepository.updateReview(id, reviewData, tx);
+  })
 }
 
 export const deleteReviewById = async (id: string) => {
@@ -127,7 +139,13 @@ export const deleteReviewById = async (id: string) => {
   if (!review) {
     throw new AppError("Couldn't find review.", 404);
   }
-  return await productRepository.deleteReviewById(id);
+  return await prisma.$transaction(async (tx) => {
+    const review = await getReviewById(id);
+    const product = await getProductById(review.productId);
+    const newTotalRating = product.totalRating - review.rating;
+    await productRepository.updateProductTotalRating(newTotalRating, product.id, tx);
+    return await productRepository.deleteReviewById(id);
+  })
 }
 
 export const updateProduct = async (id: string, productData: UpdateProduct, imagesUrl: string[]) => {

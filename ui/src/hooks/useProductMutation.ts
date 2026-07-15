@@ -1,6 +1,6 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse, Review, ReviewsResponse } from "@/types/product.type";
+import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse, Review, ReviewsResponse, CreateReview, Reviews, ReviewResponse } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -28,17 +28,37 @@ export const useCreateCategoryMutation = () => {
 }
 
 export const useCreateReviewMutation = (productId: string) => {
-  return useMutation<Review, AxiosError<ErrorResponsePayload>, { comment: string, rating: number }>({
-    mutationFn: (variables) => productService.createReview({
+  const queryClient = useQueryClient();
+  const queryKey = ["review", productId];
+  return useMutation<
+    ReviewResponse,
+    AxiosError<ErrorResponsePayload>,
+    CreateReview
+  >({
+    mutationFn: (variables) =>
+      productService.createReview({
         productId,
         comment: variables.comment,
         rating: variables.rating,
       }),
+    onSuccess: async (data) => {
+      queryClient.setQueriesData<Reviews>(
+        { queryKey },
+        (oldData) => {
+          if (!oldData) return {reviews: [data.review]};
+
+          return {
+            ...oldData,
+            reviews: [data.review, ...oldData.reviews]
+          }
+        }
+      )
+    },
     onError: (error) => {
       const serverMessage =
         error.response?.data?.message || "Authentication failed";
       console.error("Backend Error:", serverMessage);
-    }
+    },
   });
 }
 

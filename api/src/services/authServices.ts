@@ -32,6 +32,9 @@ export const loginUser = async (userData: LoginUser, userAgentString: string, de
   if (!user) {
     throw new AppError("User don't exist.", 404);
   }
+  if(!user.password) {
+    throw new AppError("User password not provided.", 400);
+  }
   const isPasswordValid = await bcrypt.compare(
     userData.password,
     user.password,

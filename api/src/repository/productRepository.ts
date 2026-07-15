@@ -201,8 +201,20 @@ export const createReview = async (
   const client = tx || prisma;
   return await client.review.create({
     data,
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        }
+      }
+    }
   });
 };
+export const updateProductTotalRating = async (newTotalRating: number, id: string, tx?: Prisma.TransactionClient) => {
+  const client = tx || prisma;
+  return await client.product.update({ where: { id }, data: { totalRating: newTotalRating } });
+}
 
 export const updateReview = async (
   id: string,
