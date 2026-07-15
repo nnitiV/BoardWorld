@@ -29,17 +29,11 @@ productRoutes.post(
   productController.createCategory,
 );
 productRoutes.post(
-  "/review",
+  "/review/:productId",
   protect,
   restrictTo(Role.ADMIN),
   productController.createReview,
 )
-productRoutes.post(
-  "/review",
-  protect,
-  restrictTo(Role.ADMIN),
-  productController.createReview,
-);
 productRoutes.put(
   "/restore/:id",
   protect,

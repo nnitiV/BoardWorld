@@ -10,7 +10,24 @@ export const getProductById = async (id: string) => {
 };
 
 export const getProductByCategory = async (categoryName: string) => {
-  return await prisma.product.findMany({where: { categories: { some: { name: categoryName } } } });
+  return await prisma.product.findMany({
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      imagesUrl: true,
+      price: true,
+      stock: true,
+      isActive: true,
+      categories: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    where: { categories: { some: { name: categoryName } }, isActive: true },
+  });
 }
 
 export const getProductCatalog = async (
@@ -62,6 +79,7 @@ export const getActivePopularProductCatalog = async (
         name: true,
         imagesUrl: true,
         price: true,
+        categories: true,
         totalRating: true,
         stock: true,
         isActive: true,
@@ -92,6 +110,7 @@ export const getActiveProductCatalog = async (
         imagesUrl: true,
         price: true,
         stock: true,
+        categories: true,
         totalRating: true,
         isActive: true,
       },
@@ -172,7 +191,7 @@ export const getReviewById = async (id: string, tx?: Prisma.TransactionClient) =
 
 export const getReviewsByProductId = async (productId: string, tx?: Prisma.TransactionClient) => {
   const client = tx || prisma;
-  return await client.review.findMany({ where: { productId } });
+  return await client.review.findMany({ where: { productId }, include: { user: true} } );
 }
 
 export const createReview = async (
@@ -181,9 +200,7 @@ export const createReview = async (
 ) => {
   const client = tx || prisma;
   return await client.review.create({
-    data: {
-      ...data,
-    },
+    data,
   });
 };
 

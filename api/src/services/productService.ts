@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import * as productRepository from "../repository/productRepository.js";
 import { CreateCategory, UpdateProduct } from "../types/product.types.js";
 import { AppError } from "../utils/AppError.js";
@@ -104,7 +105,13 @@ export const getReviewsByProductId = async (productId: string) => {
 }
 
 export const createReview = async (productId: string, userId: string, reviewData: { rating: number; comment: string | undefined }) => {
-  return await productRepository.createReview({ ...reviewData, user: { connect: { id: userId } }, product: { connect: { id: productId } } });
+  const payload: Prisma.ReviewCreateInput = {
+    rating: reviewData.rating,
+    comment: reviewData.comment || null, // Convert undefined to null for SQL compatibility
+    user: { connect: { id: userId } },
+    product: { connect: { id: productId } },
+  };
+  return await productRepository.createReview(payload);
 };
 
 export const updateReview = async (id: string, reviewData: { rating: number; comment: string | undefined }) => {

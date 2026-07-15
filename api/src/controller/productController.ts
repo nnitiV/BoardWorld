@@ -5,6 +5,7 @@ import * as productService from "../services/productService.js";
 import { CreateCategorySchema, CreateProductSchema, CreateReviewSchema, ProductCatalogRequestSchema, UpdateProductSchema } from "../types/product.types.js";
 import fs from "fs/promises";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { Prisma } from "@prisma/client";
 
 export const getProductById =  async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
@@ -31,6 +32,7 @@ export const getActivePopularProductCatalog = asyncHandler(
       page,
       limit,
     );
+    console.log("Here one");
     res.status(200).json({ message: "Product catalog retrieved.", products });
   },
 );
@@ -47,7 +49,7 @@ export const getActiveProductCatalog = asyncHandler(
       .status(200)
       .json({
         message: "Product catalog retrieved.",
-        productCatalog: products,
+        products,
         totalItems,
       });
   },
@@ -58,7 +60,7 @@ export const getProductCatalog =  asyncHandler(async (req: AuthRequest, res: Res
   const {products, totalItems} = await productService.getProductCatalog(page, limit);
   res
     .status(200)
-    .json({ message: "Product catalog retrieved.", productCatalog: products, totalItems });
+    .json({ message: "Product catalog retrieved.", products, totalItems });
 });
 
 export const createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -136,6 +138,7 @@ export const deleteCategoryById = asyncHandler(async (req: AuthRequest, res: Res
 export const getReviewsByProductId = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { productId } = req.params;
   const reviews = await productService.getReviewsByProductId(productId);
+  console.log(reviews);
   return res.status(200).json({
     message: "Reviews retrieved.",
     reviews,
@@ -155,14 +158,25 @@ export const createReview = asyncHandler(async (req: AuthRequest, res: Response)
   const { productId } = req.params;
   const { rating, comment } = CreateReviewSchema.parse(req.body);
   const userId = req.user?.id;
-  if(!userId) {
+
+  if (!userId) {
     throw new AppError("User not authenticated.", 401);
   }
-  const review = await productService.createReview(productId, userId, { rating, comment });
-  return res.status(201).json({
-    message: "Review created.",
-    review,
-  });
+
+  try {
+    const review = await productService.createReview(productId, userId, { rating, comment });
+    
+    return res.status(201).json({
+      message: "Review created.",
+      review,
+    });
+  } catch (error) {
+    // Catch the P2002 Unique Constraint error elegantly
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      throw new AppError("You have already reviewed this product.", 409); // 409 Conflict
+    }
+    throw error; // Let other unexpected errors propagate to your global handler
+  }
 });
 
 export const updateReview = asyncHandler(async (req: AuthRequest, res: Response) => {
