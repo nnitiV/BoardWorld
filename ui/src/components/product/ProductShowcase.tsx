@@ -10,7 +10,6 @@ interface ProductShowcaseProps {
 
 export default function ProductShowcase({ product }: ProductShowcaseProps) {
   const [amount, setAmount] = useState<number>(1);
-  console.log(product.categories);
   // 1. Defensive checking: is it in stock?
   const isOutOfStock = product.stock <= 0;
 
@@ -39,7 +38,7 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
               currency: "USD",
             }).format(product.price)}
           </p>
-          <div className="flex flex-col md:flex-row gap-5">
+          <div className="flex flex-col md:flex-row mt-2 gap-5">
             {product.categories.map((category) => (
               <button
                 key={category.id}

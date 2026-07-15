@@ -29,7 +29,7 @@ export default function Overview() {
   const { mutate: deleteProduct } = useDeactivateProductMutation();
   const { mutate: restoreProduct } = useRestoreProductMutation();
   
-  const products = data?.productCatalog || [];
+  const products = data?.products || [];
   const totalItems = data?.totalItems || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
 
@@ -164,14 +164,16 @@ export default function Overview() {
                         className="w-6 h-6 md:w-7 md:h-7 absolute bottom-2 right-2 md:bottom-0 md:right-0 fill-red-600"
                         onClick={(e) => {
                           e.stopPropagation();
+                          console.log(product.id);
                           deleteProduct(product.id);
                         }}
-                      />
-                    ) : (
-                      <RestoreIcon
+                        />
+                      ) : (
+                        <RestoreIcon
                         className="w-6 h-6 md:w-7 md:h-7 absolute bottom-2 right-2 md:bottom-0 md:right-0 fill-green-600"
                         onClick={(e) => {
                           e.stopPropagation();
+                          console.log(product.id);
                           restoreProduct(product.id);
                         }}
                       />

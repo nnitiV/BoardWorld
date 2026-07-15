@@ -18,6 +18,7 @@ export default function NavBar() {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "All Products", href: "/allProducts" },
+    { label: "All Categories", href: "/allCategories" },
     ...(user?.role === "ADMIN" ? [{ label: "Admin", href: "/admin" }] : []),
     { label: "About", href: "#" },
   ];
