@@ -1,17 +1,20 @@
 "use client";
 
-import { useGetProductCatalogQuery } from "@/hooks/useProductMutation";
+import {  useGetProductsByCategory } from "@/hooks/useProductMutation";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
-export default function AllProducts() {
+export default function AllProductsByCategory() {
   const [amount, setAmount] = useState<number>(20);
   const [page, setPage] = useState<number>(1);
-  const { data, isLoading } = useGetProductCatalogQuery(page, amount, true);
+    const params = useParams();
+  const category = params.category;
+  const { data, isLoading } = useGetProductsByCategory(category?.toString() || "Animals");
   const products = data?.products || [];
-  const totalItems = data?.totalItems || 0;
+  const totalItems = products.length || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
-
+  console.log(products)
   return (
     <div className="w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
       <h1 className="text-2xl font-bold text-blue-950 ms-6 mb-4">All Products</h1>

@@ -1,12 +1,12 @@
 "use client";
 import ProductCarousel from "@/components/home/ProductCarousel";
 import NavBar from "@/components/navbar";
-import { useGetPopularProductCatalogQuery, useGetProductsByCategoroy } from "@/hooks/useProductMutation";
+import { useGetPopularProductCatalogQuery, useGetProductsByCategory } from "@/hooks/useProductMutation";
 
 export default function Home() {
-  const { data: cardData } = useGetProductsByCategoroy("Card Games");
-  const { data: boardData } = useGetProductsByCategoroy("Board Game");
-  const { data: animalData } = useGetProductsByCategoroy("Animals");
+  const { data: cardData } = useGetProductsByCategory("Card Games");
+  const { data: boardData } = useGetProductsByCategory("Board Game");
+  const { data: animalData } = useGetProductsByCategory("Animals");
   const { data: popularItems } = useGetPopularProductCatalogQuery(1, 20);
   return (
     <>
