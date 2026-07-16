@@ -80,4 +80,8 @@ export const productService = {
     const { data } = await api.delete(`/products/category/${id}`);
     return data;
   },
+  deleteReview: async (id: string) => {
+    const { data } = await api.delete(`/products/review/${id}`);
+    return data;
+  },
 };

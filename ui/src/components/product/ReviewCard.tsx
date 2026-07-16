@@ -2,7 +2,9 @@ import { useUserStore } from "@/stores/userStore";
 import { Review } from "@/types/product.type";
 import TrashIcon from "../Icons/TrashIcon";
 import EditIcon from "../Icons/EditIcon";
-import { SetStateAction } from "react";
+import { SetStateAction, useState } from "react";
+import { useDeleteReview } from "@/hooks/useProductMutation";
+import ConfirmModal from "./ConfirmModal";
 
 interface ReviewCardProps {
   review: Review;
@@ -10,7 +12,9 @@ interface ReviewCardProps {
 }
 
 export default function ReviewCard({ review, setReviewToEdit }: ReviewCardProps) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const user = useUserStore(state => state.user);
+  const {mutate: deleteReview } = useDeleteReview(review.productId);
 
   // Safe fallback to grab user initials
   const userInitial = review.user?.name
@@ -57,9 +61,20 @@ export default function ReviewCard({ review, setReviewToEdit }: ReviewCardProps)
         <div className="flex gap-2">
           {user?.id === review.userId && (
             <>
-              <EditIcon onClick={() => setReviewToEdit(review)} className="w-6 h-6 md:w-8 md:h-8 fill-slate-700 hover:fill-blue-600 cursor-pointer transition-colors" />
+              <EditIcon
+                onClick={() => setReviewToEdit(review)}
+                className="w-6 h-6 md:w-8 md:h-8 fill-slate-700 hover:fill-blue-600 cursor-pointer transition-colors"
+              />
               <TrashIcon
+                onClick={() => setIsDeleteModalOpen(true)}
                 className="w-6 h-6 md:w-8 md:h-8 fill-red-500 hover:fill-red-700 cursor-pointer transition-colors"
+              />
+              <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                title="Delete Review"
+                message="Are you sure you want to delete this review? This action cannot be undone."
+                onConfirm={() => deleteReview(review.id)}
+                onClose={() => setIsDeleteModalOpen(false)}
               />
             </>
           )}

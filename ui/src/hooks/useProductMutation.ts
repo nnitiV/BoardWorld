@@ -314,10 +314,6 @@ export function useDeactivateProductMutation() {
   });
 }
 
-interface DeleteCategoryContext {
-  oldCategories: UpdateCategoryResponse | undefined;
-}
-
 export function useDeleteCategoryMutation() {
   const queryClient = useQueryClient();
   const queryKey = ["category"]
@@ -326,7 +322,7 @@ export function useDeleteCategoryMutation() {
     void,
     AxiosError<ErrorResponsePayload>,
     string,
-    DeleteCategoryContext
+    {oldCategories: UpdateCategoryResponse | undefined }
   >({
     mutationFn: productService.deleteCategory,
     onMutate: async (id) => {
@@ -356,6 +352,50 @@ export function useDeleteCategoryMutation() {
       console.error("Backend Error:", serverMessage);
       if (onMutateResult?.oldCategories) {
         queryClient.setQueryData(queryKey, onMutateResult.oldCategories);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey }),
+  });
+}
+
+export function useDeleteReview(productId: string) {
+  const queryClient = useQueryClient();
+  const queryKey = ["review", productId]
+
+  return useMutation<
+    void,
+    AxiosError<ErrorResponsePayload>,
+    string,
+    {oldReviews: ReviewsResponse | undefined }
+  >({
+    mutationFn: productService.deleteReview,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const oldReviews =
+        queryClient.getQueryData<ReviewsResponse>(queryKey);
+
+      queryClient.setQueriesData<ReviewsResponse>(
+        { queryKey },
+        (oldData) => {
+          if (!oldData) return undefined;
+          return {
+            ...oldData,
+            reviews: oldData.reviews.filter(
+              (review) => review.id !== id,
+            ),
+          };
+        },
+      );
+
+      return { oldReviews: oldReviews };
+    },
+    onError: (error, _, onMutateResult) => {
+      const serverMessage =
+        error.response?.data?.message || "Deactivation failed";
+      console.error("Backend Error:", serverMessage);
+      if (onMutateResult?.oldReviews) {
+        queryClient.setQueryData(queryKey, onMutateResult.oldReviews);
       }
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey }),
