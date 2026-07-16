@@ -180,9 +180,13 @@ export const createReview = asyncHandler(async (req: AuthRequest, res: Response)
 });
 
 export const updateReview = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    throw new AppError("User context missing from request.", 401);
+  }
   const { id } = req.params;
   const { rating, comment } = CreateReviewSchema.parse(req.body);
-  const review = await productService.updateReview(id, { rating, comment });
+  const review = await productService.updateReview(id, userId, { rating, comment });
   return res.status(200).json({
     message: "Review updated.",
     review,

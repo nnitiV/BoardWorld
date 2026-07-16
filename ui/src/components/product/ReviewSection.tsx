@@ -4,6 +4,7 @@ import { useState } from "react";
 import AddReviewModal from "./AddReviewModal";
 import { useGetReviewsByproductIdQuery } from "@/hooks/useProductMutation";
 import ReviewCard from "./ReviewCard";
+import EditReviewModal from "./EditReviewModal";
 
 interface ReviewSectionProps {
   productId: string,
@@ -16,13 +17,17 @@ export default function ReviewSection({
 }: ReviewSectionProps) {
   const { data } = useGetReviewsByproductIdQuery(productId);
   const [showAddReview, setShowAddReview] = useState<boolean>(false);
+  const [reviewToEdit, setReviewToEdit] = useState<Review | null>(null);
   const reviews = data?.reviews || [];
   return (
     <>
       <div className={`${className} md:px-24`}>
         <header className="flex flex-col gap-6 md:flex-row justify-between">
           <h1 className="text-3xl text-slate-950 font-bold">Reviews</h1>
-          <Button className="text-lg md:text-xl cursor-pointer" onClick={() => setShowAddReview(true)}>
+          <Button
+            className="text-lg md:text-xl cursor-pointer"
+            onClick={() => setShowAddReview(true)}
+          >
             Add Review (+)
           </Button>
         </header>
@@ -51,20 +56,34 @@ export default function ReviewSection({
                 Be the first to share your thoughts on this game. Your feedback
                 helps other gamers choose their next adventure!
               </p>
-              <Button className="text-lg cursor-pointer mt-5" onClick={() => setShowAddReview(true)}>
+              <Button
+                className="text-lg cursor-pointer mt-5"
+                onClick={() => setShowAddReview(true)}
+              >
                 Be the first!
               </Button>
             </div>
           ) : (
             <div className="grid cols-3 py-5">
               {reviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
+                <ReviewCard key={review.id} review={review} setReviewToEdit={setReviewToEdit} />
+              ))}
             </div>
           )}
         </main>
       </div>
-      {showAddReview && <AddReviewModal productId={productId} setShowAddReview={setShowAddReview} />}
+      {showAddReview && (
+        <AddReviewModal
+          productId={productId}
+          setShowAddReview={setShowAddReview}
+        />
+      )}
+      {reviewToEdit && (
+        <EditReviewModal
+          reviewToEdit={reviewToEdit}
+          setShowAddReview={setReviewToEdit}
+        />
+      )}
     </>
   );
 }

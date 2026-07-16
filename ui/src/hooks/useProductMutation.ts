@@ -1,6 +1,6 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse, Review, ReviewsResponse, CreateReview, Reviews, ReviewResponse } from "@/types/product.type";
+import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse, Review, ReviewsResponse, CreateReview, Reviews, ReviewResponse, UpdateReview } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -171,11 +171,15 @@ export function useUpdateProductMutation() {
   });
 }
 
+interface UpdateReviewContext {
+  oldCategories: ReviewsResponse | undefined;
+}
+
 export function useUpdateCategoryMutation() {
   const queryClient = useQueryClient();
   const queryKey = ["category"];
 
-  return useMutation<Category, AxiosError<ErrorResponsePayload>, UpdateCategory>({
+  return useMutation<Category, AxiosError<ErrorResponsePayload>, UpdateCategory, UpdateReviewContext>({
     mutationFn: productService.updateCategory,
     onMutate: async (updatedCategory) => {
       await queryClient.cancelQueries({ queryKey });
@@ -208,6 +212,66 @@ export function useUpdateCategoryMutation() {
       return { oldCategories };
     }
   })
+}
+
+export function useUpdateReviewMutation(productId: string) {
+  const queryClient = useQueryClient();
+  const queryKey = ["review", productId];
+
+  return useMutation<
+    ReviewResponse,                            
+    AxiosError<ErrorResponsePayload>,          
+    UpdateReview,                              
+    { oldReviews: ReviewResponse | undefined } 
+  >({
+    mutationFn: productService.updateReview,
+    
+    onMutate: async (updatedReview) => {
+      await queryClient.cancelQueries({ queryKey });
+      const oldReviews = queryClient.getQueryData<ReviewResponse>(queryKey);
+
+      queryClient.setQueryData<ReviewsResponse>(
+        queryKey,
+        (oldData) => {
+          if (!oldData) return undefined;
+
+          const comment = updatedReview.comment;
+          const rating = updatedReview.rating;
+
+          if (!updatedReview.id) return oldData;
+
+          return {
+            ...oldData,
+            reviews: oldData?.reviews.map((review) =>
+              review.id === updatedReview.id
+                ? {
+                    ...review,
+                    ...(comment && { comment }),
+                    ...(rating && { rating }),
+                  }
+                : review,
+            ),
+          };
+        },
+      );
+      
+      // This gets passed directly to the 3rd parameter: 'onMutateResult'
+      return { oldReviews }; 
+    },
+
+    // Using the exact v5.89+ signature you called out:
+    onError: (err, _, onMutateResult) => {
+      // Rollback using the snapshotted result!
+      if (onMutateResult?.oldReviews) {
+        queryClient.setQueryData(queryKey, onMutateResult.oldReviews);
+      }
+      console.error("Failed to update review. Reverting UI.", err);
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    }
+  });
 }
 
 export function useDeactivateProductMutation() {

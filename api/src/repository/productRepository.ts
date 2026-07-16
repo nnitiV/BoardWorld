@@ -218,12 +218,13 @@ export const updateProductTotalRating = async (newTotalRating: number, id: strin
 
 export const updateReview = async (
   id: string,
+  userId: string,
   data: Prisma.ReviewUpdateInput,
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
   return await client.review.update({
-    where: { id },
+    where: { id, userId },
     data: {
       ...data,
     },

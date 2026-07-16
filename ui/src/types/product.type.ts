@@ -96,6 +96,13 @@ export interface Review {
   updatedAt: Date;
 }
 
+export interface UpdateReview {
+  id: string;
+  comment: string;
+  rating: number;
+}
+
+
 export interface ReviewResponse {
   message: string;
   review: Review;

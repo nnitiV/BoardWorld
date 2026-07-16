@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { UpdateCategory } from "@/types/product.type";
+import { UpdateCategory, UpdateReview } from "@/types/product.type";
 
 export const productService = {
   createProduct: async (product: FormData) => {
@@ -58,6 +58,13 @@ export const productService = {
     const { data } = await api.put(
       `/products/category/${category.id}`,
       category,
+    );
+    return data;
+  },
+  updateReview: async (review: UpdateReview) => {
+    const { data } = await api.put(
+      `/products/review/${review.id}`,
+      review,
     );
     return data;
   },

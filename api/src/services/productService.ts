@@ -120,7 +120,7 @@ export const createReview = async (productId: string, userId: string, reviewData
   })
 };
 
-export const updateReview = async (id: string, reviewData: { rating: number; comment: string | undefined }) => {
+export const updateReview = async (id: string, userId: string, reviewData: { rating: number; comment: string | undefined }) => {
   const review = await getReviewById(id);
   if (!review) {
     throw new AppError("Couldn't find review.", 404);
@@ -130,7 +130,7 @@ export const updateReview = async (id: string, reviewData: { rating: number; com
     const product = await getProductById(review.productId);
     const newTotalRating = (product.totalRating - review.rating) + reviewData.rating;
     await productRepository.updateProductTotalRating(newTotalRating, product.id, tx);
-    return await productRepository.updateReview(id, reviewData, tx);
+    return await productRepository.updateReview(id, userId, reviewData, tx);
   })
 }
 
