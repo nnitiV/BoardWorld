@@ -171,15 +171,11 @@ export function useUpdateProductMutation() {
   });
 }
 
-interface UpdateReviewContext {
-  oldCategories: ReviewsResponse | undefined;
-}
-
 export function useUpdateCategoryMutation() {
   const queryClient = useQueryClient();
   const queryKey = ["category"];
 
-  return useMutation<Category, AxiosError<ErrorResponsePayload>, UpdateCategory, UpdateReviewContext>({
+  return useMutation<Category, AxiosError<ErrorResponsePayload>, UpdateCategory>({
     mutationFn: productService.updateCategory,
     onMutate: async (updatedCategory) => {
       await queryClient.cancelQueries({ queryKey });
