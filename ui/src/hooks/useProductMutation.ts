@@ -42,13 +42,14 @@ export const useCreateReviewMutation = (productId: string) => {
         rating: variables.rating,
       }),
     onSuccess: async (data) => {
-      queryClient.setQueriesData<Reviews>(
-        { queryKey },
+      queryClient.setQueryData<ReviewsResponse>(
+        queryKey,
         (oldData) => {
-          if (!oldData) return {reviews: [data.review]};
+          if (!oldData)
+            return { message: data.message, reviews: [data.review] };
 
           return {
-            ...oldData,
+            ...oldData,message: data.message,
             reviews: [data.review, ...oldData.reviews]
           }
         }
@@ -375,8 +376,8 @@ export function useDeleteReview(productId: string) {
       const oldReviews =
         queryClient.getQueryData<ReviewsResponse>(queryKey);
 
-      queryClient.setQueriesData<ReviewsResponse>(
-        { queryKey },
+      queryClient.setQueryData<ReviewsResponse>(
+        queryKey,
         (oldData) => {
           if (!oldData) return undefined;
           return {
