@@ -17,6 +17,7 @@ export function useLoginMutation() {
   const router = useRouter();
   const setAccessToken = useAuthStore((state) => state.setAuthData);
   const setUser = useUserStore(state => state.setUser);
+  const setCart = useUserStore(state => state.setCart);
 
   return useMutation<
     LoginResponse,
@@ -29,6 +30,7 @@ export function useLoginMutation() {
       const expirationTimestamp = decodedToken.exp * 1000;
       setAccessToken(data.accessToken, expirationTimestamp);
       setUser(data.user);
+      setCart(data.cart);
       router.push("/");
     },
     onError: (error) => {

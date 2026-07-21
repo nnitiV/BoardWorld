@@ -14,7 +14,7 @@ export default function Button({
 }: ButtonProps) {
   
   // Base classes that EVERY button shares
-  const baseClasses = "w-full md:w-auto font-bold px-6 py-3 md:px-10 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseClasses = "w-full cursor-pointer md:w-auto font-bold px-6 py-3 md:px-10 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed";
   
   // Variant-specific classes
   const variantClasses = {

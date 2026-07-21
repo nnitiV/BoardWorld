@@ -3,18 +3,26 @@ import { Product } from "@/types/product.type";
 import { useState } from "react";
 import Button from "../admin/Button";
 import ImageCarousel from "./ImageCarousel";
+import { useRouter } from "next/navigation";
+import { useAddItemToCartMutation } from "@/hooks/useCartMutation";
 
 interface ProductShowcaseProps {
   product: Product;
 }
 
 export default function ProductShowcase({ product }: ProductShowcaseProps) {
+  const { mutate: addCartItem} = useAddItemToCartMutation();
   const [amount, setAmount] = useState<number>(1);
+  const router = useRouter();
   // 1. Defensive checking: is it in stock?
   const isOutOfStock = product.stock <= 0;
 
   // 2. Performance protection: Cap the dropdown to prevent DOM crashing
   const maxPurchaseQuantity = Math.min(product.stock, 10);
+
+  const addCartItemToCart = () => {
+    addCartItem({ productId: product.id, quantity: amount });
+  }
 
   return (
     // 3. Mobile-first stacking (flex-col) to side-by-side (md:flex-row)
@@ -43,6 +51,7 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
               <button
                 key={category.id}
                 type="button"
+                onClick={() => router.push(`/category/${category.name}`)}
                 className={`px-4 py-2 w-fit rounded-full text-sm font-medium border transition-all duration-200 cursor-pointer bg-blue-500 border-blue-500 text-white shadow-md shadow-blue-500/10 scale-102`}
               >
                 {category.name}
@@ -107,6 +116,7 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
               variant="secondary"
               className="cursor-pointer"
               disabled={isOutOfStock}
+              onClick={addCartItemToCart}
             >
               Add to Cart
             </Button>

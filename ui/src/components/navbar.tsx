@@ -19,6 +19,7 @@ export default function NavBar() {
     { label: "Home", href: "/" },
     { label: "All Products", href: "/allProducts" },
     { label: "All Categories", href: "/allCategories" },
+    ...(user != undefined ? [{ label: "Cart", href: "/cart" }] : [] ),
     ...(user?.role === "ADMIN" ? [{ label: "Admin", href: "/admin" }] : []),
     { label: "About", href: "#" },
   ];

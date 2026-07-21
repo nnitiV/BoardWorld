@@ -1,3 +1,5 @@
+import { Cart } from "./cart.type";
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -32,5 +34,6 @@ export interface LoginCredentials {
 export interface LoginResponse {
   message: string;      
   accessToken: string;
+  cart: Cart;
   user: UserProfile;
 }
