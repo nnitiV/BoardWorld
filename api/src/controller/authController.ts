@@ -20,10 +20,10 @@ export const login =  asyncHandler(async (req: Request, res: Response) => {
 
   const {
     safeUser: user,
+    cart,
     accessToken,
     refreshToken,
   } = await authService.loginUser(validatedData, userAgentString, deviceId);
-
   if (refreshToken) {
     res.cookie("refresh_token", refreshToken.token, {
       httpOnly: true,
@@ -42,7 +42,7 @@ export const login =  asyncHandler(async (req: Request, res: Response) => {
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-  res.status(200).json({ message: "Logged in!", user, accessToken });
+  res.status(200).json({ message: "Logged in!", user, cart, accessToken });
 });
 
 export const logout = async (req: Request, res: Response) => {

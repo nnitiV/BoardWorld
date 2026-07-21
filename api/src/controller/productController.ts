@@ -32,7 +32,6 @@ export const getActivePopularProductCatalog = asyncHandler(
       page,
       limit,
     );
-    console.log("Here one");
     res.status(200).json({ message: "Product catalog retrieved.", products });
   },
 );

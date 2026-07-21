@@ -8,6 +8,7 @@ export const getCartByUserId = async (userId: string) => {
   if (!cart) {
     return { items: [] };
   }
+  
   return cart;
 };
 

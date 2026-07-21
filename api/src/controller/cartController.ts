@@ -27,6 +27,7 @@ export const addToCart =  asyncHandler(async (req: AuthRequest, res: Response) =
     throw new AppError("Authentication failed: User context missing.", 401);
   }
   const cartItem = await cartService.addToCart(user.id, cartItemToAdd);
+  
   res.status(201).json({
     message: "Item added to the cart.",
     cartItem,

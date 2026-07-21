@@ -1,5 +1,6 @@
 import * as authRepository from "../repository/authRepository.js";
 import * as userService from "../services/userService.js";
+import * as cartService from "../services/cartService.js";
 import * as refreshTokenService from "../services/refreshTokenService.js";
 import { LoginUser, RegisterUser } from "../types/user.types.js";
 import crypto from "crypto"
@@ -71,9 +72,10 @@ export const loginUser = async (userData: LoginUser, userAgentString: string, de
     const expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
     refreshToken = await refreshTokenService.upsertRefreshToken(rawToken, user.id, deviceId, expiresAt)
   }
-
+  const cart = await cartService.getCartByUserId(user.id);
+  
   const { password, ...safeUser } = user;
-  return { safeUser, accessToken, refreshToken };
+  return { safeUser, cart, accessToken, refreshToken };
 };
 
 export const logoutUser = async (token: string) => {
