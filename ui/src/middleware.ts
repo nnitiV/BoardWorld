@@ -5,7 +5,6 @@ export function middleware(request: NextRequest) {
   const isLoggedIn = request.cookies.get("is_logged_in")?.value === "true";
   const userRole = request.cookies.get("user_role")?.value;
   const { pathname } = request.nextUrl;
-
   if (
     pathname.startsWith("/cart") ||
     pathname.startsWith("/orders") ||

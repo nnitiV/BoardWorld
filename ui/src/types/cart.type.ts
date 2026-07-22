@@ -29,3 +29,18 @@ export interface AddCartItemResponse {
   message: string;
   cartItem: CartItem;
 }
+
+export interface UpdateCartItem {
+  productId: string;
+  quantity: number;
+}
+
+export interface UpdateCartItemResponse {
+  message: string;
+  updatedCartItem: CartItem;
+}
+
+export interface DeleteCartItemResponse {
+  message: string;
+  deletedCartItemId: string;
+}
