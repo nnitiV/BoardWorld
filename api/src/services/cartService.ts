@@ -45,7 +45,7 @@ export const updateCartItem = async (
       cartItemToUpdate,
       tx,
     );
-    return updatedCartItem;
+    return updatedCartItem; 
   });
 };
 

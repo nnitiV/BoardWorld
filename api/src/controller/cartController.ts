@@ -62,6 +62,6 @@ export const deleteCartItem = async (req: AuthRequest, res: Response) => {
   );
   res.status(200).json({
     message: "Cart Item Deleted.",
-    deletedCartItem,
+    deletedCartItemId: cartItemId,
   });
 };

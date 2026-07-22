@@ -60,6 +60,7 @@ export const addItemToCart = async (
     },
     update: { quantity: { increment: data.quantity } },
     create: { cartId: cartId, ...data },
+    include: { product: true }
   });
 };
 
@@ -75,6 +76,7 @@ export const updateCartItem = async (
       cartId_productId: { cartId: cartId, productId: data.productId },
     },
     data: { ...data, cartId },
+    include: { product: true },
   });
 };
 
