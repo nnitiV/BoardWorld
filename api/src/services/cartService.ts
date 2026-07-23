@@ -6,9 +6,8 @@ import { AppError } from "../utils/AppError.js";
 export const getCartByUserId = async (userId: string) => {
   const cart = await cartRepository.getCartByUserId(userId);
   if (!cart) {
-    return { items: [] };
+    return { id: "", items: [] };
   }
-  
   return cart;
 };
 
