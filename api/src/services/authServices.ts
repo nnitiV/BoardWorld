@@ -75,6 +75,7 @@ export const loginUser = async (userData: LoginUser, userAgentString: string, de
   const cart = await cartService.getCartByUserId(user.id);
   
   const { password, ...safeUser } = user;
+
   return { safeUser, cart, accessToken, refreshToken };
 };
 

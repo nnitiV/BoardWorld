@@ -1,5 +1,6 @@
-import { UserStatus } from "@prisma/client";
+import { Prisma, UserStatus } from "@prisma/client";
 import { prisma } from "../config/db.js";
+import prismaConfig from "../../prisma.config.js";
 
 export const getUserByEmail = async (email: string) => {
   return await prisma.user.findUnique({
@@ -25,6 +26,16 @@ export const getUserRole = async (id: string) => {
     select: { role: true },
   });
 };
+
+export const updateUserStripeId = async (userId: string, stripeId: string, tx?: Prisma.TransactionClient) => {
+  const client = tx || prisma;
+  return await client.user.update({
+    where: { id: userId },
+    data: {
+      stripeCustomerId: stripeId
+    }
+  })
+}
 
 export const deleteUserById = async (id: string) => {
   return await prisma.user.update({

@@ -26,6 +26,10 @@ export const getUserRole = async (id: string) => {
   return userRole;
 }
 
+export const updateUserStripeId = async (userId: string, stripeId: string) => {
+  return await userRepository.updateUserStripeId(userId, stripeId);
+}
+
 export const deleteUserById = async (id: string) => {
   const wasUserDeleted = await userRepository.deleteUserById(id);
   if(!wasUserDeleted) {
