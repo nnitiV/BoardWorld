@@ -23,6 +23,7 @@ model User {
   email     String?  @unique
   password  String?
   name      String
+  stripeCustomerId String?
   username  String?  @unique
   userStatus UserStatus @default(ACTIVE)
   role Role @default(USER)
