@@ -1,9 +1,14 @@
 import api from "@/lib/axios";
-import { AddCartItem, AddCartItemResponse, DeleteCartItemResponse, UpdateCartItem, UpdateCartItemResponse } from "@/types/cart.type";
+import { AddCartItem, AddCartItemResponse, CheckoutResponse, DeleteCartItemResponse, UpdateCartItem, UpdateCartItemResponse } from "@/types/cart.type";
 
 export const cartService = {
   addCartItem: async (cartItem: AddCartItem) => {
     const { data } = await api.post<AddCartItemResponse>("/cart", cartItem);
+    return data;
+  },
+  checkout: async () => {
+    const { data } = await api.post<CheckoutResponse>("/cart/checkout");
+    console.log(data);
     return data;
   },
   updateCartItem: async (cartItem: UpdateCartItem) => {

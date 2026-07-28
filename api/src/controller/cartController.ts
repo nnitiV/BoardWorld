@@ -5,6 +5,7 @@ import {
 } from "../types/cart.types.js";
 import { AuthRequest } from "../types/express.js";
 import * as cartService from "../services/cartService.js";
+import * as paymentService from "../services/paymentService.js";
 import { AppError } from "../utils/AppError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
@@ -65,3 +66,15 @@ export const deleteCartItem = async (req: AuthRequest, res: Response) => {
     deletedCartItemId: cartItemId,
   });
 };
+
+export const createCheckout = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    throw new AppError("Authentication failed: User context missing.", 401);
+  }
+  const checkout = await paymentService.createCheckout(userId);
+  res.status(200).json({
+    message: "Checkout session created",
+    checkout
+  })
+}

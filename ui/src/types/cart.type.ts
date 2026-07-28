@@ -44,3 +44,13 @@ export interface DeleteCartItemResponse {
   message: string;
   deletedCartItemId: string;
 }
+
+export interface Checkout {
+  id: string;
+  url: string;
+}
+
+export interface CheckoutResponse {
+  message: string;
+  checkout: Checkout;
+}

@@ -1,6 +1,10 @@
 import { AppError } from "../utils/AppError.js";
 import * as userRepository from "../repository/userRepository.js";
 
+export const getUserById = async (userId: string) => {
+  return await userRepository.getUserById(userId);
+}
+
 export const getUserByEmail = async (email: string) => {
   return await userRepository.getUserByEmail(email);
 }

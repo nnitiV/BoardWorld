@@ -4,7 +4,7 @@ import { useUserStore } from "@/stores/userStore";
 import EmptyCart from "../../../components/cart/EmptyCart";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useDeleteCartItemMutation, useUpdateCartItemMutation } from "@/hooks/useCartMutation";
+import { useCreateCheckoutSessionMutation, useDeleteCartItemMutation, useUpdateCartItemMutation } from "@/hooks/useCartMutation";
 import TrashIcon from "@/components/Icons/TrashIcon";
 import Button from "@/components/admin/Button";
 
@@ -14,6 +14,14 @@ export default function Cart() {
   const totalToPay = cart?.items.reduce((total, item) => (item.product.price * item.quantity) + total, 0);
   const { mutate: updateCartItem } = useUpdateCartItemMutation();
   const { mutate: deleteCartItem } = useDeleteCartItemMutation();
+  const { mutate: checkout, data, isPending } = useCreateCheckoutSessionMutation();
+  const checkoutCart = async () => {
+    checkout();
+    if(data?.checkout.url) {
+      router.push(data.checkout.url);
+    }
+    console.log(data);
+  }
   const setAmount = (quantity: number, productId: string) => {
     updateCartItem({ quantity, productId });
   }
@@ -130,8 +138,8 @@ export default function Cart() {
                 ${totalToPay && totalToPay.toFixed(2)}
               </span>
             </div>
-            <Button className="w-full font-bold text-white py-3">
-              Proceed to checkout
+            <Button className="w-full font-bold text-white py-3" onClick={checkoutCart}>
+              {isPending ? "Proceeding to checkout..." : "Proceed to checkout"}
             </Button>
           </div>
         </div>

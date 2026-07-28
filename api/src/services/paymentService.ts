@@ -1,19 +1,29 @@
 import * as cartService from "../services/cartService.js"
 import * as userService from "../services/userService.js"
-import { Product, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { StripeClient } from "../utils/Stripe.js"
+import { AppError } from "../utils/AppError.js";
 
-export const createStripeCustomer = async (user: User) => {
-  let customer = await StripeClient.customers.create({
-    email: user.email || undefined,
-    name: user.name || undefined,
-    metadata: {
-      userId: user.id,
-    },
-  });
-  user.stripeCustomerId = customer.id;
-  await userService.updateUserStripeId(user.id, customer.id);
-  return customer;
+export const createOrUpdateStripeCustomer = async (userId: string) => {
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new AppError(`User with id ${userId} doesn't exist.`, 404);
+  }
+  if(!user.stripeCustomerId){
+
+    let customer = await StripeClient.customers.create({
+      email: user.email || undefined,
+      name: user.name || undefined,
+      metadata: {
+        userId: user.id,
+      },
+    });
+    user.stripeCustomerId = customer.id;
+    await userService.updateUserStripeId(user.id, customer.id);
+    // return customer;
+  }
+  let customer = await StripeClient.customers.retrieve(user.stripeCustomerId)
+  // return customer;
 };
 
 export const createCheckout = async (userId: string) => {
@@ -28,6 +38,7 @@ export const createCheckout = async (userId: string) => {
     },
     quantity: item.quantity,
   }));
+  await createOrUpdateStripeCustomer(userId);
   const checkoutSession = await StripeClient.checkout.sessions.create({
     success_url: "http://localhost:3000/",
     cancel_url: "http://localhost:3000/cart",
