@@ -28,6 +28,7 @@ model User {
   userStatus UserStatus @default(ACTIVE)
   role Role @default(USER)
   cart Cart?
+  order Order?
   userDevice  UserDevice[]
   dateOfBirth DateTime
   createdAt DateTime @default(now())
@@ -79,6 +80,7 @@ model Product {
   imagesUrl String[]
   isActive Boolean @default(true)
   cartItems CartItem[]
+  orderItem OrderItem[]
   categories Category[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -119,4 +121,38 @@ model CartItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([cartId, productId])
+}
+
+enum OrderStatus {
+  PENDING 
+  PAID 
+  CANCELED
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status OrderStatus @default(PENDING)
+
+  items OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+  quantity Int @default(1)
+
+  orderId String 
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product Product @relation(fields: [productId], references: [id], onDelete: NoAction)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([orderId, productId])
 }
