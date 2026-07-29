@@ -92,9 +92,11 @@ export function useDeleteCartItemMutation() {
 }
 
 export function useCreateCheckoutSessionMutation() {
+  const addOrder = useUserStore(state => state.addOrder);
   return useMutation<CheckoutResponse, AxiosError<ErrorResponsePayload>, void>({
     mutationFn: cartService.checkout,
     onSuccess: (data) => {
+      addOrder(data.order);
       if (data.checkout.url) {
         window.location.href = data.checkout.url;
       }

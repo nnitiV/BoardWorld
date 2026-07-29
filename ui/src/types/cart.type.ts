@@ -20,6 +20,27 @@ export interface Cart {
   updatedAt: Date;
 }
 
+export interface OrderItem {
+  id: string;
+  quantity: number;
+  orderId: string;
+  product: Product;
+  productId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  user: UserProfile;
+  status: string
+  items: OrderItem[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
 export interface AddCartItem {
   productId: string;
   quantity: number;
@@ -53,4 +74,5 @@ export interface Checkout {
 export interface CheckoutResponse {
   message: string;
   checkout: Checkout;
+  order: Order
 }

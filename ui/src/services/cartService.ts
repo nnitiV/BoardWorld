@@ -7,6 +7,7 @@ export const cartService = {
     return data;
   },
   checkout: async () => {
+    console.log("Buying cart...");
     const { data } = await api.post<CheckoutResponse>("/cart/checkout");
     console.log(data);
     return data;

@@ -20,6 +20,7 @@ export default function NavBar() {
     { label: "All Products", href: "/allProducts" },
     { label: "All Categories", href: "/allCategories" },
     ...(user != undefined ? [{ label: "Cart", href: "/cart" }] : [] ),
+    ...(user != undefined ? [{ label: "Orders", href: "/orders" }] : [] ),
     ...(user?.role === "ADMIN" ? [{ label: "Admin", href: "/admin" }] : []),
     { label: "About", href: "#" },
   ];

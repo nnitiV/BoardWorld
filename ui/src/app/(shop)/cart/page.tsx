@@ -20,7 +20,6 @@ export default function Cart() {
     if(data?.checkout.url) {
       router.push(data.checkout.url);
     }
-    console.log(data);
   }
   const setAmount = (quantity: number, productId: string) => {
     updateCartItem({ quantity, productId });
