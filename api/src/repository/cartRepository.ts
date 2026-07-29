@@ -66,7 +66,6 @@ export const addItemToCart = async (
 };
 
 export const updateCartItem = async (
-  userId: string,
   cartId: string,
   data: UpdateCartItem,
   tx?: Prisma.TransactionClient,

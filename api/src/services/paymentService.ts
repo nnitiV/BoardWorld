@@ -1,10 +1,10 @@
 import * as cartService from "../services/cartService.js"
 import * as userService from "../services/userService.js"
-import { User } from "@prisma/client";
 import { StripeClient } from "../utils/Stripe.js"
 import { AppError } from "../utils/AppError.js";
+import * as cartConverter from "../utils/cartConverter.js";
 
-export const createOrUpdateStripeCustomer = async (userId: string) => {
+export const createOrUpdateStripeCustomer = async (userId: string ) => {
   const user = await userService.getUserById(userId);
   if(!user) {
     throw new AppError(`User with id ${userId} doesn't exist.`, 404);
@@ -28,6 +28,10 @@ export const createOrUpdateStripeCustomer = async (userId: string) => {
 
 export const createCheckout = async (userId: string) => {
   const cart = await cartService.getCartByUserId(userId);
+  if (!('userId' in cart) || cart.items.length === 0) {
+    throw new AppError("Cannot create checkout for an empty cart", 400);
+  }
+  const order = await cartConverter.convertCartToOrder(userId, cart);
   const lineItems = cart.items.map((item) => ({
     price_data: {
       currency: "usd",
@@ -49,5 +53,5 @@ export const createCheckout = async (userId: string) => {
       cartId: cart.id,
     },
   });
-  return checkoutSession;
+  return {order, checkoutSession};
 };

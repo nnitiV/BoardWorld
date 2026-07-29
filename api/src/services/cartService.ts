@@ -39,7 +39,6 @@ export const updateCartItem = async (
       throw new AppError("No cart associated with this user.", 404);
     }
     const updatedCartItem = await cartRepository.updateCartItem(
-      userId,
       cart.id,
       cartItemToUpdate,
       tx,

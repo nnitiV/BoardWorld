@@ -72,9 +72,10 @@ export const createCheckout = async (req: AuthRequest, res: Response) => {
   if (!userId) {
     throw new AppError("Authentication failed: User context missing.", 401);
   }
-  const checkout = await paymentService.createCheckout(userId);
+  const {order, checkoutSession} = await paymentService.createCheckout(userId);
   res.status(200).json({
     message: "Checkout session created",
-    checkout
+    checkout: checkoutSession,
+    order
   })
 }
