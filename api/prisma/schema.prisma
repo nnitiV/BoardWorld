@@ -28,7 +28,7 @@ model User {
   userStatus UserStatus @default(ACTIVE)
   role Role @default(USER)
   cart Cart?
-  order Order?
+  orders Order[]
   userDevice  UserDevice[]
   dateOfBirth DateTime
   createdAt DateTime @default(now())
@@ -131,9 +131,12 @@ enum OrderStatus {
 
 model Order {
   id String @id @default(uuid())
+  displayId Int @default(autoincrement())
 
-  userId String @unique
+  userId String 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  paymentUrl String?
 
   status OrderStatus @default(PENDING)
 
