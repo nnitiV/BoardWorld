@@ -1,8 +1,8 @@
 import * as cartService from "../services/cartService.js"
 import * as userService from "../services/userService.js"
+import * as orderService from "../services/orderService.js"
 import { StripeClient } from "../utils/Stripe.js"
 import { AppError } from "../utils/AppError.js";
-import * as cartConverter from "../utils/cartConverter.js";
 
 export const createOrUpdateStripeCustomer = async (userId: string ) => {
   const user = await userService.getUserById(userId);
@@ -31,7 +31,7 @@ export const createCheckout = async (userId: string) => {
   if (!('userId' in cart) || cart.items.length === 0) {
     throw new AppError("Cannot create checkout for an empty cart", 400);
   }
-  const order = await cartConverter.convertCartToOrder(userId, cart);
+
   const lineItems = cart.items.map((item) => ({
     price_data: {
       currency: "usd",
@@ -45,7 +45,7 @@ export const createCheckout = async (userId: string) => {
   await createOrUpdateStripeCustomer(userId);
   const checkoutSession = await StripeClient.checkout.sessions.create({
     success_url: "http://localhost:3000/",
-    cancel_url: "http://localhost:3000/cart",
+    cancel_url: "http://localhost:3000/orders",
     line_items: lineItems,
     mode: "payment",
     metadata: {
@@ -53,5 +53,9 @@ export const createCheckout = async (userId: string) => {
       cartId: cart.id,
     },
   });
+  if(!checkoutSession.url) {
+    throw new AppError("Url not created.", 500);
+  }
+  const order = await orderService.createOrderFromCart(cart, userId, checkoutSession.url);
   return {order, checkoutSession};
 };

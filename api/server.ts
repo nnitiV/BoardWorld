@@ -5,6 +5,7 @@ import healthRoutes from "./src/routes/healthRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoute.js";
 import cartRoutes from "./src/routes/cartRoute.js";
+import orderRoutes from "./src/routes/orderRoutes.js";
 import productRoutes from "./src/routes/productRoute.js";
 import deviceRoutes from "./src/routes/deviceRoutes.js";
 import globalErrorHandler from "./src/middleware/errorHandler.js";
@@ -48,6 +49,7 @@ app.use(protect);
 app.use("/api/device", deviceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/cart", cartRoutes)
+app.use("/api/order", orderRoutes)
 
 app.use(globalErrorHandler);
 

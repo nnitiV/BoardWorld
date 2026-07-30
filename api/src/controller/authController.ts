@@ -21,6 +21,7 @@ export const login =  asyncHandler(async (req: Request, res: Response) => {
   const {
     safeUser: user,
     cart,
+    orders,
     accessToken,
     refreshToken,
   } = await authService.loginUser(validatedData, userAgentString, deviceId);
@@ -42,7 +43,7 @@ export const login =  asyncHandler(async (req: Request, res: Response) => {
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-  res.status(200).json({ message: "Logged in!", user, cart, accessToken });
+  res.status(200).json({ message: "Logged in!", user, cart, orders, accessToken });
 });
 
 export const logout = async (req: Request, res: Response) => {
