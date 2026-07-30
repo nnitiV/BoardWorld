@@ -18,6 +18,7 @@ export function useLoginMutation() {
   const setAccessToken = useAuthStore((state) => state.setAuthData);
   const setUser = useUserStore(state => state.setUser);
   const setCart = useUserStore(state => state.setCart);
+  const setOrders = useUserStore(state => state.setOrders);
 
   return useMutation<
     LoginResponse,
@@ -31,6 +32,7 @@ export function useLoginMutation() {
       setAccessToken(data.accessToken, expirationTimestamp);
       setUser(data.user);
       setCart(data.cart);
+      setOrders(data.orders);
       router.push("/");
     },
     onError: (error) => {

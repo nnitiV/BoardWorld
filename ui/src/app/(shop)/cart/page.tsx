@@ -4,9 +4,10 @@ import { useUserStore } from "@/stores/userStore";
 import EmptyCart from "../../../components/cart/EmptyCart";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCreateCheckoutSessionMutation, useDeleteCartItemMutation, useUpdateCartItemMutation } from "@/hooks/useCartMutation";
+import { useDeleteCartItemMutation, useUpdateCartItemMutation } from "@/hooks/useCartMutation";
 import TrashIcon from "@/components/Icons/TrashIcon";
 import Button from "@/components/admin/Button";
+import { useCreateCheckoutSessionMutation } from "@/hooks/useOrderMutation";
 
 export default function Cart() {
   const router = useRouter();

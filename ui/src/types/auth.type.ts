@@ -1,4 +1,5 @@
 import { Cart } from "./cart.type";
+import { Order } from "./order.type";
 
 export interface UserProfile {
   id: string;
@@ -35,5 +36,6 @@ export interface LoginResponse {
   message: string;      
   accessToken: string;
   cart: Cart;
+  orders: Order[];
   user: UserProfile;
 }

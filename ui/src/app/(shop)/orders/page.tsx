@@ -2,11 +2,13 @@
 import Button from "@/components/admin/Button";
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "next/navigation";
-import Image from "next/image"; // 👈 Senior fix: Importing Next.js Image
+import Image from "next/image"; 
+import { useCancelOrderMutation } from "@/hooks/useOrderMutation";
 
 export default function OrdersList() {
   const orders = useUserStore((state) => state.orders);
   const router = useRouter();
+  const { mutate: cancelOrder } = useCancelOrderMutation();
 
   if (!orders || orders.length === 0) {
     return (
@@ -30,6 +32,8 @@ export default function OrdersList() {
       
       <div className="space-y-6">
         {orders.map((order) => {
+          console.log(order.items);
+          if(!order.displayId) return;
           const normalizedStatus = order.status?.toString().toUpperCase();
           const statusClassName =
             normalizedStatus === "PENDING"
@@ -52,10 +56,10 @@ export default function OrdersList() {
                 {/* ... (Order ID and Date/Status rendering remains the same) ... */}
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">
-                    Order ID
+                    ID
                   </p>
                   <p className="font-mono text-gray-900 text-sm mt-1">
-                    {order.id}
+                    ORDER-{String(order.displayId).padStart(5, `0`)}
                   </p>
                 </div>
 
@@ -100,13 +104,13 @@ export default function OrdersList() {
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden shrink-0 border border-gray-200">
                           {item.product.imagesUrl?.[0] ? (
-                              <Image
-                                src={`http://localhost:5173${item.product.imagesUrl[0]}`}
-                                alt={item.product.name}
-                                width={48}
-                                height={48}
-                                className="w-full h-full object-cover"
-                              />
+                            <Image
+                              src={`http://localhost:5173${item.product.imagesUrl[0]}`}
+                              alt={item.product.name}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
                               No img
@@ -132,13 +136,32 @@ export default function OrdersList() {
               </div>
 
               {/* Order Footer: Total */}
-              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
-                <p className="text-sm text-gray-600 mr-4 self-center">
-                  Order Total:
-                </p>
-                <p className="text-lg font-bold text-gray-900">
-                  ${orderTotal.toFixed(2)}
-                </p>
+              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between">
+                <div className="flex gap-4">
+                  {order.status !== "CANCELED" && (
+                    <Button
+                      className="bg-red-500 border border-red-300/50 text-white font-bold hover:bg-red-400"
+                      onClick={() => cancelOrder(order.id)}
+                    >
+                      Cancel {order.status}
+                    </Button>
+                  )}
+                  <Button
+                    className="bg-green-500 border border-green-300/50 text-white font-bold hover:bg-green-400"
+                    disabled={order.status.toUpperCase() !== "PENDING"}
+                    onClick={() => router.push(order.paymentUrl)}
+                  >
+                    Pay
+                  </Button>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mr-4 self-center">
+                    Order Total:
+                  </p>
+                  <p className="text-lg font-bold text-gray-900">
+                    ${orderTotal.toFixed(2)}
+                  </p>
+                </div>
               </div>
             </div>
           );

@@ -1,6 +1,6 @@
 import { cartService } from "@/services/cartService";
 import { useUserStore } from "@/stores/userStore";
-import { AddCartItem, AddCartItemResponse, CartItem, CheckoutResponse, DeleteCartItemResponse, UpdateCartItem, UpdateCartItemResponse } from "@/types/cart.type";
+import { AddCartItem, AddCartItemResponse, CartItem, DeleteCartItemResponse, UpdateCartItem, UpdateCartItemResponse } from "@/types/cart.type";
 import { ErrorResponsePayload } from "@/types/error.type";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -89,21 +89,4 @@ export function useDeleteCartItemMutation() {
       console.error("Backend Error:", serverMessage, error);
     },
   })
-}
-
-export function useCreateCheckoutSessionMutation() {
-  const addOrder = useUserStore(state => state.addOrder);
-  return useMutation<CheckoutResponse, AxiosError<ErrorResponsePayload>, void>({
-    mutationFn: cartService.checkout,
-    onSuccess: (data) => {
-      addOrder(data.order);
-      if (data.checkout.url) {
-        window.location.href = data.checkout.url;
-      }
-    },
-    onError: (error) => {
-      const serverMessage = error || "Authentication failed";
-      console.error("Backend Error:", serverMessage, error);
-    },
-  });
 }

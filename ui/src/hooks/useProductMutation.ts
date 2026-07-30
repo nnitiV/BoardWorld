@@ -1,6 +1,6 @@
 import { productService } from "@/services/productService";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse, Review, ReviewsResponse, CreateReview, Reviews, ReviewResponse, UpdateReview } from "@/types/product.type";
+import { Category, CategoriesResponse, Product, ProductCatalogResponse, ProductResponse, UpdateCategoryResponse, UpdateCategory, ProductsResponse, ReviewsResponse, CreateReview, Reviews, ReviewResponse, UpdateReview } from "@/types/product.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 

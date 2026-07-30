@@ -1,27 +1,45 @@
 import { prisma } from "../config/db.js";
-import * as orderRepository from "../repository/orderRepository.js"
+import * as orderRepository from "../repository/orderRepository.js";
+import { FullCartDetails } from "../types/cart.types.js";
 import { AddOrderItem, UpdateOrderItem } from "../types/order.types.js";
-import { AppError } from "../utils/AppError.js";
 
-export const getOrderByUserId = async (userId: string) => {
-  const Order = await orderRepository.getOrderByUserId(userId);
+export const createOrder = async (userId: string) => {
+  const order = await orderRepository.createOrder(userId);
+  return order;
+};
+
+export const createOrderFromCart = async (cart: FullCartDetails, userId: string, url: string) => {
+  const order = await orderRepository.createOrderFromCart(cart, userId, url);
+  return order;
+}
+
+export const getOrdersByUserId = async (userId: string) => {
+  const Order = await orderRepository.getOrdersByUserId(userId);
   if (!Order) {
     return { id: "", items: [] };
   }
   return Order;
 };
 
-export const addToOrder = async (userId: string, OrderItem: AddOrderItem) => {
+export const addToOrder = async (
+  userId: string,
+  orderId: string,
+  orderItem: AddOrderItem,
+) => {
   return await prisma.$transaction(async (tx) => {
-    let Order = await orderRepository.getOrderByUserId(userId, tx);
-    
-    let OrderId = !Order
+    let order = await orderRepository.getOrderByUserIdAndOrderId(
+      userId,
+      orderId,
+      tx,
+    );
+
+    let ordId = !order
       ? (await orderRepository.createOrder(userId, tx)).id
-      : Order.id;
+      : order.id;
 
     const newOrderItem = await orderRepository.addItemToOrder(
-      OrderItem,
-      OrderId,
+      orderItem,
+      ordId,
       tx,
     );
 
@@ -30,37 +48,40 @@ export const addToOrder = async (userId: string, OrderItem: AddOrderItem) => {
 };
 
 export const updateOrderItem = async (
-  userId: string,
-  OrderItemToUpdate: UpdateOrderItem,
+  orderId: string,
+  orderItemToUpdate: UpdateOrderItem,
 ) => {
-  return await prisma.$transaction(async (tx) => {
-    let Order = await orderRepository.getOrderByUserId(userId, tx);
-    if (!Order) {
-      throw new AppError("No Order associated with this user.", 404);
-    }
-    const updatedOrderItem = await orderRepository.updateOrderItem(
-      Order.id,
-      OrderItemToUpdate,
-      tx,
-    );
-    return updatedOrderItem; 
-  });
+  const updatedOrderItem = await orderRepository.updateOrderItem(
+    orderId,
+    orderItemToUpdate,
+  );
+  return updatedOrderItem;
+};
+
+export const updateOrderWithCheckoutUrl = async (
+  url: string,
+  orderId: string,
+) => {
+  const updatedOrder = await orderRepository.updateOrderWithCheckoutUrl(
+    url,
+    orderId,
+  );
+  return updatedOrder;
 };
 
 export const deleteOrderItemById = async (
-  OrderItemId: string,
-  userId: string,
+  orderItemId: string,
+  orderId: string,
 ) => {
-  return await prisma.$transaction(async (tx) => {
-    let Order = await orderRepository.getOrderByUserId(userId, tx);
-    if (!Order) {
-      throw new AppError("No Order associated with this user.", 404);
-    }
-    const deletedOrderItem = await orderRepository.deleteOrderItemById(
-      OrderItemId,
-      Order.id,
-      tx,
-    );
-    return deletedOrderItem;
-  });
+  const deletedOrderItem = await orderRepository.deleteOrderItemById(
+    orderItemId,
+    orderId,
+  );
+  return deletedOrderItem;
+};
+
+export const cancelOrder = async (orderId: string, userId: string) => {
+  const canceledOrder = await orderRepository.cancelOrder(orderId, userId);
+  console.log(canceledOrder);
+  return canceledOrder;
 };
