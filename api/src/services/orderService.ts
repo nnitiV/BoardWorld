@@ -82,6 +82,5 @@ export const deleteOrderItemById = async (
 
 export const cancelOrder = async (orderId: string, userId: string) => {
   const canceledOrder = await orderRepository.cancelOrder(orderId, userId);
-  console.log(canceledOrder);
   return canceledOrder;
 };

@@ -143,7 +143,7 @@ export default function OrdersList() {
                       className="bg-red-500 border border-red-300/50 text-white font-bold hover:bg-red-400"
                       onClick={() => cancelOrder(order.id)}
                     >
-                      Cancel {order.status}
+                      Cancel
                     </Button>
                   )}
                   <Button

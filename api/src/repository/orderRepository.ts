@@ -55,27 +55,50 @@ export const createOrder = async (
 };
 
 
-export const createOrderFromCart = async (cart: FullCartDetails, userId: string, url: string) => {
-  return await prisma.order.create({
-    data: {
-      userId: userId,
-      paymentUrl: url,
-      status: "PENDING",
-      // 👇 This is the magic. It creates the order and inserts all items simultaneously.
-      items: {
-        create: cart.items.map((cartItem) => ({
-          productId: cartItem.productId,
-          quantity: cartItem.quantity,
-        })),
-      },
-    },
-    include: {
-      items: {
-        include: {
-          product: true,
+export const createOrderFromCart = async (
+  cart: FullCartDetails, 
+  userId: string, 
+  url: string
+) => {
+  // $transaction guarantees ALL of this succeeds, or NONE of it does
+  return await prisma.$transaction(async (tx) => {
+    // 1. Create the Order & OrderItems
+    const order = await tx.order.create({
+      data: {
+        userId,
+        paymentUrl: url,
+        status: "PENDING",
+        items: {
+          create: cart.items.map((cartItem) => ({
+            productId: cartItem.productId,
+            quantity: cartItem.quantity,
+          })),
         },
       },
-    },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    // 2. Decrement stock for every product using atomic Promise.all
+    await Promise.all(
+      cart.items.map((cartItem) =>
+        tx.product.update({
+          where: { id: cartItem.productId },
+          data: {
+            stock: {
+              decrement: cartItem.quantity, // Atomic decrement!
+            },
+          },
+        })
+      )
+    );
+
+    return order;
   });
 };
 
@@ -156,15 +179,28 @@ export const cancelOrder = async (orderId: string, userId: string,
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.order.update({
-    where: { id: orderId },
-    data: { status: "CANCELED" },
-    include: {
-      items: {
-        include: {
-          product: true,
+  return await client.$transaction(async (tx) => {
+    const canceledOrder = await tx.order.update({
+      where: { id: orderId },
+      data: { status: "CANCELED" },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
         },
       },
-    },
+    });
+
+    await Promise.all(
+      canceledOrder.items.map((orderItem) =>
+        tx.product.update({
+          where: { id: orderItem.productId },
+          data: { stock: { increment: orderItem.quantity } },
+        }),
+      ),
+    );
+
+    return canceledOrder;
   });
 }
