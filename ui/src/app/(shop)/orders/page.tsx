@@ -3,9 +3,14 @@ import Button from "@/components/admin/Button";
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image"; 
-import { useCancelOrderMutation } from "@/hooks/useOrderMutation";
+import { useCancelOrderMutation, useGetOrdersMutation } from "@/hooks/useOrderMutation";
+import { useEffect } from "react";
 
 export default function OrdersList() {
+  const { mutate: getOrders } = useGetOrdersMutation();
+  useEffect(() => {
+    getOrders();
+  }, []);
   const orders = useUserStore((state) => state.orders);
   const router = useRouter();
   const { mutate: cancelOrder } = useCancelOrderMutation();
@@ -138,21 +143,23 @@ export default function OrdersList() {
               {/* Order Footer: Total */}
               <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between">
                 <div className="flex gap-4">
-                  {order.status !== "CANCELED" && (
-                    <Button
-                      className="bg-red-500 border border-red-300/50 text-white font-bold hover:bg-red-400"
-                      onClick={() => cancelOrder(order.id)}
-                    >
-                      Cancel
-                    </Button>
+                  {order.status === "PENDING" && (
+                    <>
+                      <Button
+                        className="bg-red-500 border border-red-300/50 text-white font-bold hover:bg-red-400"
+                        onClick={() => cancelOrder(order.id)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="bg-green-500 border border-green-300/50 text-white font-bold hover:bg-green-400"
+                        disabled={order.status.toUpperCase() !== "PENDING"}
+                        onClick={() => router.push(order.paymentUrl)}
+                      >
+                        Pay
+                      </Button>
+                    </>
                   )}
-                  <Button
-                    className="bg-green-500 border border-green-300/50 text-white font-bold hover:bg-green-400"
-                    disabled={order.status.toUpperCase() !== "PENDING"}
-                    onClick={() => router.push(order.paymentUrl)}
-                  >
-                    Pay
-                  </Button>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 mr-4 self-center">

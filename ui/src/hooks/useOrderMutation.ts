@@ -1,9 +1,24 @@
 import { orderService } from "@/services/orderService";
 import { useUserStore } from "@/stores/userStore";
 import { ErrorResponsePayload } from "@/types/error.type";
-import { CancelOrderResponse, CheckoutResponse } from "@/types/order.type";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CancelOrderResponse, CheckoutResponse, GetOrdersResponse } from "@/types/order.type";
+import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+
+export function useGetOrdersMutation() {
+  const setOrders = useUserStore(state => state.setOrders);
+  return useMutation<GetOrdersResponse, AxiosError<ErrorResponsePayload>, void>({
+    mutationFn: orderService.getOrders,
+    onSuccess: (data) => {
+      setOrders(data.orders);
+    },
+    onError: (error) => {
+      const serverMessage = error || "Authentication failed";
+      console.error("Backend Error:", serverMessage, error);
+    },
+  });
+}
+
 
 export function useCreateCheckoutSessionMutation() {
   const addOrder = useUserStore(state => state.addOrder);

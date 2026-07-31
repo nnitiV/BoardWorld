@@ -29,6 +29,11 @@ export interface Checkout {
   url: string;
 }
 
+export interface GetOrdersResponse {
+  message: string;
+  orders: Order[]
+}
+
 export interface CheckoutResponse {
   message: string;
   checkout: Checkout;
