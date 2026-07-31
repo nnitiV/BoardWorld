@@ -3,6 +3,7 @@ import { Product } from "@/types/product.type";
 import { useState } from "react";
 import Button from "../admin/Button";
 import ImageCarousel from "./ImageCarousel";
+import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
 import { useAddItemToCartMutation } from "@/hooks/useCartMutation";
 
@@ -22,6 +23,7 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
 
   const addCartItemToCart = () => {
     addCartItem({ productId: product.id, quantity: amount });
+    toast.success('Board game added to cart!');
   }
 
   return (

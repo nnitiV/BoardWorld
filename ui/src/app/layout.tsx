@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import type { Metadata } from "next";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full bg-blue-50">
         <QueryProvider>{children}</QueryProvider>
+        <Toaster />
       </body>
     </html>
   );
