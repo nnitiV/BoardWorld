@@ -4,6 +4,15 @@ import * as orderService from "../services/orderService.js"
 import { StripeClient } from "../utils/Stripe.js"
 import { AppError } from "../utils/AppError.js";
 
+export const getOrders = async (userId: string) => {
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new AppError(`User with id ${userId} doesn't exist.`, 404);
+  }
+  const orders = await orderService.getOrdersByUserId(userId);
+  return orders;
+}
+
 export const createOrUpdateStripeCustomer = async (userId: string ) => {
   const user = await userService.getUserById(userId);
   if(!user) {
@@ -44,7 +53,7 @@ export const createCheckout = async (userId: string) => {
   }));
   await createOrUpdateStripeCustomer(userId);
   const checkoutSession = await StripeClient.checkout.sessions.create({
-    success_url: "http://localhost:3000/",
+    success_url: "http://localhost:3000/orders",
     cancel_url: "http://localhost:3000/orders",
     line_items: lineItems,
     mode: "payment",
@@ -57,5 +66,10 @@ export const createCheckout = async (userId: string) => {
     throw new AppError("Url not created.", 500);
   }
   const order = await orderService.createOrderFromCart(cart, userId, checkoutSession.url);
+  await StripeClient.checkout.sessions.update(checkoutSession.id, {
+    metadata: {
+      orderId: order.id,
+    },
+  });
   return {order, checkoutSession};
 };

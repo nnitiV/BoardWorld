@@ -6,6 +6,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoute.js";
 import cartRoutes from "./src/routes/cartRoute.js";
 import orderRoutes from "./src/routes/orderRoutes.js";
+import webhookRoutes from "./src/routes/webhookRoutes.js";
 import productRoutes from "./src/routes/productRoute.js";
 import deviceRoutes from "./src/routes/deviceRoutes.js";
 import globalErrorHandler from "./src/middleware/errorHandler.js";
@@ -38,6 +39,8 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
+
+app.use("/api/webhooks", webhookRoutes);
 
 app.use(express.json());
 

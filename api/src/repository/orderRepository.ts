@@ -35,6 +35,9 @@ export const getOrdersByUserId = async (
         },
       },
     },
+    orderBy: {
+      createdAt: "desc", // 'desc' puts the newest dates at the top
+    },
   });
 };
 
@@ -43,7 +46,12 @@ export const getOrderItemsByOrderId = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
-  return await client.orderItem.findMany({ where: { orderId } });
+  return await client.orderItem.findMany({
+    where: { orderId },
+    orderBy: {
+      createdAt: "desc", // 'desc' puts the newest dates at the top
+    },
+  });
 };
 
 export const createOrder = async (
@@ -54,11 +62,10 @@ export const createOrder = async (
   return await client.order.create({ data: { userId } });
 };
 
-
 export const createOrderFromCart = async (
-  cart: FullCartDetails, 
-  userId: string, 
-  url: string
+  cart: FullCartDetails,
+  userId: string,
+  url: string,
 ) => {
   // $transaction guarantees ALL of this succeeds, or NONE of it does
   return await prisma.$transaction(async (tx) => {
@@ -94,8 +101,16 @@ export const createOrderFromCart = async (
               decrement: cartItem.quantity, // Atomic decrement!
             },
           },
-        })
-      )
+        }),
+      ),
+    );
+
+    await Promise.all(
+      cart.items.map((cartItem) =>
+        tx.cartItem.delete({
+          where: { id: cartItem.id },
+        }),
+      ),
     );
 
     return order;
@@ -128,7 +143,7 @@ export const addItemToOrder = async (
     },
     update: { quantity: { increment: data.quantity } },
     create: { orderId: orderId, ...data },
-    include: { product: true }
+    include: { product: true },
   });
 };
 
@@ -147,7 +162,11 @@ export const updateOrderItem = async (
   });
 };
 
-export const updateOrderWithCheckoutUrl = async (url: string, orderId: string, tx?: Prisma.TransactionClient) => {
+export const updateOrderWithCheckoutUrl = async (
+  url: string,
+  orderId: string,
+  tx?: Prisma.TransactionClient,
+) => {
   const client = tx || prisma;
   return await client.order.update({
     where: {
@@ -162,7 +181,18 @@ export const updateOrderWithCheckoutUrl = async (url: string, orderId: string, t
       },
     },
   });
-}
+};
+
+export const markOrderAsPaid = async (
+  orderId: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx || prisma;
+  return await client.order.update({
+    where: { id: orderId },
+    data: { status: "PAID" },
+  });
+};
 
 export const deleteOrderItemById = async (
   id: string,
@@ -175,7 +205,9 @@ export const deleteOrderItemById = async (
   });
 };
 
-export const cancelOrder = async (orderId: string, userId: string,
+export const cancelOrder = async (
+  orderId: string,
+  userId: string,
   tx?: Prisma.TransactionClient,
 ) => {
   const client = tx || prisma;
@@ -203,4 +235,4 @@ export const cancelOrder = async (orderId: string, userId: string,
 
     return canceledOrder;
   });
-}
+};

@@ -80,6 +80,12 @@ export const deleteOrderItemById = async (
   return deletedOrderItem;
 };
 
+export const markOrderAsPaid = async (orderId: string) => {
+  const paidOrder = await orderRepository.markOrderAsPaid(orderId);
+  return paidOrder;
+}
+
+
 export const cancelOrder = async (orderId: string, userId: string) => {
   const canceledOrder = await orderRepository.cancelOrder(orderId, userId);
   return canceledOrder;
