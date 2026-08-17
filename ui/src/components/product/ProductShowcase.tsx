@@ -23,7 +23,7 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
 
   const addCartItemToCart = () => {
     addCartItem({ productId: product.id, quantity: amount });
-    toast.success('Board game added to cart!');
+    toast.success('Added to cart!');
   }
 
   return (
