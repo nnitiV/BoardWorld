@@ -5,7 +5,8 @@ import Button from "../admin/Button";
 import ImageCarousel from "./ImageCarousel";
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
-import { useAddItemToCartMutation } from "@/hooks/useCartMutation";
+import { useAddItemToCartMutation, useDeleteCartItemMutation } from "@/hooks/useCartMutation";
+import { useCreateCheckoutSessionMutation } from "@/hooks/useOrderMutation";
 
 interface ProductShowcaseProps {
   product: Product;
@@ -13,6 +14,8 @@ interface ProductShowcaseProps {
 
 export default function ProductShowcase({ product }: ProductShowcaseProps) {
   const { mutate: addCartItem} = useAddItemToCartMutation();
+  const { mutate: deleteCartItem, isSuccess} = useDeleteCartItemMutation();
+  const { mutate: checkout, data, isPending } = useCreateCheckoutSessionMutation();
   const [amount, setAmount] = useState<number>(1);
   const router = useRouter();
   // 1. Defensive checking: is it in stock?
@@ -24,6 +27,14 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
   const addCartItemToCart = () => {
     addCartItem({ productId: product.id, quantity: amount });
     toast.success('Added to cart!');
+  }
+
+  const addCartToItemAndPurchase = () => {
+    addCartItem({ productId: product.id, quantity: amount });
+    checkout();
+    if(data?.checkout.url) {
+      router.push(data.checkout.url);
+    }
   }
 
   return (
@@ -110,7 +121,8 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
             <Button
               variant="primary"
               className="cursor-pointer"
-              disabled={isOutOfStock}
+              disabled={isOutOfStock || isPending}
+              onClick={addCartToItemAndPurchase}
             >
               Purchase now
             </Button>

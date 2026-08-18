@@ -1,6 +1,5 @@
 import api from "@/lib/axios";
 import { AddCartItem, AddCartItemResponse, DeleteCartItemResponse, UpdateCartItem, UpdateCartItemResponse } from "@/types/cart.type";
-import { CheckoutResponse } from "@/types/order.type";
 
 export const cartService = {
   addCartItem: async (cartItem: AddCartItem) => {

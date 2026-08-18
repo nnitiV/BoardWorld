@@ -66,7 +66,7 @@ export default function NavBar() {
             href="/"
             className="text-2xl font-bold transition-transform hover:scale-105"
           >
-            Board World {cartItemCount}
+            Board World
           </Link>
 
           {/* Desktop Nav */}

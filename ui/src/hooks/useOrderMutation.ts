@@ -4,6 +4,7 @@ import { ErrorResponsePayload } from "@/types/error.type";
 import { CancelOrderResponse, CheckoutResponse, GetOrdersResponse } from "@/types/order.type";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useDeleteCartItemMutation } from "./useCartMutation";
 
 export function useGetOrdersMutation() {
   const setOrders = useUserStore(state => state.setOrders);
@@ -27,6 +28,9 @@ export function useCreateCheckoutSessionMutation() {
     onSuccess: (data) => {
       addOrder(data.order);
       if (data.checkout.url) {
+        data.order.items.forEach(item => {
+          useUserStore.getState().deleteCartItem(item.productId);
+        });
         window.location.href = data.checkout.url;
       }
     },

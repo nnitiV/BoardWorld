@@ -13,6 +13,7 @@ interface UserState {
   setOrders: (orders: Order[]) => void;
   addOrder: (order: Order) => void;
   updateOrder: (order: Order) => void;
+  deleteCartItem: (productId: string) => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -30,6 +31,20 @@ export const useUserStore = create<UserState>()(
         set((state) => ({
           orders: state.orders.map((o) => (o.id === order.id ? order : o)),
         })),
+        deleteCartItem: (productId) => {
+          set((state) => {
+            if (!state.cart) return state;
+            const updatedItems = state.cart.items.filter(
+              (item) => item.productId !== productId,
+            );
+            return {
+              cart: {
+                ...state.cart,
+                items: updatedItems,
+              },
+            };
+          })
+        }
     }),
     {
       name: "boardworld-user",
