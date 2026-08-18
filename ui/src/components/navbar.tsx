@@ -24,7 +24,7 @@ export default function NavBar() {
     ...(user != undefined ? [{ label: "Cart", href: "/cart" }] : [] ),
     ...(user != undefined ? [{ label: "Orders", href: "/orders" }] : [] ),
     ...(user?.role === "ADMIN" ? [{ label: "Admin", href: "/admin" }] : []),
-    { label: "About", href: "#" },
+    { label: "About", href: "/about" },
   ];
 
   // Helper to ensure we strictly close the menu (rather than toggling it) when a link is clicked
@@ -165,9 +165,14 @@ export default function NavBar() {
                 <Link
                   href={link.href}
                   onClick={handleCloseMenu}
-                  className="block text-lg font-medium transition-colors hover:text-blue-300"
+                  className={`block text-lg font-medium transition-colors hover:text-blue-300 ${link.label === "Cart" && "relative"}`}
                 >
                   {link.label}
+                  {link.label === "Cart" && cartItemCount > 0 && (
+                      <span className="bg-red-500 rounded-full py-1 px-2 text-xs font-bold absolute transform translate-x-1/2 -translate-y-1/2">
+                        {cartItemCount}
+                      </span>
+                    )}
                 </Link>
               </li>
             ))}

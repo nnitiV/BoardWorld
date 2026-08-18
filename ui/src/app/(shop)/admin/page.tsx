@@ -6,11 +6,9 @@ export default function Admin() {
   //   "OVERVIEW",
   // );
   return (
-    <div className="shadow rounded flex gap-4">
-      <div className="pt-4 w-full">
+    <div className="w-full h-full min-h-screen pb-12">
         {/* {selectedMenu == "OVERVIEW" && <Overview />} */}
         <Overview />
-      </div>
     </div>
   );
 }

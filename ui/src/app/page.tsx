@@ -11,10 +11,10 @@ export default function Home() {
   return (
     <>
       <NavBar />
-      <ProductCarousel title="Popular Products" productsToShow={popularItems?.products} className="mt-5" amountToShow={5} />
-      <ProductCarousel title="Animal" productsToShow={animalData?.products} className="mt-5" amountToShow={5} />
-      <ProductCarousel title="Board Games" productsToShow={boardData?.products} className="mt-5" amountToShow={5} />
-      <ProductCarousel title="Card Games" productsToShow={cardData?.products} className="mt-5" amountToShow={5} />
+      <ProductCarousel title="Popular Products" productsToShow={popularItems?.products} className="mt-5" amountToShowInPage={5} />
+      <ProductCarousel title="Animal" productsToShow={animalData?.products} className="mt-5" amountToShowInPage={5} />
+      <ProductCarousel title="Board Games" productsToShow={boardData?.products} className="mt-5" amountToShowInPage={5} />
+      <ProductCarousel title="Card Games" productsToShow={cardData?.products} className="mt-5" amountToShowInPage={5} />
     </>
   );
 }

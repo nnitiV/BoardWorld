@@ -2,6 +2,7 @@
 
 import {  useGetProductsByCategory } from "@/hooks/useProductMutation";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
@@ -14,38 +15,45 @@ export default function AllProductsByCategory() {
   const products = data?.products || [];
   const totalItems = products.length || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / amount));
-  console.log(products)
+  const API_URL = process.env.API_URL || "http://localhost:5173";
   return (
-    <div className="w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
-      <h1 className="text-2xl font-bold text-blue-950 ms-6 mb-4">All Products</h1>
-      <div className="relative inline-block w-20 ms-6">
-        <select
-          name="amount"
-          id="amount"
-          className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-          value={amount}
-          onChange={(e) => {
-            setAmount(Number(e.target.value));
-            setPage(1);
-          }}
-        >
-          <option value="20">20</option>
-          <option value="40">40</option>
-          <option value="60">60</option>
-          <option value="80">80</option>
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-          <svg className="fill-current h-4 w-4" viewBox="0 0 20 20">
-            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-          </svg>
+    <div className="w-full max-w-7xl mx-auto mt-4 sm:mt-8 shadow-lg rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 lg:p-8 overflow-hidden">
+      
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-950 px-2">
+          All Products
+        </h1>
+        
+        <div className="relative inline-block w-full sm:w-24 shrink-0">
+          <select
+            name="amount"
+            id="amount"
+            className="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 py-2.5 pl-4 pr-10 rounded-lg cursor-pointer transition-all hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            value={amount}
+            onChange={(e) => {
+              setAmount(Number(e.target.value));
+              setPage(1);
+            }}
+          >
+            <option value="20">20</option>
+            <option value="40">40</option>
+            <option value="60">60</option>
+            <option value="80">80</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+            <svg className="fill-current h-4 w-4" viewBox="0 0 20 20">
+              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
         </div>
       </div>
-      <ul className="grid grid-cols-4 gap-6 p-6">
+
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 py-4">
         {isLoading ? (
-          <li className="flex justify-center py-6" role="status">
+          <li className="flex justify-center py-12 col-span-full" role="status">
             <svg
               aria-hidden="true"
-              className="w-8 h-8 text-neutral-tertiary animate-spin fill-brand"
+              className="w-8 h-8 text-slate-200 animate-spin fill-blue-600"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -63,104 +71,105 @@ export default function AllProductsByCategory() {
           </li>
         ) : (
           products.map((product) => (
-            <li
-              key={product.id}
-              className="w-full flex items-center gap-6 p-3 rounded-xl transition-all cursor-pointer
-              border border-transparent hover:border-slate-100 hover:bg-slate-200"
-              onClick={() => (window.location.href = `/product/${product.id}`)}
-            >
-              <div className="w-24 h-24 relative shrink-0 rounded-lg overflow-hidden">
-                <Image
-                  src={`http://localhost:5173${product.imagesUrl[0]}`}
-                  alt={product.name}
-                  width={96}
-                  height={96}
-                  className="w-full h-full object-cover"
-                />
-                
-              </div>
-
-              <div className="flex flex-col gap-2 justify-around h-full ">
-                <h2 className="text-lg font-semibold hover:text-shadow-amber-500">
-                  {product.name}
-                </h2>
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-blue-600">
-                    <span className="font-bold">Categories:</span> <br />{product.categories?.map(category => category.name).join(", ").toString()}
-                  </p>
-                  <p className="text-sm font-bold text-blue-600">
-                    ${product.price}
-                  </p>
+            <li key={product.id} className="relative group flex w-full">
+              <Link
+                href={`/product/${product.id}`}
+                // THE FIX: flex-row on mobile, flex-col on tablet/desktop
+                className="w-full flex flex-row sm:flex-col items-center sm:items-start gap-4 p-3 sm:p-4 rounded-xl transition-all cursor-pointer bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-slate-100 shadow-sm hover:shadow-md overflow-hidden"
+              >
+                {/* THE FIX: Fixed 112px square on mobile, expands to 100% width on desktop */}
+                <div className="w-28 h-28 sm:w-full sm:h-auto sm:aspect-square shrink-0 relative bg-white rounded-lg overflow-hidden border border-slate-200">
+                  <Image
+                    src={`${API_URL}${product.imagesUrl[0]}`}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 640px) 112px, (max-width: 1024px) 33vw, 25vw"
+                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
-              </div>
 
-              
+                <div className="flex flex-col justify-center sm:justify-start h-full sm:w-full overflow-hidden flex-1 min-w-0">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors line-clamp-2 break-words">
+                    {product.name}
+                  </h2>
+                  <div className="flex flex-col mt-1 sm:mt-2 gap-1">
+                    <p className="text-xs sm:text-sm font-medium text-slate-600 line-clamp-2 leading-tight break-words">
+                      <span className="font-bold text-slate-800">Categories:</span><br className="hidden sm:block" />
+                      <span className="sm:hidden"> </span>
+                      {product.categories?.map((category) => category.name).join(", ")}
+                    </p>
+                    <p className="text-sm sm:text-lg font-bold text-blue-600 mt-1">
+                      ${product.price}
+                    </p>
+                  </div>
+                </div>
+              </Link>
             </li>
           ))
         )}
       </ul>
-      <div className="flex items-center gap-1 mt-6 mx-auto">
+
+      {/* Pagination */}
+      <div className="flex flex-wrap justify-center items-center gap-1 sm:gap-2 mt-8 w-full border-t border-slate-100 pt-6">
         <button
           onClick={() => setPage((page) => page - 1)}
           disabled={page === 1}
-          className="px-4 py-2 transition-all rounded-l-lg cursor-pointer hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
+          className="px-3 py-2 sm:px-4 transition-all rounded-lg cursor-pointer hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600 font-bold"
         >
           &lt;
         </button>
 
-        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-          (pageNumber) => {
-            if (
-              pageNumber == page ||
-              pageNumber == page + 1 ||
-              pageNumber == page - 1 ||
-              pageNumber == 1 ||
-              pageNumber == totalPages
-            ) {
-              return (
-                <button
-                  key={pageNumber}
-                  onClick={() => setPage(pageNumber)}
-                  className={`w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium
-          ${
-            pageNumber === page
-              ? "bg-blue-600 text-white shadow-md" // Active state
-              : "cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900" // Inactive state
-          }`}
-                >
-                  {pageNumber}
-                </button>
-              );
-            } else if (pageNumber == 2 && page > 3) {
-              return (
-                <p
-                  key={pageNumber}
-                  className="w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
-                  onClick={() => setPage((page) => Math.max(1, page - 5))}
-                >
-                  ...
-                </p>
-              );
-            } else if (pageNumber == totalPages - 1 && page < totalPages - 2) {
-              return (
-                <p
-                  key={pageNumber}
-                  className="w-10 h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-600 hover:bg-blue-100 hover:text-blue-900"
-                  onClick={() =>
-                    setPage((page) => Math.min(totalPages, page + 5))
-                  }
-                >
-                  ...
-                </p>
-              );
-            }
-          },
-        )}
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => {
+          if (
+            pageNumber === page ||
+            pageNumber === page + 1 ||
+            pageNumber === page - 1 ||
+            pageNumber === 1 ||
+            pageNumber === totalPages
+          ) {
+            return (
+              <button
+                key={pageNumber}
+                onClick={() => setPage(pageNumber)}
+                className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-all rounded-lg font-medium text-sm sm:text-base ${
+                  pageNumber === page
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+                    : "cursor-pointer text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                {pageNumber}
+              </button>
+            );
+          } else if (pageNumber === 2 && page > 3) {
+            return (
+              <button
+                key={pageNumber}
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-400 hover:bg-slate-100"
+                onClick={() => setPage((page) => Math.max(1, page - 5))}
+                title="Jump back 5 pages"
+              >
+                ...
+              </button>
+            );
+          } else if (pageNumber === totalPages - 1 && page < totalPages - 2) {
+            return (
+              <button
+                key={pageNumber}
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-all rounded-lg font-medium cursor-pointer text-slate-400 hover:bg-slate-100"
+                onClick={() => setPage((page) => Math.min(totalPages, page + 5))}
+                title="Jump forward 5 pages"
+              >
+                ...
+              </button>
+            );
+          }
+          return null;
+        })}
 
         <button
           onClick={() => setPage((page) => page + 1)}
           disabled={page === totalPages}
-          className="px-4 py-2 transition-all cursor-pointer rounded-r-lg hover:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600"
+          className="px-3 py-2 sm:px-4 transition-all cursor-pointer rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none text-slate-600 font-bold"
         >
           &gt;
         </button>

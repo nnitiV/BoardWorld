@@ -5,7 +5,7 @@ import Button from "../admin/Button";
 import ImageCarousel from "./ImageCarousel";
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
-import { useAddItemToCartMutation, useDeleteCartItemMutation } from "@/hooks/useCartMutation";
+import { useAddItemToCartMutation } from "@/hooks/useCartMutation";
 import { useCreateCheckoutSessionMutation } from "@/hooks/useOrderMutation";
 
 interface ProductShowcaseProps {
@@ -14,7 +14,6 @@ interface ProductShowcaseProps {
 
 export default function ProductShowcase({ product }: ProductShowcaseProps) {
   const { mutate: addCartItem} = useAddItemToCartMutation();
-  const { mutate: deleteCartItem, isSuccess} = useDeleteCartItemMutation();
   const { mutate: checkout, data, isPending } = useCreateCheckoutSessionMutation();
   const [amount, setAmount] = useState<number>(1);
   const router = useRouter();

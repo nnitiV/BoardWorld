@@ -8,6 +8,7 @@ import { useDeleteCartItemMutation, useUpdateCartItemMutation } from "@/hooks/us
 import TrashIcon from "@/components/Icons/TrashIcon";
 import Button from "@/components/admin/Button";
 import { useCreateCheckoutSessionMutation } from "@/hooks/useOrderMutation";
+import Link from "next/link";
 
 export default function Cart() {
   const router = useRouter();
@@ -25,9 +26,11 @@ export default function Cart() {
   const setAmount = (quantity: number, productId: string) => {
     updateCartItem({ quantity, productId });
   }
+  const API_URL = process.env.API_URL || "http://localhost:5173";
+
   return (
     <>
-      {cart && cart.items && cart.items.length > 0 ? (
+      {cart && cart.items?.length > 0 ? (
         <div className="mx-auto mt-8 flex w-full max-w-6xl flex-col items-start gap-8 px-4 md:flex-row">
           {/* Left Column (Cart Items) */}
           <div className="flex-1 w-full rounded-2xl border border-slate-200 bg-white shadow-sm backdrop-blur-sm">
@@ -37,32 +40,33 @@ export default function Cart() {
                   key={item.product.id}
                   className="flex w-full items-start sm:items-center gap-4 sm:gap-6 border-b border-slate-200 p-4 sm:p-6 transition-all last:border-b-0"
                 >
-                  {/* Image Container */}
+                  {/* Image Container - Wrapped in Link, swapped to Image fill for better scaling */}
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-slate-100 sm:h-24 sm:w-24">
-                    <Image
-                      onClick={() => router.push(`/product/${item.product.id}`)}
-                      src={`http://localhost:5173${item.product.imagesUrl[0]}`}
-                      alt={item.product.name}
-                      width={96}
-                      height={96}
-                      className="h-full w-full cursor-pointer object-cover"
-                    />
+                    <Link href={`/product/${item.product.id}`} className="block w-full h-full">
+                      <Image
+                        src={`${API_URL}${item.product.imagesUrl[0]}`}
+                        alt={item.product.name}
+                        fill
+                        sizes="(max-width: 640px) 80px, 96px"
+                        className="object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </Link>
                   </div>
 
                   {/* Content Container */}
                   <div className="flex flex-1 flex-col justify-between self-stretch py-1">
                     <div className="flex items-start justify-between gap-4">
-                      <h2
-                        className="cursor-pointer text-base font-semibold text-slate-900 transition-colors hover:text-blue-700 sm:text-lg line-clamp-2"
-                        onClick={() =>
-                          router.push(`/product/${item.product.id}`)
-                        }
-                      >
-                        {item.product.name}
-                      </h2>
+                      {/* Title - Wrapped in Link instead of onClick */}
+                      <Link href={`/product/${item.product.id}`} className="group">
+                        <h2 className="text-base font-semibold text-slate-900 transition-colors group-hover:text-blue-700 sm:text-lg line-clamp-2">
+                          {item.product.name}
+                        </h2>
+                      </Link>
+                      
                       <button
                         onClick={() => deleteCartItem(item.id)}
-                        className="p-1 hover:bg-red-50 rounded-md transition-colors"
+                        className="p-1 hover:bg-red-50 rounded-md transition-colors shrink-0"
+                        aria-label="Remove item"
                       >
                         <TrashIcon className="h-5 w-5 fill-red-600 cursor-pointer sm:h-6 sm:w-6" />
                       </button>
@@ -134,8 +138,9 @@ export default function Cart() {
             </h3>
             <div className="flex items-center justify-between">
               <span className="text-slate-600 font-medium">Total to pay</span>
+              {/* Added a safety fallback (totalToPay || 0) just in case the state hasn't initialized */}
               <span className="text-xl font-bold text-green-600">
-                ${totalToPay && totalToPay.toFixed(2)}
+                ${(totalToPay || 0).toFixed(2)}
               </span>
             </div>
             <Button className="w-full font-bold text-white py-3" onClick={checkoutCart}>

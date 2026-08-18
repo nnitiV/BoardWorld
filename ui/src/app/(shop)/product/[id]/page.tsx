@@ -17,10 +17,10 @@ export default function ProductPage() {
   return (
     <>
       {product && product.isActive && (
-        <div className="h-fit w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
-          <ProductShowcase product={product} />
-          <ReviewSection className="mt-12" productId={product.id} />
-        </div>
+        <div className="h-fit w-full max-w-7xl mx-auto mt-4 sm:mt-8 shadow-lg rounded-2xl border border-slate-200 bg-slate-100 p-4 sm:p-6 lg:p-8 overflow-hidden">
+  <ProductShowcase product={product} />
+  <ReviewSection className="mt-12" productId={product.id} />
+</div>
       )}
     </>
   );

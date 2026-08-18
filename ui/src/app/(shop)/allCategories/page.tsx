@@ -1,23 +1,26 @@
 "use client";
 
 import { useGetCategoriesQuery } from "@/hooks/useProductMutation";
+import Link from "next/link";
 
 export default function AllCategories() {
   const { data, isLoading } = useGetCategoriesQuery();
   const categories = data?.categories || [];
 
   return (
-    <div className="w-3/4 mx-auto mt-4 shadow-lg rounded-lg border border-slate-200 bg-slate-100 p-6 overflow-hidden">
-      <h1 className="text-2xl font-bold text-blue-950 ms-6 mb-4">
+    <div className="w-full max-w-7xl mx-auto mt-4 sm:mt-8 shadow-lg rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 lg:p-8 overflow-hidden">
+      
+      <h1 className="text-2xl sm:text-3xl font-bold text-blue-950 mb-6 px-2">
         All Categories
       </h1>
 
-      <ul className="grid grid-cols-8 gap-2 p-6">
+      {/* Responsive Grid: 2 cols on mobile, scaling all the way up to 8 on ultra-wide screens */}
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-4">
         {isLoading ? (
-          <li className="flex justify-center py-6" role="status">
+          <li className="flex justify-center py-12 col-span-full" role="status">
             <svg
               aria-hidden="true"
-              className="w-8 h-8 text-neutral-tertiary animate-spin fill-brand"
+              className="w-8 h-8 text-slate-200 animate-spin fill-blue-600"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -35,19 +38,17 @@ export default function AllCategories() {
           </li>
         ) : (
           categories.map((category) => (
-            <li
-              key={category.id}
-              className="w-full flex items-center gap-6 p-3 rounded-xl transition-all cursor-pointer
-              border border-transparent hover:border-slate-100 hover:bg-slate-200"
-              onClick={() =>
-                (window.location.href = `/category/${category.name}`)
-              }
-            >
-              <div className="flex flex-col gap-2 justify-around h-full ">
-                <h2 className="text-lg font-semibold hover:text-shadow-amber-500">
+            <li key={category.id} className="w-full flex group">
+              {/* Semantic routing with Next/Link. Makes the whole card clickable for accessibility */}
+              <Link
+                href={`/category/${category.name}`}
+                className="w-full flex items-center justify-center p-4 rounded-xl transition-all bg-slate-50 border border-slate-100 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md text-center min-h-[80px]"
+              >
+                {/* Dynamically clamped text to prevent overflow on long category names */}
+                <h2 className="text-sm sm:text-base font-semibold text-slate-800 group-hover:text-blue-700 line-clamp-2">
                   {category.name}
                 </h2>
-              </div>
+              </Link>
             </li>
           ))
         )}
