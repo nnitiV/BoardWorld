@@ -34,6 +34,23 @@ A modern, production-grade, full-stack e-commerce platform built for board game 
 
 ---
 
+# 📸 Application Showcase
+<h1>Home</h1>
+<div align="center">
+    <img  alt="Home-Desktop" src="https://github.com/user-attachments/assets/7991ce03-60c9-4e47-b698-06294f495571" width="60%" />
+    <img  alt="HomePage-Mobile" src="https://github.com/user-attachments/assets/f5def7a6-91a2-4ece-99a7-6518e8c27b3c" width="20%" />
+</div>
+<h1>Cart</h1>
+<div align="center">
+    <img alt="Cart-Desktop" src="https://github.com/user-attachments/assets/37537ecf-977f-4f33-ae86-3bf9218a485d" width="60%" />
+    <img alt="Cart-Mobile" src="https://github.com/user-attachments/assets/d6794f30-c4de-461a-8654-cce635f9475f" width="20%" />
+</div>
+<h1>Admin</h1>
+<div align="center">
+    <img alt="Admin-Desktop" src="https://github.com/user-attachments/assets/d5e558f4-ca16-4734-8c48-1eaa1eb56817" width="60%" />
+    <img alt="Admin-Mobile" src="https://github.com/user-attachments/assets/f3ea02f8-d017-4c4f-bd04-1cadc8b9a3b3"  width="20%" />
+</div>
+
 ## 📁 Project Structure
 
 ```text
